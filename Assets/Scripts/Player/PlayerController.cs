@@ -38,11 +38,9 @@ public class PlayerController : MonoBehaviour
 			Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit;
 
-			if (Physics.Raycast(ray, out hit, 100))
-			{
+			if (Physics.Raycast(ray, out hit, 100)) {
 				Interactable interactable = hit.collider.GetComponent<Interactable>();
-				if (interactable != null)
-				{
+				if (interactable != null) {
 					SetFocus(interactable);
 				}
 			}
@@ -51,8 +49,7 @@ public class PlayerController : MonoBehaviour
 
     void SetFocus(Interactable newFocus)
     {
-	    if (newFocus != focus)
-	    {
+	    if (newFocus != focus) {
 		    if (focus != null)
 			    focus.OnDefocused();
 		    

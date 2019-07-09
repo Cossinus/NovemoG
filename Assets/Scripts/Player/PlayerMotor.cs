@@ -17,14 +17,14 @@ public class PlayerMotor : MonoBehaviour
 
     void Update()
     {
-	    if (target != null)
-	    {
-		    agent.SetDestination(target.position);
+	    if (target != null) {
+		    agent.SetDestination(target.position); 
 		    FaceTarget();
 	    }
     }
 
-    public void MoveToPoint (Vector3 point) {
+    public void MoveToPoint (Vector3 point) 
+    {
 		agent.SetDestination(point);
 	}
 
