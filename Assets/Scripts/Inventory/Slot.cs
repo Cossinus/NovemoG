@@ -77,7 +77,8 @@ public class Slot : MonoBehaviour, IPointerClickHandler
     //Use second prefab instead
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Right) {
+        if (eventData.button == PointerEventData.InputButton.Right && !GameObject.Find("Hover") && Inventory.Instance.canvasGroup.alpha > 0)
+        {
             UseItem();
         }
     }

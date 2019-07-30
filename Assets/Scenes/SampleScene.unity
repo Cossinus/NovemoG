@@ -2334,11 +2334,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 139238501746362869, guid: 73a6f91088aa2a64ab6bea660954a4e5,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7574055119391793374, guid: 73a6f91088aa2a64ab6bea660954a4e5,
         type: 3}
       propertyPath: m_AnchorMin.y

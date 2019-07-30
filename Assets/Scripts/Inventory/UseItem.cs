@@ -3,5 +3,5 @@ using UnityEngine.EventSystems;
 
 public class UseItem : Slot
 {
-   
+    
 }

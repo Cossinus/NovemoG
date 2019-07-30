@@ -284,7 +284,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -313.2, y: 230.5}
+  m_AnchoredPosition: {x: -313.25, y: 230.5498}
   m_SizeDelta: {x: 626.5, y: 461.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7132513862426544292
@@ -338,6 +338,7 @@ GameObject:
   - component: {fileID: 7132513862513212792}
   - component: {fileID: 7132513862513212799}
   - component: {fileID: 7132513862513212795}
+  - component: {fileID: 1570569370}
   m_Layer: 5
   m_Name: Inventory Canvas
   m_TagString: Untagged
@@ -443,6 +444,21 @@ MonoBehaviour:
   slots: 24
   iconPrefab: {fileID: 6313002164672428387, guid: a9b9cc4bbfd063547901d8b711bab85a,
     type: 3}
+  eventSystem: {fileID: 0}
+  canvasGroup: {fileID: 1570569370}
+  fadeTime: 0.8
+--- !u!225 &1570569370
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7132513862513212798}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &19808404244529707
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -562,11 +578,42 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4660548935244554666, guid: e3c00a3f14c625f4e8a27fac5b18dd1c,
         type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4660548935244554666, guid: e3c00a3f14c625f4e8a27fac5b18dd1c,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 7132513862513212795}
+    - target: {fileID: 4660548935244554666, guid: e3c00a3f14c625f4e8a27fac5b18dd1c,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MoveItem
+      objectReference: {fileID: 0}
+    - target: {fileID: 4660548935244554666, guid: e3c00a3f14c625f4e8a27fac5b18dd1c,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4660548935244554666, guid: e3c00a3f14c625f4e8a27fac5b18dd1c,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 4678051662009573913}
+    - target: {fileID: 4660548935244554666, guid: e3c00a3f14c625f4e8a27fac5b18dd1c,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.GameObject, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e3c00a3f14c625f4e8a27fac5b18dd1c, type: 3}
+--- !u!1 &4678051662009573913 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4660548933667364914, guid: e3c00a3f14c625f4e8a27fac5b18dd1c,
+    type: 3}
+  m_PrefabInstance: {fileID: 19808404244529707}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &4678051662009573914 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4660548933667364913, guid: e3c00a3f14c625f4e8a27fac5b18dd1c,

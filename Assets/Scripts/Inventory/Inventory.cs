@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class Inventory : MonoBehaviour
 {
     #region Singleton
     
@@ -39,10 +40,15 @@ public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     private static GameObject _hoverObject;
 
     private float _hoverYOffset;
-    private bool _isOver = false;
 
     public EventSystem eventSystem;
-    
+
+    public CanvasGroup canvasGroup;
+
+    private bool fadingIn;
+    private bool fadingOut;
+    public float fadeTime;
+
     private static int _emptySlots;
     public static int EmptySlots {
         get => _emptySlots;
@@ -65,7 +71,15 @@ public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     void Update()
     {
         if (Input.GetButtonDown("Inventory")) {
-            inventoryUI.SetActive(!inventoryUI.activeSelf);
+            if (canvasGroup.alpha > 0)
+            {
+                StartCoroutine(nameof(FadeOut));
+                PutItemBack();
+            }
+            else
+            {
+                StartCoroutine(nameof(FadeIn));
+            }
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -77,7 +91,7 @@ public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                 Destroy(GameObject.Find("Hover"));
                 _to = null;
                 _from = null;
-                _hoverObject = null;
+                EmptySlots++;
             }
         }
 
@@ -86,7 +100,7 @@ public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             Vector2 position;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, Input.mousePosition,
                 canvas.worldCamera, out position);
-            position.Set(position.x, position.y-_hoverYOffset);
+            position.Set(position.x, position.y - _hoverYOffset);
             _hoverObject.transform.position = canvas.transform.TransformPoint(position);
         }
     }
@@ -138,21 +152,22 @@ public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void MoveItem(GameObject clicked)
     {
-        if (_from == null)
+        if (_from == null && canvasGroup.alpha == 1)
         {
             if (!clicked.GetComponent<Slot>().IsNullOrEmpty)
             {
                 _from = clicked.GetComponent<Slot>();
                 _from.icon.color = Color.gray;
 
-                _hoverObject = Instantiate(iconPrefab);
+                _hoverObject = Instantiate(iconPrefab, GameObject.Find("Inventory Canvas").transform, true);
                 _hoverObject.GetComponent<Image>().sprite = clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite;
                 _hoverObject.name = "Hover";
+                
                 RectTransform hoverTransform = _hoverObject.GetComponent<RectTransform>();
                 RectTransform clickedTransform = clicked.GetComponent<RectTransform>();
+                
                 hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, clickedTransform.sizeDelta.x - 30f);
                 hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, clickedTransform.sizeDelta.y - 30f);
-                _hoverObject.transform.SetParent(GameObject.Find("Inventory Canvas").transform, true);
                 _hoverObject.transform.localScale = _from.gameObject.transform.localScale;
             }
         }
@@ -179,23 +194,67 @@ public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             _from.icon.color = Color.white;
             _to = null;
             _from = null;
-            _hoverObject = null;
+            Destroy(GameObject.Find("Hover"));
+        }
+    }
+
+    private void PutItemBack()
+    {
+        if (_from != null)
+        {
+            Destroy(GameObject.Find("Hover"));
+            _from.icon.color = Color.white;
+            _from = null;
+        }
+    }
+
+    private IEnumerator FadeOut()
+    {
+        if (!fadingOut)
+        {
+            fadingOut = true;
+            fadingIn = false;
+            StopCoroutine(nameof(FadeIn));
+
+            float startAlpha = canvasGroup.alpha;
+            float rate = 1.0f / fadeTime;
+            float progress = 0.0f;
+
+            while (progress < 1.0)
+            {
+                canvasGroup.alpha = Mathf.Lerp(startAlpha, 0, progress);
+                progress += rate * Time.deltaTime;
+                yield return null;
+            }
+
+            inventoryUI.SetActive(!inventoryUI.activeSelf);
+            canvasGroup.alpha = 0;
+            fadingOut = false;
         }
     }
     
-    public void OnPointerEnter(PointerEventData eventData)
+    private IEnumerator FadeIn()
     {
-        if (eventData.pointerEnter.name == "Hover")
+        if (!fadingIn)
         {
-            
-        }
-        Debug.Log("Mouse enter");
-        _isOver = true;
-    }
+            fadingOut = false;
+            fadingIn = true;
+            StopCoroutine(nameof(FadeOut));
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        Debug.Log("Mouse exit");
-        _isOver = false;
+            float startAlpha = canvasGroup.alpha;
+            float rate = 1.0f / fadeTime;
+            float progress = 0.0f;
+
+            inventoryUI.SetActive(!inventoryUI.activeSelf);
+            while (progress < 1.0)
+            {
+                canvasGroup.alpha = Mathf.Lerp(startAlpha, 1, progress);
+                progress += rate * Time.deltaTime;
+                yield return null;
+            }
+            
+            canvasGroup.alpha = 1;
+            fadingIn = false;
+        }
     }
 }

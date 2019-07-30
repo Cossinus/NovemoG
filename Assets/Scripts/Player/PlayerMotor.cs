@@ -26,7 +26,7 @@ public class PlayerMotor : MonoBehaviour
     public void MoveToPoint (Vector3 point) 
     {
 		agent.SetDestination(point);
-	}
+    }
 
     public void FollowTarget(Interactable newTarget)
     {
