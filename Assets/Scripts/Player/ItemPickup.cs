@@ -1,10 +1,9 @@
-﻿using UnityEditor.UI;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ItemPickup : Interactable
 {
     public Item item;
-    
+
     public override void Interact()
     {
         base.Interact();
@@ -14,9 +13,9 @@ public class ItemPickup : Interactable
 
     void PickUp()
     {
-        Debug.Log("Picked item:" + item.name);
-        bool wasPickedUp = Inventory.instance.Add(item);
-        
+        //Debug.Log("Picked item:" + item.name);
+        bool wasPickedUp = Inventory.Instance.AddItem(item);
+
         if (wasPickedUp)
             Destroy(gameObject);
     }
