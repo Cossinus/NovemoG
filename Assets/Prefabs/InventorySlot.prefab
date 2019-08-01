@@ -86,7 +86,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 70, y: 70}
+  m_SizeDelta: {x: 90, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4660548933708346921
 CanvasRenderer:
@@ -247,9 +247,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132513862513212798, guid: 73a6f91088aa2a64ab6bea660954a4e5,
+      - m_Target: {fileID: 7132513862513212795, guid: 7470a29016065b245be7e006d7610dc3,
           type: 3}
-        m_MethodName: 
+        m_MethodName: MoveItem
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 4660548933667364914}

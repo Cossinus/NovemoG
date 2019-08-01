@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,8 +13,7 @@ public class Inventory : MonoBehaviour
 
     void Awake()
     {
-        if (Instance != null)
-        {
+        if (Instance != null) {
             Debug.LogWarning("More than one instance of Inventory found!");
             return;
         }
@@ -45,47 +45,45 @@ public class Inventory : MonoBehaviour
 
     public CanvasGroup canvasGroup;
 
-    private bool fadingIn;
-    private bool fadingOut;
+    private bool _fadingIn;
+    private bool _fadingOut;
     public float fadeTime;
 
-    private static int _emptySlots;
-    public static int EmptySlots {
-        get => _emptySlots;
-        set => _emptySlots = value;
-    }
+    private static GameObject _clicked;
+    public GameObject selectStackSize;
+    public TextMeshProUGUI stackTxt;
+    private int _splitAmount;
+    private int _maxStackCount;
+    public Slot movingSlot;
+    private static Slot _movingSlot;
+
+    public static int EmptySlots { get; set; }
 
     void Start()
     {
-        inventoryUI.gameObject.SetActive(true);
-
         _slots = itemsParent.GetComponentsInChildren<Slot>();
 
-        _emptySlots = slots;
+        EmptySlots = slots;
 
         _hoverYOffset = 100f * 0.01f;
 
-        inventoryUI.gameObject.SetActive(false);
+        _movingSlot = movingSlot;
     }
 
     void Update()
     {
         if (Input.GetButtonDown("Inventory")) {
-            if (canvasGroup.alpha > 0)
-            {
+            if (canvasGroup.alpha > 0) {
                 StartCoroutine(nameof(FadeOut));
                 PutItemBack();
             }
-            else
-            {
+            else {
                 StartCoroutine(nameof(FadeIn));
             }
         }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            if (!eventSystem.IsPointerOverGameObject(-1) && _from != null)
-            {
+        if (Input.GetMouseButtonUp(0)) {
+            if (!eventSystem.IsPointerOverGameObject(-1) && _from != null) {
                 _from.icon.color = Color.white;
                 _from.ClearSlot();
                 Destroy(GameObject.Find("Hover"));
@@ -95,8 +93,7 @@ public class Inventory : MonoBehaviour
             }
         }
 
-        if (_hoverObject != null)
-        {
+        if (_hoverObject != null) {
             Vector2 position;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, Input.mousePosition,
                 canvas.worldCamera, out position);
@@ -122,7 +119,7 @@ public class Inventory : MonoBehaviour
                 return true;
             }
 
-            if (_emptySlots > 0) {
+            if (EmptySlots > 0) {
                 PlaceEmpty(item);
                 return true;
             }
@@ -136,12 +133,12 @@ public class Inventory : MonoBehaviour
 
     private bool PlaceEmpty(Item item)
     {
-        if (_emptySlots > 0) {
+        if (EmptySlots > 0) {
             foreach (Slot slot in _slots) {
                 Slot tmp = slot.GetComponent<Slot>();
                 if (tmp.IsNullOrEmpty) {
                     tmp.AddItem(item);
-                    _emptySlots--;
+                    EmptySlots--;
                     return true;
                 }
             }
@@ -152,42 +149,37 @@ public class Inventory : MonoBehaviour
 
     public void MoveItem(GameObject clicked)
     {
-        if (_from == null && canvasGroup.alpha == 1)
-        {
-            if (!clicked.GetComponent<Slot>().IsNullOrEmpty)
-            {
+        _clicked = clicked;
+        
+        if (!movingSlot.IsNullOrEmpty) {
+            Slot tmp = clicked.GetComponent<Slot>();
+
+            if (tmp.IsNullOrEmpty) {
+                tmp.AddItems(movingSlot.Items);
+                movingSlot.Items.Clear();
+                Destroy(GameObject.Find("Hover"));
+            } else if (!tmp.IsNullOrEmpty && movingSlot.Items.Peek().type == tmp.CurrentItem.type && tmp.IsAvailable) {
+                MergeStacks(movingSlot, tmp);
+            }
+        } else if (_from == null && canvasGroup.alpha == 1 && !Input.GetKey(KeyCode.LeftShift)) {
+            if (!clicked.GetComponent<Slot>().IsNullOrEmpty) {
                 _from = clicked.GetComponent<Slot>();
                 _from.icon.color = Color.gray;
-
-                _hoverObject = Instantiate(iconPrefab, GameObject.Find("Inventory Canvas").transform, true);
-                _hoverObject.GetComponent<Image>().sprite = clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite;
-                _hoverObject.name = "Hover";
                 
-                RectTransform hoverTransform = _hoverObject.GetComponent<RectTransform>();
-                RectTransform clickedTransform = clicked.GetComponent<RectTransform>();
-                
-                hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, clickedTransform.sizeDelta.x - 30f);
-                hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, clickedTransform.sizeDelta.y - 30f);
-                _hoverObject.transform.localScale = _from.gameObject.transform.localScale;
+                CreateHoverIcon();
             }
-        }
-        else if (_to == null)
-        {
+        } else if (_to == null && !Input.GetKey(KeyCode.LeftShift)) {
             _to = clicked.GetComponent<Slot>();
             Destroy(GameObject.Find("Hover"));
         }
 
-        if (_to != null && _from != null)
-        {
+        if (_to != null && _from != null) {
             Stack<Item> tmpTo = new Stack<Item>(_to.Items);
             _to.AddItems(_from.Items);
 
-            if (tmpTo.Count == 0)
-            {
+            if (tmpTo.Count == 0) {
                 _from.ClearSlot();
-            }
-            else
-            {
+            } else {
                 _from.AddItems(tmpTo);
             }
 
@@ -198,30 +190,92 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    private void CreateHoverIcon()
+    {
+        _hoverObject = Instantiate(iconPrefab, GameObject.Find("Inventory Canvas").transform, true);
+        _hoverObject.GetComponent<Image>().sprite = _clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite;
+        _hoverObject.name = "Hover";
+                
+        RectTransform hoverTransform = _hoverObject.GetComponent<RectTransform>();
+        RectTransform clickedTransform = _clicked.GetComponent<RectTransform>();
+                
+        hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, clickedTransform.sizeDelta.x - 50f);
+        hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, clickedTransform.sizeDelta.y - 50f);
+        _hoverObject.transform.localScale = _clicked.gameObject.transform.localScale;
+
+        _hoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
+            movingSlot.Items.Count > 1 ? movingSlot.Items.Count.ToString() : string.Empty;
+    }
+
     private void PutItemBack()
     {
-        if (_from != null)
-        {
+        if (_from != null) {
             Destroy(GameObject.Find("Hover"));
             _from.icon.color = Color.white;
             _from = null;
         }
     }
 
+    public void SetStackInfo(int maxStackCount)
+    {
+        selectStackSize.SetActive(true);
+        _splitAmount = 0;
+        _maxStackCount = maxStackCount;
+        stackTxt.text = _splitAmount.ToString();
+    }
+
+    public void SplitStack()
+    {
+        selectStackSize.SetActive(false);
+        
+        if (_splitAmount == _maxStackCount) {
+            MoveItem(_clicked);
+        } else if (_splitAmount > 0) {
+            movingSlot.Items = _clicked.GetComponent<Slot>().RemoveItems(_splitAmount);
+            CreateHoverIcon();
+        }
+    }
+
+    public void ChangeStackText(int i)
+    {
+        _splitAmount += 1;
+
+        if (_splitAmount < 0) {
+            _splitAmount = 0;
+        }
+        if (_splitAmount > _maxStackCount) {
+            _splitAmount = _maxStackCount;
+        }
+
+        stackTxt.text = _splitAmount.ToString();
+    }
+
+    public void MergeStacks(Slot source, Slot destination)
+    {
+        int max = destination.CurrentItem.stackLimit - destination.Items.Count;
+        int count = source.Items.Count < max ? source.Items.Count : max;
+
+        for (int i = 0; i < count; i++) {
+            destination.AddItem(source.RemoveItem());
+        }
+        if (source.Items.Count == 0) {
+            source.ClearSlot();
+            Destroy(GameObject.Find("Hover"));
+        }
+    }
+
     private IEnumerator FadeOut()
     {
-        if (!fadingOut)
-        {
-            fadingOut = true;
-            fadingIn = false;
+        if (!_fadingOut) {
+            _fadingOut = true;
+            _fadingIn = false;
             StopCoroutine(nameof(FadeIn));
 
             float startAlpha = canvasGroup.alpha;
             float rate = 1.0f / fadeTime;
             float progress = 0.0f;
 
-            while (progress < 1.0)
-            {
+            while (progress < 1.0) {
                 canvasGroup.alpha = Mathf.Lerp(startAlpha, 0, progress);
                 progress += rate * Time.deltaTime;
                 yield return null;
@@ -229,16 +283,15 @@ public class Inventory : MonoBehaviour
 
             inventoryUI.SetActive(!inventoryUI.activeSelf);
             canvasGroup.alpha = 0;
-            fadingOut = false;
+            _fadingOut = false;
         }
     }
     
     private IEnumerator FadeIn()
     {
-        if (!fadingIn)
-        {
-            fadingOut = false;
-            fadingIn = true;
+        if (!_fadingIn) {
+            _fadingOut = false;
+            _fadingIn = true;
             StopCoroutine(nameof(FadeOut));
 
             float startAlpha = canvasGroup.alpha;
@@ -246,15 +299,14 @@ public class Inventory : MonoBehaviour
             float progress = 0.0f;
 
             inventoryUI.SetActive(!inventoryUI.activeSelf);
-            while (progress < 1.0)
-            {
+            while (progress < 1.0) {
                 canvasGroup.alpha = Mathf.Lerp(startAlpha, 1, progress);
                 progress += rate * Time.deltaTime;
                 yield return null;
             }
             
             canvasGroup.alpha = 1;
-            fadingIn = false;
+            _fadingIn = false;
         }
     }
 }

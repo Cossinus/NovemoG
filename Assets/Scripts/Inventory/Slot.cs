@@ -5,26 +5,22 @@ using UnityEngine.EventSystems;
 
 public class Slot : MonoBehaviour
 {
-    private Stack<Item> _items = new Stack<Item>();
-    public Stack<Item> Items {
-        get => _items;
-        set => _items = value;
-    }
+    public Stack<Item> Items { get; set; } = new Stack<Item>();
 
     public Image icon;
     public Text stackAmount;
 
-    public bool IsAvailable => CurrentItem.stackLimit > _items.Count;
+    public bool IsAvailable => CurrentItem.stackLimit > Items.Count;
 
-    public Item CurrentItem => _items.Peek();
+    public Item CurrentItem => Items.Peek();
 
-    public bool IsNullOrEmpty => _items.Count == 0;
+    public bool IsNullOrEmpty => Items.Count == 0;
 
     public void AddItem(Item item)
     {
-        _items.Push(item);
-        if (_items.Count > 1) {
-            stackAmount.text = _items.Count.ToString();
+        Items.Push(item);
+        if (Items.Count > 1) {
+            stackAmount.text = Items.Count.ToString();
             stackAmount.gameObject.SetActive(true);
         }
         
@@ -34,12 +30,12 @@ public class Slot : MonoBehaviour
     
     public void AddItems(Stack<Item> items)
     {
-        _items = new Stack<Item>(items);
+        Items = new Stack<Item>(items);
         
-        stackAmount.text = _items.Count > 1 ? _items.Count.ToString() : string.Empty;
+        stackAmount.text = Items.Count > 1 ? Items.Count.ToString() : string.Empty;
         stackAmount.gameObject.SetActive(true);
         
-        if (_items?.Peek()) {
+        if (Items?.Peek()) {
             icon.sprite = CurrentItem.icon;
             icon.gameObject.SetActive(true);
         } else {
@@ -51,9 +47,9 @@ public class Slot : MonoBehaviour
     public void UseItemFromInventory()
     {
         if (!IsNullOrEmpty) {
-            _items.Pop().Use();
+            Items.Pop().Use();
 
-            stackAmount.text = _items.Count > 1 ? _items.Count.ToString() : string.Empty;
+            stackAmount.text = Items.Count > 1 ? Items.Count.ToString() : string.Empty;
 
             if (IsNullOrEmpty) {
                 icon.sprite = null;
@@ -65,16 +61,34 @@ public class Slot : MonoBehaviour
 
     public void ClearSlot()
     {
-        _items.Clear();
+        Items.Clear();
         icon.sprite = null;
         icon.gameObject.SetActive(false);
         stackAmount.text = string.Empty;
     }
 
+    public Stack<Item> RemoveItems(int amount)
+    {
+        Stack<Item> tmp = new Stack<Item>();
+        for (int i = 0; i < amount; i++) {
+            tmp.Push(Items.Pop());
+        }
+
+        Inventory.Instance.stackTxt.text = Items.Count > 1 ? Items.Count.ToString() : string.Empty;
+
+        return tmp;
+    }
+
+    public Item RemoveItem()
+    {
+        var tmp = Items.Pop();
+        Inventory.Instance.stackTxt.text = Items.Count > 1 ? Items.Count.ToString() : string.Empty;
+        return tmp;
+    }
+
     void Update()
     {
-        if (UseItem.itemButtonPressed)
-        {
+        if (UseSlot.ItemButtonPressed) {
             UseItemFromInventory();
         }
     }
