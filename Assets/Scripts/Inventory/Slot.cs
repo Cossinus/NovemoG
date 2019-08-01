@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class Slot : MonoBehaviour, IPointerClickHandler
+public class Slot : MonoBehaviour
 {
     private Stack<Item> _items = new Stack<Item>();
     public Stack<Item> Items {
@@ -48,10 +48,7 @@ public class Slot : MonoBehaviour, IPointerClickHandler
         }
     }
     
-    //If I wanted to use an item by clicking on a slot,
-    //I have to make OnClick event in the Inspector
-    //And attach Slot + this function
-    public void UseItem()
+    public void UseItemFromInventory()
     {
         if (!IsNullOrEmpty) {
             _items.Pop().Use();
@@ -74,12 +71,11 @@ public class Slot : MonoBehaviour, IPointerClickHandler
         stackAmount.text = string.Empty;
     }
 
-    //Use second prefab instead
-    public void OnPointerClick(PointerEventData eventData)
+    void Update()
     {
-        if (eventData.button == PointerEventData.InputButton.Right && !GameObject.Find("Hover") && Inventory.Instance.canvasGroup.alpha > 0)
+        if (UseItem.itemButtonPressed)
         {
-            UseItem();
+            UseItemFromInventory();
         }
     }
 }
