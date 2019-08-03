@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class UseSlot : Slot, IPointerClickHandler
+public class UseSlot : MonoBehaviour, IPointerClickHandler
 {
-    public static bool ItemButtonPressed { get; set; }
-    
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Right && !GameObject.Find("Hover") && Inventory.Instance.canvasGroup.alpha > 0) {
-            ItemButtonPressed = true;
+        Slot slot = gameObject.GetComponentInParent(typeof(Slot)) as Slot;
+        
+        if (eventData.button == PointerEventData.InputButton.Right && !GameObject.Find("Hover") && Inventory.Instance.inventoryUI.activeInHierarchy) {
+            slot.UseItemFromInventory();
         } else if (eventData.button == PointerEventData.InputButton.Left && Input.GetKey(KeyCode.LeftShift) &&
-                   Items.Count > 0 && !IsNullOrEmpty && !GameObject.Find("Hover")) {
+                   slot.IsMoreThanOneInSlot && !slot.IsEmpty && !GameObject.Find("Hover")) {
             Vector2 position;
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -21,7 +21,7 @@ public class UseSlot : Slot, IPointerClickHandler
             Inventory.Instance.selectStackSize.transform.position =
                 Inventory.Instance.canvas.transform.TransformPoint(position);
             
-            Inventory.Instance.SetStackInfo(Items.Count);
+            Inventory.Instance.SetStackInfo(slot.Items.Count);
         }
     }
 }

@@ -26,36 +26,33 @@ public class Inventory : MonoBehaviour
     public delegate void OnItemChanged();
     public OnItemChanged onItemChangedCallback;
     
+    public EventSystem eventSystem;
+    public TextMeshProUGUI stackTxt;
+
     public Transform itemsParent;
-    public GameObject inventoryUI;
+    
+    public CanvasGroup canvasGroup;
     public Canvas canvas;
 
-    public int slots;
-
+    private static GameObject _hoverObject;
+    private static GameObject _clicked;
+    public GameObject selectStackSize;
+    public GameObject inventoryUI;
+    public GameObject iconPrefab;
+    
+    private static Slot _from, _to;
+    private static Slot _movingSlot;
     private Slot[] _slots;
 
-    private static Slot _from, _to;
-
-    public GameObject iconPrefab;
-    private static GameObject _hoverObject;
-
+    private int _splitAmount;
+    private int _maxStackCount;
+    public int slots;
+    
     private float _hoverYOffset;
-
-    public EventSystem eventSystem;
-
-    public CanvasGroup canvasGroup;
+    public float fadeTime;
 
     private bool _fadingIn;
     private bool _fadingOut;
-    public float fadeTime;
-
-    private static GameObject _clicked;
-    public GameObject selectStackSize;
-    public TextMeshProUGUI stackTxt;
-    private int _splitAmount;
-    private int _maxStackCount;
-    public Slot movingSlot;
-    private static Slot _movingSlot;
 
     public static int EmptySlots { get; set; }
 
@@ -67,18 +64,20 @@ public class Inventory : MonoBehaviour
 
         _hoverYOffset = 100f * 0.01f;
 
-        _movingSlot = movingSlot;
+        _movingSlot = GameObject.Find("MovingSlot").GetComponent<Slot>();
+
+        inventoryUI.SetActive(false);
     }
 
     void Update()
     {
         if (Input.GetButtonDown("Inventory")) {
-            if (canvasGroup.alpha > 0) {
-                StartCoroutine(nameof(FadeOut));
-                PutItemBack();
+            if (canvasGroup.alpha == 0) {
+                StartCoroutine(nameof(FadeIn));
             }
             else {
-                StartCoroutine(nameof(FadeIn));
+                StartCoroutine(nameof(FadeOut));
+                PutItemBack();
             }
         }
 
@@ -90,6 +89,9 @@ public class Inventory : MonoBehaviour
                 _to = null;
                 _from = null;
                 EmptySlots++;
+            } else if (!eventSystem.IsPointerOverGameObject(-1) && !_movingSlot.IsEmpty) {
+                _movingSlot.ClearSlot();
+                Destroy(GameObject.Find("Hover"));
             }
         }
 
@@ -105,23 +107,23 @@ public class Inventory : MonoBehaviour
     public bool AddItem(Item item)
     {
         if (item.stackLimit == 1 || !item.isStackable) {
-            PlaceEmpty(item);
-            return true;
+            return PlaceEmpty(item);
         }
 
         if (item.isStackable && item.stackLimit > 1) {
             foreach (Slot slot in _slots) {
                 Slot tmp = slot.GetComponent<Slot>();
 
-                if (tmp.IsNullOrEmpty) continue;
+                if (tmp.IsEmpty) continue;
                 if (tmp.CurrentItem.type != item.type || !tmp.IsAvailable) continue;
-                tmp.AddItem(item);
-                return true;
+                if (!_movingSlot.IsEmpty && tmp.Items.Count <= item.stackLimit - _movingSlot.Items.Count) {
+                    tmp.AddItem(item);
+                    return true;
+                }
             }
 
             if (EmptySlots > 0) {
-                PlaceEmpty(item);
-                return true;
+                return PlaceEmpty(item);
             }
         }
         
@@ -136,7 +138,7 @@ public class Inventory : MonoBehaviour
         if (EmptySlots > 0) {
             foreach (Slot slot in _slots) {
                 Slot tmp = slot.GetComponent<Slot>();
-                if (tmp.IsNullOrEmpty) {
+                if (tmp.IsEmpty) {
                     tmp.AddItem(item);
                     EmptySlots--;
                     return true;
@@ -150,19 +152,19 @@ public class Inventory : MonoBehaviour
     public void MoveItem(GameObject clicked)
     {
         _clicked = clicked;
-        
-        if (!movingSlot.IsNullOrEmpty) {
+
+        if (!_movingSlot.IsEmpty) {
             Slot tmp = clicked.GetComponent<Slot>();
 
-            if (tmp.IsNullOrEmpty) {
-                tmp.AddItems(movingSlot.Items);
-                movingSlot.Items.Clear();
+            if (tmp.IsEmpty) {
+                tmp.AddItems(_movingSlot.Items);
+                _movingSlot.Items.Clear();
                 Destroy(GameObject.Find("Hover"));
-            } else if (!tmp.IsNullOrEmpty && movingSlot.Items.Peek().type == tmp.CurrentItem.type && tmp.IsAvailable) {
-                MergeStacks(movingSlot, tmp);
+            } else if (!tmp.IsEmpty && _movingSlot.CurrentItem.type == tmp.CurrentItem.type && tmp.IsAvailable) {
+                MergeStacks(_movingSlot, tmp);
             }
         } else if (_from == null && canvasGroup.alpha == 1 && !Input.GetKey(KeyCode.LeftShift)) {
-            if (!clicked.GetComponent<Slot>().IsNullOrEmpty) {
+            if (!clicked.GetComponent<Slot>().IsEmpty) {
                 _from = clicked.GetComponent<Slot>();
                 _from.icon.color = Color.gray;
                 
@@ -193,7 +195,9 @@ public class Inventory : MonoBehaviour
     private void CreateHoverIcon()
     {
         _hoverObject = Instantiate(iconPrefab, GameObject.Find("Inventory Canvas").transform, true);
-        _hoverObject.GetComponent<Image>().sprite = _clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite;
+        _hoverObject.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite =
+            _clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite;
+        _hoverObject.transform.Find("ItemButton/Icon").gameObject.SetActive(true);
         _hoverObject.name = "Hover";
                 
         RectTransform hoverTransform = _hoverObject.GetComponent<RectTransform>();
@@ -202,9 +206,14 @@ public class Inventory : MonoBehaviour
         hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, clickedTransform.sizeDelta.x - 50f);
         hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, clickedTransform.sizeDelta.y - 50f);
         _hoverObject.transform.localScale = _clicked.gameObject.transform.localScale;
-
-        _hoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
-            movingSlot.Items.Count > 1 ? movingSlot.Items.Count.ToString() : string.Empty;
+        
+        _hoverObject.transform.Find("ItemButton/Amount").gameObject.SetActive(true);
+        if (!_movingSlot.IsEmpty)
+            _hoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
+            _movingSlot.Items.Count > 1 ? _movingSlot.Items.Count.ToString() : string.Empty;
+        else
+            _hoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text = 
+            _from.Items.Count > 1 ? _from.Items.Count.ToString() : string.Empty;
     }
 
     private void PutItemBack()
@@ -213,7 +222,17 @@ public class Inventory : MonoBehaviour
             Destroy(GameObject.Find("Hover"));
             _from.icon.color = Color.white;
             _from = null;
+        } else if (!_movingSlot.IsEmpty) {
+            Destroy(GameObject.Find("Hover"));
+            foreach (Item item in _movingSlot.Items)
+            {
+                _clicked.GetComponent<Slot>().AddItem(item);
+            }
+            
+            _movingSlot.ClearSlot();
         }
+        
+        selectStackSize.SetActive(false);
     }
 
     public void SetStackInfo(int maxStackCount)
@@ -231,14 +250,14 @@ public class Inventory : MonoBehaviour
         if (_splitAmount == _maxStackCount) {
             MoveItem(_clicked);
         } else if (_splitAmount > 0) {
-            movingSlot.Items = _clicked.GetComponent<Slot>().RemoveItems(_splitAmount);
+            _movingSlot.Items = _clicked.GetComponent<Slot>().RemoveItems(_splitAmount);
             CreateHoverIcon();
         }
     }
 
     public void ChangeStackText(int i)
     {
-        _splitAmount += 1;
+        _splitAmount += i;
 
         if (_splitAmount < 0) {
             _splitAmount = 0;
@@ -257,6 +276,8 @@ public class Inventory : MonoBehaviour
 
         for (int i = 0; i < count; i++) {
             destination.AddItem(source.RemoveItem());
+            _hoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
+                _movingSlot.Items.Count.ToString();
         }
         if (source.Items.Count == 0) {
             source.ClearSlot();
@@ -274,14 +295,14 @@ public class Inventory : MonoBehaviour
             float startAlpha = canvasGroup.alpha;
             float rate = 1.0f / fadeTime;
             float progress = 0.0f;
-
+            
             while (progress < 1.0) {
                 canvasGroup.alpha = Mathf.Lerp(startAlpha, 0, progress);
                 progress += rate * Time.deltaTime;
                 yield return null;
             }
-
             inventoryUI.SetActive(!inventoryUI.activeSelf);
+            
             canvasGroup.alpha = 0;
             _fadingOut = false;
         }
@@ -297,14 +318,14 @@ public class Inventory : MonoBehaviour
             float startAlpha = canvasGroup.alpha;
             float rate = 1.0f / fadeTime;
             float progress = 0.0f;
-
+            
             inventoryUI.SetActive(!inventoryUI.activeSelf);
             while (progress < 1.0) {
                 canvasGroup.alpha = Mathf.Lerp(startAlpha, 1, progress);
                 progress += rate * Time.deltaTime;
                 yield return null;
             }
-            
+
             canvasGroup.alpha = 1;
             _fadingIn = false;
         }

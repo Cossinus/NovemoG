@@ -5,16 +5,23 @@ using UnityEngine.EventSystems;
 
 public class Slot : MonoBehaviour
 {
-    public Stack<Item> Items { get; set; } = new Stack<Item>();
+    public Stack<Item> Items { get; set; }
 
     public Image icon;
     public Text stackAmount;
 
     public bool IsAvailable => CurrentItem.stackLimit > Items.Count;
 
+    public bool IsMoreThanOneInSlot => Items.Count > 1;
+
     public Item CurrentItem => Items.Peek();
 
-    public bool IsNullOrEmpty => Items.Count == 0;
+    public bool IsEmpty => Items.Count == 0;
+
+    void Awake()
+    {
+        Items = new Stack<Item>();
+    }
 
     public void AddItem(Item item)
     {
@@ -24,15 +31,15 @@ public class Slot : MonoBehaviour
             stackAmount.gameObject.SetActive(true);
         }
         
-        icon.sprite = item.icon;
         icon.gameObject.SetActive(true);
+        icon.sprite = item.icon;
     }
     
     public void AddItems(Stack<Item> items)
     {
         Items = new Stack<Item>(items);
         
-        stackAmount.text = Items.Count > 1 ? Items.Count.ToString() : string.Empty;
+        stackAmount.text = IsMoreThanOneInSlot ? Items.Count.ToString() : string.Empty;
         stackAmount.gameObject.SetActive(true);
         
         if (Items?.Peek()) {
@@ -46,12 +53,12 @@ public class Slot : MonoBehaviour
     
     public void UseItemFromInventory()
     {
-        if (!IsNullOrEmpty) {
+        if (!IsEmpty) {
             Items.Pop().Use();
+            
+            stackAmount.text = IsMoreThanOneInSlot ? Items.Count.ToString() : string.Empty;
 
-            stackAmount.text = Items.Count > 1 ? Items.Count.ToString() : string.Empty;
-
-            if (IsNullOrEmpty) {
+            if (IsEmpty) {
                 icon.sprite = null;
                 icon.gameObject.SetActive(false);
                 Inventory.EmptySlots++;
@@ -74,22 +81,15 @@ public class Slot : MonoBehaviour
             tmp.Push(Items.Pop());
         }
 
-        Inventory.Instance.stackTxt.text = Items.Count > 1 ? Items.Count.ToString() : string.Empty;
+        stackAmount.text = IsMoreThanOneInSlot ? Items.Count.ToString() : string.Empty;
 
         return tmp;
     }
 
     public Item RemoveItem()
     {
-        var tmp = Items.Pop();
-        Inventory.Instance.stackTxt.text = Items.Count > 1 ? Items.Count.ToString() : string.Empty;
+        Item tmp = Items.Pop();
+        stackAmount.text = IsMoreThanOneInSlot ? Items.Count.ToString() : string.Empty;
         return tmp;
-    }
-
-    void Update()
-    {
-        if (UseSlot.ItemButtonPressed) {
-            UseItemFromInventory();
-        }
     }
 }
