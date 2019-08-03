@@ -116,7 +116,11 @@ public class Inventory : MonoBehaviour
 
                 if (tmp.IsEmpty) continue;
                 if (tmp.CurrentItem.type != item.type || !tmp.IsAvailable) continue;
-                if (!_movingSlot.IsEmpty && tmp.Items.Count <= item.stackLimit - _movingSlot.Items.Count) {
+                if (!_movingSlot.IsEmpty && _clicked.GetComponent<Slot>() == tmp.GetComponent<Slot>()) {
+                    continue;
+                }
+                else
+                {
                     tmp.AddItem(item);
                     return true;
                 }
