@@ -10,7 +10,7 @@ public class CharacterStats : MonoBehaviour
     public Stat arcane;
     public Stat armor;
 
-    public event System.Action<int, int> OnHealthChanged;
+    public event Action<int, int> OnHealthChanged;
     
     void Awake()
     {

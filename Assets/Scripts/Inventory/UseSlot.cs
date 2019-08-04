@@ -9,8 +9,7 @@ public class UseSlot : MonoBehaviour, IPointerClickHandler
         
         if (eventData.button == PointerEventData.InputButton.Right && !GameObject.Find("Hover") && Inventory.Instance.inventoryUI.activeInHierarchy) {
             slot.UseItemFromInventory();
-        } else if (eventData.button == PointerEventData.InputButton.Left && Input.GetKey(KeyCode.LeftShift) &&
-                   slot.IsMoreThanOneInSlot && !slot.IsEmpty && !GameObject.Find("Hover")) {
+        } else if (eventData.button == PointerEventData.InputButton.Middle && slot.IsMoreThanOneInSlot && !slot.IsEmpty && !GameObject.Find("Hover")) {
             Vector2 position;
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(

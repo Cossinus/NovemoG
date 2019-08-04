@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -27,19 +28,26 @@ public class Inventory : MonoBehaviour
     public OnItemChanged onItemChangedCallback;
     
     public EventSystem eventSystem;
+    
     public TextMeshProUGUI stackTxt;
+    public TextMeshProUGUI sizeText;
+    public TextMeshProUGUI visualText;
 
     public Transform itemsParent;
+
+    public Image toolTipBackground;
     
     public CanvasGroup canvasGroup;
     public Canvas canvas;
 
     private static GameObject _hoverObject;
+    private static GameObject _toolTip;
     private static GameObject _clicked;
     public GameObject selectStackSize;
     public GameObject inventoryUI;
     public GameObject iconPrefab;
-    
+    public GameObject toolTipObject;
+
     private static Slot _from, _to;
     private static Slot _movingSlot;
     private Slot[] _slots;
@@ -58,6 +66,16 @@ public class Inventory : MonoBehaviour
 
     void Start()
     {
+        _toolTip = toolTipObject;
+        
+        if (_slots != null)
+        {
+            foreach (Slot go in _slots)
+            {
+                Destroy(go);
+            }
+        }
+        
         _slots = itemsParent.GetComponentsInChildren<Slot>();
 
         EmptySlots = slots;
@@ -74,8 +92,7 @@ public class Inventory : MonoBehaviour
         if (Input.GetButtonDown("Inventory")) {
             if (canvasGroup.alpha == 0) {
                 StartCoroutine(nameof(FadeIn));
-            }
-            else {
+            } else {
                 StartCoroutine(nameof(FadeOut));
                 PutItemBack();
             }
@@ -116,11 +133,9 @@ public class Inventory : MonoBehaviour
 
                 if (tmp.IsEmpty) continue;
                 if (tmp.CurrentItem.type != item.type || !tmp.IsAvailable) continue;
-                if (!_movingSlot.IsEmpty && _clicked.GetComponent<Slot>() == tmp.GetComponent<Slot>()) {
+                if (!_movingSlot.IsEmpty && tmp.Items.Count == item.stackLimit - _movingSlot.Items.Count) {
                     continue;
-                }
-                else
-                {
+                } else {
                     tmp.AddItem(item);
                     return true;
                 }
@@ -167,14 +182,14 @@ public class Inventory : MonoBehaviour
             } else if (!tmp.IsEmpty && _movingSlot.CurrentItem.type == tmp.CurrentItem.type && tmp.IsAvailable) {
                 MergeStacks(_movingSlot, tmp);
             }
-        } else if (_from == null && canvasGroup.alpha == 1 && !Input.GetKey(KeyCode.LeftShift)) {
+        } else if (_from == null && canvasGroup.alpha == 1) {
             if (!clicked.GetComponent<Slot>().IsEmpty) {
                 _from = clicked.GetComponent<Slot>();
                 _from.icon.color = Color.gray;
                 
                 CreateHoverIcon();
             }
-        } else if (_to == null && !Input.GetKey(KeyCode.LeftShift)) {
+        } else if (_to == null) {
             _to = clicked.GetComponent<Slot>();
             Destroy(GameObject.Find("Hover"));
         }
@@ -289,6 +304,29 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    public void ShowToolTip(GameObject slot)
+    {
+        Slot tmpSlot = slot.GetComponent<Slot>();
+
+        if (!tmpSlot.IsEmpty && _hoverObject == null)
+        {
+            visualText.text = tmpSlot.CurrentItem.GetTooltip();
+            sizeText.text = visualText.text;
+            
+            _toolTip.SetActive(true);
+
+            float xPos = slot.transform.position.x - 30f;
+            float yPos = slot.transform.position.y + slot.GetComponent<RectTransform>().sizeDelta.y - 100f;
+
+            _toolTip.transform.position = new Vector2(xPos, yPos);
+        }
+    }
+    
+    public void HideToolTip()
+    {
+        _toolTip.SetActive(false);
+    }
+
     private IEnumerator FadeOut()
     {
         if (!_fadingOut) {
@@ -332,6 +370,51 @@ public class Inventory : MonoBehaviour
 
             canvasGroup.alpha = 1;
             _fadingIn = false;
+        }
+    }
+
+    private void SaveInventory()
+    {
+        string content = string.Empty;
+
+        for (int i = 0; i < _slots.Length; i++)
+        {
+            Slot tmp = _slots[i].GetComponent<Slot>();
+
+            if (!tmp.IsEmpty) {
+                content += i + "-" + tmp.CurrentItem.type.ToString() + "-" + tmp.Items.Count.ToString() + ";";
+            }
+        }
+        
+        PlayerPrefs.SetString("content", content);
+        PlayerPrefs.SetInt("slots", slots);
+        PlayerPrefs.SetFloat("xPos", inventoryUI.transform.position.x);
+        PlayerPrefs.SetFloat("yPos", inventoryUI.transform.position.y);
+        
+        PlayerPrefs.Save();
+    }
+
+    private void LoadInventory()
+    {
+        string content = PlayerPrefs.GetString("content");
+        slots = PlayerPrefs.GetInt("slots");
+        
+        inventoryUI.transform.position = new Vector3(PlayerPrefs.GetFloat("xPos"), PlayerPrefs.GetFloat("yPos"),
+            inventoryUI.transform.position.z);
+
+        string[] splitContent = content.Split(';');
+        for (int x = 0; x < splitContent.Length - 1; x++)
+        {
+            string[] splitValues = splitContent[x].Split('-');
+            
+            int index = Int32.Parse(splitValues[0]);
+            ItemType type = (ItemType)Enum.Parse(typeof(ItemType), splitValues[1]);
+            int amount = Int32.Parse(splitValues[2]);
+
+            for (int i = 0; i < amount; i++)
+            {
+                
+            }
         }
     }
 }

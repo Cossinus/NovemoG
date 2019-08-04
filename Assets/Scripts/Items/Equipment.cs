@@ -6,15 +6,27 @@ using UnityEngine;
 public class Equipment : Item
 {
     public EquipmentSlot equipSlot;
-    
+
     public int armorModifier;
     public int damageModifier;
-
+    
     public override void Use()
     {
         base.Use();
         EquipmentManager.Instance.Equip(this);
         RemoveFromInventory();
+    }
+
+    public int ArmorModifier
+    {
+        get => Armor = armorModifier;
+        set => Armor = armorModifier = value;
+    }
+
+    public int DamageModifier
+    {
+        get => Damage = damageModifier;
+        set => Damage = damageModifier = value;
     }
 }
 

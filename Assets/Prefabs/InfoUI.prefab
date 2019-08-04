@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 3982805176091421726}
   - component: {fileID: 8290830895616257050}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: LevelText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -470,7 +470,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3794515702968180234}
   m_Layer: 5
-  m_Name: Player's UI
+  m_Name: InfoUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

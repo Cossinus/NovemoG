@@ -12,13 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12b40ea5ef81dce4b938c7145b7aca02, type: 3}
   m_Name: Neonazi Helmet 1
   m_EditorClassIdentifier: 
-  name: Neonazi Helmet
+  itemName: Neonazi Helmet
+  description: Default Description
   icon: {fileID: 21300000, guid: e6d019d1cf3851447963e4646de2ab72, type: 3}
   type: 0
   rarity: 0
   isDefaultItem: 0
   isStackable: 0
   stackLimit: 1
+  value: 0
   equipSlot: 0
   armorModifier: 10
   damageModifier: 0
