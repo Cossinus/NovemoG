@@ -1,35 +1,37 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class Stat
 {
-    [SerializeField]
-    private int baseValue;
-
-    private List<int> _modifiers = new List<int>();
+    public string Name;
+    public float BaseValue;
+    public float Power; // Power of debuffs
+    public int Number; // number that Stat occupies in a List
+    private List<float> modifiers = new List<float>();
     
-    public int GetValue()
+    public float GetValue()
     {
-        int finalValue = baseValue;
-        _modifiers.ForEach(x => finalValue += x);
+        float finalValue = BaseValue;
+        modifiers.ForEach(x => finalValue += x);
         return finalValue;
     }
 
-    public void AddModifier(int modifier)
+    public void AddModifier(float modifier)
     {
         if (modifier != 0)
         {
-            _modifiers.Add(modifier);
+            modifiers.Add(modifier);
         }
     }
     
-    public void RemoveModifier(int modifier)
+    public void RemoveModifier(float modifier)
     {
         if (modifier != 0)
         {
-            _modifiers.Remove(modifier);
+            modifiers.Remove(modifier);
         }
     }
 }

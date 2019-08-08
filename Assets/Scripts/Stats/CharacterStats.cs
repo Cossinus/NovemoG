@@ -1,20 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class CharacterStats : MonoBehaviour
 {
-    public int maxHealth = 100;
-    public int currentHealth { get; private set; }
-    
-    public Stat damage;
-    public Stat arcane;
-    public Stat armor;
+    public List<Stat> stats = new List<Stat>();
+    public float CurrentHealth { get; private set; }
+    public float CurrentMana { get; private set; }
 
-    public event Action<int, int> OnHealthChanged;
+    public event Action<float, float> OnHealthChanged;
     
     void Awake()
     {
-        currentHealth = maxHealth;
+        foreach (var stat in stats)
+        {
+            if (stat.Name == "Health")
+                CurrentHealth = stat.GetValue();
+            if (stat.Name == "Mana")
+                CurrentMana = stat.GetValue();
+            if (stat.Name == "Movement Speed")
+                GetComponent<NavMeshAgent>().speed = stat.GetValue();
+        }
     }
 
     void Update()
@@ -25,20 +32,21 @@ public class CharacterStats : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
-        damage -= armor.GetValue(); //Swap this with own formula (according to other effects, potions, scrolls, armor mostly in %)
-        damage = Mathf.Clamp(damage, 0, int.MaxValue);
+        float armor = stats[3].GetValue();
+        damage -= armor; // Swap this with own formula (according to other effects, potions, scrolls, armor mostly in %)
+        damage = Mathf.Clamp(damage, 0, float.MaxValue);
         
-        currentHealth -= damage;
-        Debug.Log(transform.name + "takes " + damage + " damage.");
+        CurrentHealth -= damage;
+        Debug.Log(transform.name + " takes " + damage + " damage.");
 
         if (OnHealthChanged != null)
         {
-            OnHealthChanged(maxHealth, currentHealth);
+            OnHealthChanged(stats[0].GetValue(), CurrentHealth);
         }
         
-        if (currentHealth <= 0)
+        if (CurrentHealth <= 0)
         {
             Die();
         }

@@ -13,14 +13,26 @@ public class PlayerStats : CharacterStats
     {
         if (newItem != null)
         {
-            armor.AddModifier(newItem.armorModifier);
-            damage.AddModifier(newItem.damageModifier);
+            foreach (var stat in stats)
+            {
+                foreach (var modifier in newItem.Modifiers)
+                {
+                    if (stat.Name == modifier.Name)
+                        stat.AddModifier(modifier.Value);
+                }
+            }
         }
 
         if (oldItem != null)
         {
-            armor.RemoveModifier(oldItem.armorModifier);
-            damage.RemoveModifier(oldItem.damageModifier);
+            foreach (var stat in stats)
+            {
+                foreach (var modifier in oldItem.Modifiers)
+                {
+                    if (stat.Name == modifier.Name)
+                        stat.RemoveModifier(modifier.Value);
+                }
+            }
         }
     }
 }

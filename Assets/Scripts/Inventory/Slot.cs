@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 public class Slot : MonoBehaviour
 {
@@ -18,7 +17,7 @@ public class Slot : MonoBehaviour
 
     public bool IsEmpty => Items.Count == 0;
 
-    void Awake()
+    private void Awake()
     {
         Items = new Stack<Item>();
     }
@@ -26,39 +25,45 @@ public class Slot : MonoBehaviour
     public void AddItem(Item item)
     {
         Items.Push(item);
-        if (Items.Count > 1) {
+        if (Items.Count > 1)
+        {
             stackAmount.text = Items.Count.ToString();
             stackAmount.gameObject.SetActive(true);
         }
-        
+
         icon.gameObject.SetActive(true);
         icon.sprite = item.icon;
     }
-    
+
     public void AddItems(Stack<Item> items)
     {
         Items = new Stack<Item>(items);
-        
+
         stackAmount.text = IsMoreThanOneInSlot ? Items.Count.ToString() : string.Empty;
         stackAmount.gameObject.SetActive(true);
-        
-        if (Items?.Peek()) {
+
+        if (Items?.Peek())
+        {
             icon.sprite = CurrentItem.icon;
             icon.gameObject.SetActive(true);
-        } else {
+        }
+        else
+        {
             icon.sprite = null;
             icon.gameObject.SetActive(false);
         }
     }
-    
+
     public void UseItemFromInventory()
     {
-        if (!IsEmpty) {
+        if (!IsEmpty)
+        {
             Items.Pop().Use();
-            
+
             stackAmount.text = IsMoreThanOneInSlot ? Items.Count.ToString() : string.Empty;
 
-            if (IsEmpty) {
+            if (IsEmpty)
+            {
                 icon.sprite = null;
                 icon.gameObject.SetActive(false);
                 Inventory.EmptySlots++;
@@ -76,10 +81,8 @@ public class Slot : MonoBehaviour
 
     public Stack<Item> RemoveItems(int amount)
     {
-        Stack<Item> tmp = new Stack<Item>();
-        for (int i = 0; i < amount; i++) {
-            tmp.Push(Items.Pop());
-        }
+        var tmp = new Stack<Item>();
+        for (var i = 0; i < amount; i++) tmp.Push(Items.Pop());
 
         stackAmount.text = IsMoreThanOneInSlot ? Items.Count.ToString() : string.Empty;
 
@@ -88,7 +91,7 @@ public class Slot : MonoBehaviour
 
     public Item RemoveItem()
     {
-        Item tmp = Items.Pop();
+        var tmp = Items.Pop();
         stackAmount.text = IsMoreThanOneInSlot ? Items.Count.ToString() : string.Empty;
         return tmp;
     }

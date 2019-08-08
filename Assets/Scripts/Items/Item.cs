@@ -1,34 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "New Item", menuName = "Items/Item")]
 public class Item : ScriptableObject
 {
     public string itemName = "New Item";
-    public string description = "Default Description";
+    public string description = "Item Description";
+    public string specials = string.Empty;
     public Sprite icon;
     public ItemType type;
     public Rarity rarity;
     public bool isDefaultItem;
-    public bool isStackable;
     public int stackLimit = 1;
     public int value;
-
-    [NonSerialized] protected int Armor;
-    [NonSerialized] protected int Damage;
+    public List<Modifier> Modifiers = new List<Modifier>();
 
     public virtual void Use()
     {
         Debug.Log(itemName + " has been used!");
-        //Use item according to it's Type
+        UniqueEffect();
     }
 
-    public void RemoveFromInventory()
+    public virtual string UniqueEffect() // e.g. Custom Set, Unique Spells or Resistance to one or more types of monsters
     {
-        //Inventory.Instance.Remove(this); //Add Remove method in Inventory script
+        string effectName = string.Empty;
+        string effectDescription = string.Empty;
+        
+        if (effectName != string.Empty)
+        {
+            return $"\n<color=yellow><size=20><b>{effectName}</b></size></color>\n" +
+                   $"<color=#ffffe0><size=18><i>{effectDescription}</i></size></color>";
+        }
+        else
+        {
+            return null;
+        }
     }
-    
+
     public string GetTooltip()
     {
         string stats = string.Empty;
@@ -43,47 +53,89 @@ public class Item : ScriptableObject
         switch (rarity)
         {
             case Rarity.Common:
-                color = "gray";
+                color = "#696969><size=40>" + itemName + "</size>";
                 break;
             case Rarity.Normal:
-                color = "yellow";
+                color = "yellow><size=40>" + itemName + "</size>";
                 break;
             case Rarity.Uncommon:
-                color = "lime";
+                color = "#bfff00><size=40>" + itemName + "</size>";
                 break;
             case Rarity.Rare:
-                color = "brick";
+                color = "#bc3c21><size=40>" + itemName + "</size>";
                 break;
             case Rarity.VeryRare:
-                color = "navy";
+                color = "#00CED1><size=40>" + itemName + "</size>";
                 break;
             case Rarity.Epic:
-                color = "orange";
+                color = "orange><size=40><b>" + itemName + "</b></size>";
                 break;
             case Rarity.Legendary:
-                color = "magenta";
+                color = "#ff00ff><size=40><b>" + itemName + "</b></size>";
                 break;
             case Rarity.Mystical:
-                color = "red";
+                color = "red><size=40><b>" + itemName + "</b></size>";
                 break;
             case Rarity.Artifact:
-                color = "white";
+                color = "white><size=40><b>" + itemName + "</b></size>";
                 break;
         }
 
-        if (Armor > 0)
+        foreach (var modifier in Modifiers)
         {
-            stats += "\n+" + Armor.ToString() + " Strength";
+            if (modifier.Value > 0)
+                stats += $"{Environment.NewLine}+{modifier.Value} {modifier.Name}";
         }
-        if (Damage > 0)
-        {
-            stats += "\n+" + Damage.ToString() + " Damage";
-        } //TODO change that
 
-        return string.Format(
-            "<color=" + color + "><size=16>{0}</size></color><size=14><i><color=purple>" + newLine +
-            "{1}</color></i>{2}</size>", itemName, description, stats);
+        if (stats != string.Empty && specials != string.Empty)
+        {
+            return string.Format(
+                "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
+                "{0}</color></i>\nStats:{1}\n" + "\n<color=#999900><size=20><i>{2}</i></size></color>" +
+                UniqueEffect(), description, stats, specials);
+        }
+        else if (stats != string.Empty && specials == string.Empty)
+        {
+            return string.Format(
+                "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
+                "{0}</color></i>\nStats:{1}</size>" + UniqueEffect(), description, stats);
+        }
+        else if (stats == string.Empty && specials != string.Empty)
+        {
+            return string.Format(
+                "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
+                "{0}</color></i></size>" + "\n<color=#999900><size=20><i>{1}</i></size></color>" +
+                UniqueEffect(), description, specials);
+        }
+        else
+        {
+            return string.Format(
+                "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
+                "{0}</color></i></size>" + UniqueEffect(), description);
+        }
     }
+
+    public void SetStats(Item item)
+    {
+        this.itemName = item.itemName;
+        this.description = item.description;
+        this.specials = item.specials;
+        this.icon = item.icon;
+        this.type = item.type;
+        this.rarity = item.rarity;
+        this.stackLimit = item.stackLimit;
+        this.isDefaultItem = item.isDefaultItem;
+        this.value = item.value;
+        
+        this.Modifiers = item.Modifiers;
+    }
+}
+
+[Serializable]
+public struct Modifier
+{
+    public string Name;
+    public float Value;
 }
 
 public enum Rarity {
@@ -108,6 +160,6 @@ public enum ItemType {
     Scroll,
     QuestScroll,
     
-    //etc...
-    //Only types of things that are used to craft something or use elsewhere (e.g. quest items)
+    // etc...
+    // Only types of things that are used to craft something or use elsewhere (e.g. quest items)
 }
