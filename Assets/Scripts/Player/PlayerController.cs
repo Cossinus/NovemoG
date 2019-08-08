@@ -1,13 +1,21 @@
-﻿using UnityEngine.EventSystems;
+﻿using System.Collections.Generic;
+using UnityEngine.EventSystems;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(PlayerMotor))]
 public class PlayerController : MonoBehaviour
 {
+	private float Gold = 10;
+	
+	public float CurrentExperience { get; private set; }
+	public float ExperienceGoal { get; private set; }
+
 	public Interactable focus;
 	
 	public LayerMask movementMask;
+
+	public Quest quest;
 
 	Camera cam;
 	PlayerMotor motor;
@@ -45,6 +53,17 @@ public class PlayerController : MonoBehaviour
 				if (interactable != null) {
 					SetFocus(interactable);
 				}
+			}
+		}
+
+		if (quest.isActive)
+		{
+			quest.goal.EnemyKilled();
+			if (quest.goal.IsReached())
+			{
+				CurrentExperience += quest.ExpReward;
+				Gold += quest.GoldReward;
+				quest.Complete();
 			}
 		}
     }
