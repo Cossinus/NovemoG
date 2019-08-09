@@ -28,6 +28,8 @@ public class UseSlot : MonoBehaviour, IPointerClickHandler
                 Inventory.Instance.canvas.transform as RectTransform, Input.mousePosition,
                 Inventory.Instance.canvas.worldCamera, out position);
 
+            position.x -= Inventory.Instance.selectStackSize.GetComponent<RectTransform>().rect.width / 2;
+            
             Inventory.Instance.selectStackSize.SetActive(true);
             Inventory.Instance.selectStackSize.transform.position =
                 Inventory.Instance.canvas.transform.TransformPoint(position);

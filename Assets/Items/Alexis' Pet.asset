@@ -21,31 +21,15 @@ MonoBehaviour:
   isDefaultItem: 0
   stackLimit: 1
   value: 999
-  healthModifier: 150
-  manaModifier: 15
-  healthRegenModifier: 0
-  manaRegenModifier: 0
-  armorModifier: 27
-  magicResistModifier: 0
-  damageModifier: 72
-  lethalDamageModifier: 0
-  arcaneModifier: 0
-  additionalGoldPercentage: 0
-  additionalExpPercentage: 0
-  additionalCdPercentage: 0
-  additionalAttackSpeedPercentage: 0
-  manaBurnPercentage: 0
-  bleedChancePercentage: 0
-  poisonChancePercentage: 0
-  witheringChancePercentage: 0
-  igniteChancePercentage: 0
-  maxHealthDamagePercentage: 0
-  currentHealthDamagePercentage: 0
-  attackPairPercentage: 0
-  attackBlockPercentage: 0
-  armorPenetrationPercentage: 0
-  magicResistPenetrationPercentage: 0
-  lifeStealPercentage: 0
-  spellVampirism: 0
-  luckPercentage: 0
+  Modifiers:
+  - Name: Health
+    Value: 150
+  - Name: Mana
+    Value: 15
+  - Name: Armor
+    Value: 72
+  - Name: Damage
+    Value: 27
+  - Name: Lethal Damage
+    Value: 10
   equipSlot: 13

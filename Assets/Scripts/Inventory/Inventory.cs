@@ -38,7 +38,7 @@ public class Inventory : MonoBehaviour
 
     public Transform itemsParent;
 
-    public Image toolTipBackground;
+    public Slider splitSlider;
 
     public CanvasGroup canvasGroup;
     public Canvas canvas;
@@ -322,6 +322,7 @@ public class Inventory : MonoBehaviour
         _toolTip.SetActive(false);
         _splitAmount = 0;
         _maxStackCount = maxStackCount;
+        splitSlider.maxValue = maxStackCount;
         stackTxt.text = _splitAmount.ToString();
     }
 
@@ -337,12 +338,13 @@ public class Inventory : MonoBehaviour
         {
             _movingSlot.Items = clicked.GetComponent<Slot>().RemoveItems(_splitAmount);
             CreateHoverIcon();
+            clicked = null;
         }
     }
 
-    public void ChangeStackText(int i)
+    public void ChangeStackText()
     {
-        _splitAmount += i;
+        _splitAmount = (int)splitSlider.value;
 
         if (_splitAmount < 0) _splitAmount = 0;
         if (_splitAmount > _maxStackCount) _splitAmount = _maxStackCount;

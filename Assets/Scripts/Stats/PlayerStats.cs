@@ -18,7 +18,13 @@ public class PlayerStats : CharacterStats
                 foreach (var modifier in newItem.Modifiers)
                 {
                     if (stat.Name == modifier.Name)
+                    {
                         stat.AddModifier(modifier.Value);
+                        if (stat.Name == "Health")
+                            CurrentHealth += modifier.Value;
+                        if (stat.Name == "Mana")
+                            CurrentMana += modifier.Value;
+                    }
                 }
             }
         }
@@ -30,9 +36,21 @@ public class PlayerStats : CharacterStats
                 foreach (var modifier in oldItem.Modifiers)
                 {
                     if (stat.Name == modifier.Name)
+                    {
                         stat.RemoveModifier(modifier.Value);
+                        if (stat.Name == "Health")
+                            CurrentHealth -= modifier.Value;
+                        if (stat.Name == "Mana")
+                            CurrentMana -= modifier.Value;
+                    }
                 }
             }
         }
+    }
+
+    public override void Die()
+    {
+        base.Die();
+        PlayerManager.Instance.KillPlayer();
     }
 }

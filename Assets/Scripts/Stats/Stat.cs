@@ -9,7 +9,6 @@ public class Stat
     public string Name;
     public float BaseValue;
     public float Power; // Power of debuffs
-    public int Number; // number that Stat occupies in a List
     private List<float> modifiers = new List<float>();
     
     public float GetValue()
