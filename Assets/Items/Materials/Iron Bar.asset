@@ -21,4 +21,5 @@ MonoBehaviour:
   isDefaultItem: 0
   stackLimit: 6
   value: 15
+  effect: {fileID: 11400000, guid: 2cbbd7742a911104983e3028f8729ba7, type: 2}
   Modifiers: []

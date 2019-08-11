@@ -10,22 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12b40ea5ef81dce4b938c7145b7aca02, type: 3}
-  m_Name: Neonazi Helmet 1
+  m_Name: Alexis' Pet
   m_EditorClassIdentifier: 
-  itemName: Neonazi Helmet
-  description: A helmet of a neonazi troop.
-  specials: 
-  icon: {fileID: 21300000, guid: e6d019d1cf3851447963e4646de2ab72, type: 3}
+  itemName: Alexis' Pet
+  description: An awesome pet! I promise... it'll be!
+  specials: Item made by Alexis, my close friend.
+  icon: {fileID: 21300000, guid: 8fc39e434f36f71459f01860bda1b591, type: 3}
   type: 0
-  rarity: 2
+  rarity: 6
   isDefaultItem: 0
   stackLimit: 1
-  value: 70
+  value: 999
+  effect: {fileID: 11400000, guid: 2cbbd7742a911104983e3028f8729ba7, type: 2}
   Modifiers:
   - Name: Health
+    Value: 150
+  - Name: Mana
     Value: 15
-  - Name: Damage
-    Value: 12
   - Name: Armor
-    Value: 7
-  equipSlot: 0
+    Value: 72
+  - Name: Damage
+    Value: 27
+  - Name: Lethal Damage
+    Value: 10
+  equipSlot: 13

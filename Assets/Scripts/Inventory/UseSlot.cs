@@ -14,7 +14,7 @@ public class UseSlot : MonoBehaviour, IPointerClickHandler
         {
             if (slot.CurrentItem.type != ItemType.Material)
             {
-                Inventory.Instance.toolTipObject.SetActive(false);
+                InventoryManager.Instance.toolTipObject.SetActive(false);
                 slot.UseItemFromInventory();
             }
         }
@@ -22,19 +22,19 @@ public class UseSlot : MonoBehaviour, IPointerClickHandler
                  !GameObject.Find("Hover"))
         {
             Vector2 position;
-            Inventory.Instance.clicked = clicked;
+            InventoryManager.Instance.clicked = clicked;
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                Inventory.Instance.canvas.transform as RectTransform, Input.mousePosition,
-                Inventory.Instance.canvas.worldCamera, out position);
+                InventoryManager.Instance.canvas.transform as RectTransform, Input.mousePosition,
+                InventoryManager.Instance.canvas.worldCamera, out position);
 
-            position.x -= Inventory.Instance.selectStackSize.GetComponent<RectTransform>().rect.width / 2;
+            position.x -= InventoryManager.Instance.selectStackSize.GetComponent<RectTransform>().rect.width / 2;
             
-            Inventory.Instance.selectStackSize.SetActive(true);
-            Inventory.Instance.selectStackSize.transform.position =
-                Inventory.Instance.canvas.transform.TransformPoint(position);
+            InventoryManager.Instance.selectStackSize.SetActive(true);
+            InventoryManager.Instance.selectStackSize.transform.position =
+                InventoryManager.Instance.canvas.transform.TransformPoint(position);
 
-            Inventory.Instance.SetStackInfo(slot.Items.Count);
+            InventoryManager.Instance.SetStackInfo(slot.Items.Count);
         }
     }
 }

@@ -38,6 +38,7 @@ public class EquipmentManager : MonoBehaviour
 
         if (_currentEquipment[slotIndex] != null)
         {
+            _currentEquipment[slotIndex].IsEquipped = true;
             oldItem = _currentEquipment[slotIndex];
             _inventory.AddItem(oldItem);
         }
@@ -52,17 +53,15 @@ public class EquipmentManager : MonoBehaviour
 
     public void Unequip(int slotIndex)
     {
-        if (_currentEquipment[slotIndex] != null)
+        if (_currentEquipment[slotIndex] != null && _inventory.emptySlots > 0)
         {
+            _currentEquipment[slotIndex].IsEquipped = false;
             Equipment oldItem = _currentEquipment[slotIndex];
             _inventory.AddItem(oldItem);
 
             _currentEquipment[slotIndex] = null;
-            
-            if (onEquipmentChanged != null)
-            {
-                onEquipmentChanged.Invoke(null, oldItem);
-            }
+
+            onEquipmentChanged?.Invoke(null, oldItem);
         }
     }
 

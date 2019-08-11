@@ -1,9 +1,10 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(CharacterStats))]
-public class PlayerUI : MonoBehaviour
+public class InfoUI : MonoBehaviour
 {
     public GameObject uiPrefab;
     public Transform target;
@@ -55,6 +56,8 @@ public class PlayerUI : MonoBehaviour
             ui.position = target.position;
             ui.forward = -cam.forward;
             ui.right = cam.right;
+            ui.Find("Level/LevelText").GetComponent<TextMeshProUGUI>().text =
+                GetComponent<CharacterStats>().level.ToString();
 
             if (Time.time - lastMadeVisibleTime > visibleTime)
             {

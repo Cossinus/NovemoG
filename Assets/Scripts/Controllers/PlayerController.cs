@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
 
 	public Quest quest;
 
+	public Class playerClass;
+
 	Camera cam;
 	PlayerMotor motor;
 

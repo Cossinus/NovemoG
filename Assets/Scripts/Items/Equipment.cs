@@ -7,12 +7,12 @@ using UnityEngine;
 public class Equipment : Item
 {
     public EquipmentSlot equipSlot;
+    public bool IsEquipped { get; set; }
 
     public override void Use()
     {
         base.Use();
         EquipmentManager.Instance.Equip(this);
-        //RemoveFromInventory();
     }
 }
 

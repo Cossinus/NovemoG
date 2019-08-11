@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class Inventory : MonoBehaviour
@@ -24,61 +24,40 @@ public class Inventory : MonoBehaviour
     }
 
     #endregion
-
+    
     public delegate void OnItemChanged();
     public OnItemChanged onItemChangedCallback;
 
-    public EventSystem eventSystem;
-
-    private static TextMeshProUGUI _sizeText;
-    private static TextMeshProUGUI _visualText;
-    public TextMeshProUGUI sizeTextObject;
-    public TextMeshProUGUI visualTextObject;
-    public TextMeshProUGUI stackTxt;
-
+    // Actual Inventory Parent Object
     public Transform itemsParent;
 
-    public Slider splitSlider;
-
+    // Canvas Group of an Inventory
     public CanvasGroup canvasGroup;
-    public Canvas canvas;
-
-    private static GameObject _hoverObject;
-    private static GameObject _toolTip;
-    private static GameObject _clicked;
-    private static GameObject _staticSelectStackSize;
+    
+    // Game Objects
     private static GameObject _playerRef;
-    public GameObject clicked;
-    public GameObject selectStackSize;
     public GameObject inventoryUI;
-    public GameObject iconPrefab;
-    public GameObject toolTipObject;
-    public GameObject dropItem;
 
-    private static Slot _from, _to;
-    private static Slot _movingSlot;
+    // All Slots in Inventory
     private Slot[] _slots;
 
-    private int _splitAmount;
-    private int _maxStackCount;
-    public int slots;
-
+    // Floats
     private float _hoverYOffset;
     public float fadeTime;
-
+    
     private bool _fadingIn;
     private bool _fadingOut;
 
+    public Item iron;
+    
+    // EmptySlots and All Slots as an int
     public static int EmptySlots { get; set; }
+    public int emptySlots;
+    public int slots;
 
     private void Start()
     {
-        _toolTip = toolTipObject;
-        _sizeText = sizeTextObject;
-        _playerRef = GameObject.Find("Player");
-        _visualText = visualTextObject;
-
-        _staticSelectStackSize = selectStackSize;
+        _playerRef = PlayerManager.Instance.player;
 
         if (_slots != null)
             foreach (var go in _slots)
@@ -90,13 +69,18 @@ public class Inventory : MonoBehaviour
 
         _hoverYOffset = 100f * 0.01f;
 
-        _movingSlot = GameObject.Find("MovingSlot").GetComponent<Slot>();
+        InventoryManager.Instance.MovingSlot = GameObject.Find("MovingSlot").GetComponent<Slot>();
 
         inventoryUI.SetActive(false);
     }
 
     private void Update()
     {
+        if (Input.GetKey(KeyCode.A))
+        {
+            AddItem(iron);
+        }
+
         if (Input.GetButtonDown("Inventory"))
         {
             if (canvasGroup.alpha == 0)
@@ -112,71 +96,95 @@ public class Inventory : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
-            if (!eventSystem.IsPointerOverGameObject(-1) && _from != null)
-            {
-                _from.icon.color = Color.white;
-
-                foreach (Item item in _from.Items)
-                {
-                    float angle = UnityEngine.Random.Range(0.0f, Mathf.PI * 2);
-                    
-                    Vector3 v = new Vector3(Mathf.Sin(angle),0,Mathf.Cos(angle));
-                    v *= 3;
-
-                    GameObject tmpDrp = Instantiate(dropItem, _playerRef.transform.position - v, Quaternion.identity);
-                    tmpDrp.transform.Rotate(-90f, 180f, -180f);
-                    tmpDrp.GetComponent<ItemPickup>().item = _from.CurrentItem;
-                }
-                
-                _from.ClearSlot();
-                Destroy(GameObject.Find("Hover"));
-                _to = null;
-                _from = null;
-                EmptySlots++;
-            }
-            else if (!eventSystem.IsPointerOverGameObject(-1) && !_movingSlot.IsEmpty)
-            {
-                foreach (Item item in _movingSlot.Items)
-                {
-                    float angle = UnityEngine.Random.Range(0.0f, Mathf.PI * 2);
-                    
-                    Vector3 v = new Vector3(Mathf.Sin(angle),0,Mathf.Cos(angle));
-                    v *= 3;
-
-                    GameObject tmpDrp = Instantiate(dropItem, _playerRef.transform.position - v, Quaternion.identity);
-                    tmpDrp.transform.Rotate(-90f, 180f, -180f);
-                    tmpDrp.GetComponent<ItemPickup>().item = _movingSlot.CurrentItem;
-                }
-                
-                _movingSlot.ClearSlot();
-                Destroy(GameObject.Find("Hover"));
-            }
+            DropItem();
         }
 
-        if (_hoverObject != null)
+        if (InventoryManager.Instance.HoverObject != null)
         {
             Vector2 position;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform,
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(InventoryManager.Instance.canvas.transform as RectTransform,
                 Input.mousePosition,
-                canvas.worldCamera, out position);
+                InventoryManager.Instance.canvas.worldCamera, out position);
             position.Set(position.x, position.y - _hoverYOffset);
-            _hoverObject.transform.position = canvas.transform.TransformPoint(position);
+            InventoryManager.Instance.HoverObject.transform.position = InventoryManager.Instance.canvas.transform.TransformPoint(position);
+        }
+        emptySlots = EmptySlots;
+    }
+
+    private void DropItem()
+    {
+        if (!InventoryManager.Instance.eventSystem.IsPointerOverGameObject(-1) &&
+            InventoryManager.Instance.From != null)
+        {
+            InventoryManager.Instance.From.icon.color = Color.white;
+
+            foreach (Item item in InventoryManager.Instance.From.Items)
+            {
+                float angle = UnityEngine.Random.Range(0.0f, Mathf.PI * 2);
+
+                Vector3 v = new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle));
+                v *= 2;
+
+                GameObject tmpDrp = Instantiate(InventoryManager.Instance.dropItem, _playerRef.transform.position - v,
+                    Quaternion.identity);
+                tmpDrp.transform.Find("Canvas/SizeItemName/ItemName").GetComponent<TextMeshProUGUI>().text = SetDropItemName(item);
+                tmpDrp.transform.Find("Canvas/SizeItemName").GetComponent<TextMeshProUGUI>().text =
+                    SetDropItemName(item);
+                tmpDrp.transform.Rotate(-90f, 180f, -180f);
+                tmpDrp.GetComponent<ItemPickup>().item = InventoryManager.Instance.From.CurrentItem;
+            }
+
+            InventoryManager.Instance.From.ClearSlot();
+            Destroy(GameObject.Find("Hover"));
+            InventoryManager.Instance.To = null;
+            InventoryManager.Instance.From = null;
+        }
+        else if (!InventoryManager.Instance.eventSystem.IsPointerOverGameObject(-1) &&
+                 !InventoryManager.Instance.MovingSlot.IsEmpty)
+        {
+            foreach (Item item in InventoryManager.Instance.MovingSlot.Items)
+            {
+                float angle = UnityEngine.Random.Range(0.0f, Mathf.PI * 2);
+
+                Vector3 v = new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle));
+                v *= 2;
+
+                GameObject tmpDrp = Instantiate(InventoryManager.Instance.dropItem, _playerRef.transform.position - v,
+                    Quaternion.identity);
+                tmpDrp.transform.Find("Canvas/SizeItemName/ItemName").GetComponent<TextMeshProUGUI>().text =
+                    SetDropItemName(item);
+                tmpDrp.transform.Find("Canvas/SizeItemName").GetComponent<TextMeshProUGUI>().text =
+                    SetDropItemName(item);
+                tmpDrp.transform.Rotate(-90f, 180f, -180f);
+                tmpDrp.GetComponent<ItemPickup>().item = InventoryManager.Instance.MovingSlot.CurrentItem;
+            }
+
+            InventoryManager.Instance.MovingSlot.ClearSlot();
+            Destroy(GameObject.Find("Hover"));
         }
     }
 
     public bool AddItem(Item item)
     {
-        if (item.stackLimit == 1) return PlaceEmpty(item);
+        if (item.stackLimit == 1 && EmptySlots > 0) return PlaceEmpty(item);
 
         if (item.stackLimit > 1)
         {
             foreach (var slot in _slots)
             {
                 var tmp = slot.GetComponent<Slot>();
-
+                
                 if (tmp.IsEmpty) continue;
                 if (tmp.CurrentItem.type != item.type || !tmp.IsAvailable) continue;
-                if (!_movingSlot.IsEmpty && tmp.Items.Count == item.stackLimit - _movingSlot.Items.Count)
+                if (InventoryManager.Instance.clicked != null &&
+                    InventoryManager.Instance.clicked.GetComponent<Slot>() == tmp.GetComponent<Slot>() &&
+                    tmp.Items.Count == item.stackLimit - InventoryManager.Instance.MovingSlot.Items.Count)
+                {
+                    continue;
+                }
+                else if (InventoryManager.Instance.Clicked != null &&
+                    InventoryManager.Instance.Clicked.GetComponent<Slot>() == tmp.GetComponent<Slot>() &&
+                    tmp.Items.Count == item.stackLimit - InventoryManager.Instance.MovingSlot.Items.Count)
                 {
                     continue;
                 }
@@ -187,11 +195,10 @@ public class Inventory : MonoBehaviour
                 }
             }
 
-            if (EmptySlots > 0) return PlaceEmpty(item);
+            if (EmptySlots > 0) return PlaceEmpty(item); // TODO sprawdzić to jutro
         }
 
-        if (onItemChangedCallback != null)
-            onItemChangedCallback.Invoke();
+        onItemChangedCallback?.Invoke();
 
         return false;
     }
@@ -215,143 +222,66 @@ public class Inventory : MonoBehaviour
 
     public void MoveItem(GameObject clicked)
     {
-        _clicked = clicked;
-        selectStackSize.SetActive(false);
+        InventoryManager.Instance.Clicked = clicked;
+        InventoryManager.Instance.selectStackSize.SetActive(false);
+        Debug.Log(EmptySlots);
 
-        if (!_movingSlot.IsEmpty)
+        if (!InventoryManager.Instance.MovingSlot.IsEmpty)
         {
             var tmp = clicked.GetComponent<Slot>();
 
             if (tmp.IsEmpty)
             {
-                tmp.AddItems(_movingSlot.Items);
-                _movingSlot.Items.Clear();
+                tmp.AddItems(InventoryManager.Instance.MovingSlot.Items);
+                InventoryManager.Instance.MovingSlot.Items.Clear();
                 Destroy(GameObject.Find("Hover"));
+                EmptySlots--;
             }
-            else if (!tmp.IsEmpty && _movingSlot.CurrentItem.type == tmp.CurrentItem.type && tmp.IsAvailable)
+            else if (!tmp.IsEmpty && InventoryManager.Instance.MovingSlot.CurrentItem.type == tmp.CurrentItem.type && tmp.IsAvailable)
             {
-                MergeStacks(_movingSlot, tmp);
+                MergeStacks(InventoryManager.Instance.MovingSlot, tmp);
             }
         }
-        else if (_from == null && canvasGroup.alpha == 1)
+        else if (InventoryManager.Instance.From == null && canvasGroup.alpha == 1)
         {
             if (!clicked.GetComponent<Slot>().IsEmpty)
             {
-                _from = clicked.GetComponent<Slot>();
-                _from.icon.color = Color.gray;
-
+                EmptySlots++;
+                InventoryManager.Instance.MovingSlot.Items = clicked.GetComponent<Slot>().RemoveItems(clicked.GetComponent<Slot>().Items.Count);
                 CreateHoverIcon();
+                clicked.GetComponent<Slot>().ClearSlot();
             }
         }
-        else if (_to == null)
+        else if (InventoryManager.Instance.To == null)
         {
-            _to = clicked.GetComponent<Slot>();
+            InventoryManager.Instance.To = clicked.GetComponent<Slot>();
+            InventoryManager.Instance.Clicked = null;
             Destroy(GameObject.Find("Hover"));
         }
 
-        if (_to != null && _from != null)
+        if (InventoryManager.Instance.To != null && !InventoryManager.Instance.MovingSlot.IsEmpty)
         {
-            var tmpTo = new Stack<Item>(_to.Items);
-            _to.AddItems(_from.Items);
-
+            var tmpTo = new Stack<Item>(InventoryManager.Instance.To.Items);
             if (tmpTo.Count == 0)
-                _from.ClearSlot();
+            {
+                foreach (var item in InventoryManager.Instance.MovingSlot.Items)
+                    clicked.GetComponent<Slot>().AddItem(item);
+                
+                InventoryManager.Instance.MovingSlot.ClearSlot();
+                EmptySlots--;
+            }
             else
-                _from.AddItems(tmpTo);
-
-            _from.icon.color = Color.white;
-            _to = null;
-            _from = null;
+            {
+                MergeStacks(InventoryManager.Instance.From, InventoryManager.Instance.To);
+            }
+            
+            InventoryManager.Instance.To = null;
+            InventoryManager.Instance.From = null;
             Destroy(GameObject.Find("Hover"));
         }
+        emptySlots = EmptySlots;
     }
-
-    private void CreateHoverIcon()
-    {
-        _hoverObject = Instantiate(iconPrefab, GameObject.Find("Inventory Canvas").transform, true);
-        _hoverObject.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite = clicked == null
-            ? _clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite
-            : clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite;
-        
-        _hoverObject.transform.Find("ItemButton/Icon").gameObject.SetActive(true);
-        _hoverObject.name = "Hover";
-
-        var hoverTransform = _hoverObject.GetComponent<RectTransform>();
-        var clickedTransform = clicked == null
-            ? _clicked.GetComponent<RectTransform>()
-            : clicked.GetComponent<RectTransform>();
-
-        hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, clickedTransform.sizeDelta.x - 50f);
-        hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, clickedTransform.sizeDelta.y - 50f);
-
-        _hoverObject.transform.localScale = clicked == null
-            ? _clicked.gameObject.transform.localScale
-            : clicked.gameObject.transform.localScale;
-
-        _hoverObject.transform.Find("ItemButton/Amount").gameObject.SetActive(true);
-        if (!_movingSlot.IsEmpty)
-            _hoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
-                _movingSlot.Items.Count > 1 ? _movingSlot.Items.Count.ToString() : string.Empty;
-        else
-            _hoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
-                _from.Items.Count > 1 ? _from.Items.Count.ToString() : string.Empty;
-    }
-
-    private void PutItemBack()
-    {
-        if (_from != null)
-        {
-            Destroy(GameObject.Find("Hover"));
-            _from.icon.color = Color.white;
-            _from = null;
-        }
-        else if (!_movingSlot.IsEmpty)
-        {
-            Destroy(GameObject.Find("Hover"));
-            foreach (var item in _movingSlot.Items) _clicked.GetComponent<Slot>().AddItem(item);
-
-            _movingSlot.ClearSlot();
-        }
-
-        selectStackSize.SetActive(false);
-    }
-
-    public void SetStackInfo(int maxStackCount)
-    {
-        selectStackSize.SetActive(true);
-        _toolTip.SetActive(false);
-        _splitAmount = 0;
-        _maxStackCount = maxStackCount;
-        splitSlider.maxValue = maxStackCount;
-        stackTxt.text = _splitAmount.ToString();
-    }
-
-    public void SplitStack()
-    {
-        selectStackSize.SetActive(false);
-
-        if (_splitAmount == _maxStackCount)
-        {
-            MoveItem(clicked);
-        }
-        else if (_splitAmount > 0)
-        {
-            _movingSlot.Items = clicked.GetComponent<Slot>().RemoveItems(_splitAmount);
-            CreateHoverIcon();
-            clicked = null;
-        }
-    }
-
-    public void ChangeStackText()
-    {
-        _splitAmount = (int)splitSlider.value;
-
-        if (_splitAmount < 0) _splitAmount = 0;
-        if (_splitAmount > _maxStackCount) _splitAmount = _maxStackCount;
-
-        stackTxt.text = _splitAmount.ToString();
-    }
-
+    
     public void MergeStacks(Slot source, Slot destination)
     {
         var max = destination.CurrentItem.stackLimit - destination.Items.Count;
@@ -360,8 +290,12 @@ public class Inventory : MonoBehaviour
         for (var i = 0; i < count; i++)
         {
             destination.AddItem(source.RemoveItem());
-            _hoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
-                _movingSlot.Items.Count.ToString();
+            if (!InventoryManager.Instance.MovingSlot.IsEmpty)
+                InventoryManager.Instance.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
+                    InventoryManager.Instance.MovingSlot.Items.Count.ToString();
+            else
+                InventoryManager.Instance.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text = 
+                    source.Items.Count.ToString();
         }
 
         if (source.Items.Count == 0)
@@ -371,27 +305,116 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    private void CreateHoverIcon()
+    {
+        InventoryManager.Instance.HoverObject = Instantiate(InventoryManager.Instance.iconPrefab, GameObject.Find("Inventory Canvas").transform, true);
+        InventoryManager.Instance.HoverObject.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite = InventoryManager.Instance.clicked == null
+            ? InventoryManager.Instance.Clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite
+            : InventoryManager.Instance.clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite;
+        
+        InventoryManager.Instance.HoverObject.transform.Find("ItemButton/Icon").gameObject.SetActive(true);
+        InventoryManager.Instance.HoverObject.name = "Hover";
+
+        var hoverTransform = InventoryManager.Instance.HoverObject.GetComponent<RectTransform>();
+        var clickedTransform = InventoryManager.Instance.clicked == null
+            ? InventoryManager.Instance.Clicked.GetComponent<RectTransform>()
+            : InventoryManager.Instance.clicked.GetComponent<RectTransform>();
+
+        hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, clickedTransform.sizeDelta.x - 50f);
+        hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, clickedTransform.sizeDelta.y - 50f);
+
+        InventoryManager.Instance.HoverObject.transform.localScale = InventoryManager.Instance.clicked == null
+            ? InventoryManager.Instance.Clicked.gameObject.transform.localScale
+            : InventoryManager.Instance.clicked.gameObject.transform.localScale;
+
+        InventoryManager.Instance.HoverObject.transform.Find("ItemButton/Amount").gameObject.SetActive(true);
+        if (!InventoryManager.Instance.MovingSlot.IsEmpty)
+            InventoryManager.Instance.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
+                InventoryManager.Instance.MovingSlot.Items.Count > 1 ? InventoryManager.Instance.MovingSlot.Items.Count.ToString() : string.Empty;
+        else
+            InventoryManager.Instance.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
+                InventoryManager.Instance.From.Items.Count > 1 ? InventoryManager.Instance.From.Items.Count.ToString() : string.Empty;
+    }
+
+    private void PutItemBack()
+    {
+        if (EmptySlots == 0)
+        {
+            DropItem();
+        }
+        else
+        {
+            if (!InventoryManager.Instance.MovingSlot.IsEmpty)
+            {
+                Destroy(GameObject.Find("Hover"));
+                foreach (var item in InventoryManager.Instance.MovingSlot.Items)
+                {
+                    if (InventoryManager.Instance.clicked != null)
+                        InventoryManager.Instance.clicked.GetComponent<Slot>().AddItem(item);
+                    else if (InventoryManager.Instance.Clicked != null)
+                        InventoryManager.Instance.Clicked.GetComponent<Slot>().AddItem(item);
+                }
+
+                EmptySlots--;
+                InventoryManager.Instance.MovingSlot.ClearSlot();
+            }
+        }
+
+        InventoryManager.Instance.selectStackSize.SetActive(false);
+    }
+
+    public void SplitStack()
+    {
+        Debug.Log(EmptySlots);
+        InventoryManager.Instance.selectStackSize.SetActive(false);
+
+        if (InventoryManager.Instance.SplitAmount == InventoryManager.Instance.MaxStackCount)
+        {
+            InventoryManager.Instance.MovingSlot.Items = InventoryManager.Instance.clicked.GetComponent<Slot>().RemoveItems(InventoryManager.Instance.SplitAmount);
+            CreateHoverIcon();
+            InventoryManager.Instance.clicked.GetComponent<Slot>().ClearSlot();
+            EmptySlots++;
+        }
+        else if (InventoryManager.Instance.SplitAmount > 0)
+        {
+            InventoryManager.Instance.MovingSlot.Items = InventoryManager.Instance.clicked.GetComponent<Slot>().RemoveItems(InventoryManager.Instance.SplitAmount);
+            CreateHoverIcon();
+        }
+        
+        InventoryManager.Instance.splitSlider.value = 0;
+    }
+
+    public void ChangeStackText()
+    {
+        InventoryManager.Instance.SplitAmount = (int)InventoryManager.Instance.splitSlider.value;
+
+        if (InventoryManager.Instance.SplitAmount < 0) InventoryManager.Instance.SplitAmount = 0;
+        if (InventoryManager.Instance.SplitAmount > InventoryManager.Instance.MaxStackCount) InventoryManager.Instance.SplitAmount = InventoryManager.Instance.MaxStackCount;
+
+        InventoryManager.Instance.stackTxt.text = InventoryManager.Instance.SplitAmount.ToString();
+    }
+
     public void ShowToolTip(GameObject slot)
     {
         var tmpSlot = slot.GetComponent<Slot>();
 
-        if (!tmpSlot.IsEmpty && _hoverObject == null && !_staticSelectStackSize.activeSelf)
+        if (!tmpSlot.IsEmpty && InventoryManager.Instance.HoverObject == null && !InventoryManager.Instance.selectStackSize.activeSelf)
         {
-            _visualText.text = tmpSlot.CurrentItem.GetTooltip();
-            _sizeText.text = _visualText.text;
+            InventoryManager.Instance.visualTextObject.text = tmpSlot.CurrentItem.GetTooltip();
+            InventoryManager.Instance.sizeTextObject.text = InventoryManager.Instance.visualTextObject.text;
 
-            _toolTip.SetActive(true);
+            InventoryManager.Instance.toolTipObject.SetActive(true);
 
             var xPos = slot.transform.position.x;
             var yPos = slot.transform.position.y + slot.GetComponent<RectTransform>().sizeDelta.y - 100f;
 
-            _toolTip.transform.position = new Vector2(xPos, yPos);
+            InventoryManager.Instance.toolTipObject.transform.position = new Vector2(xPos, yPos);
         }
     }
 
     public void HideToolTip()
     {
-        _toolTip.SetActive(false);
+        InventoryManager.Instance.toolTipObject.SetActive(false);
     }
 
     private IEnumerator FadeOut()
@@ -485,5 +508,43 @@ public class Inventory : MonoBehaviour
             {
             }
         }
+    }
+
+    private string SetDropItemName(Item item)
+    {
+        string dropItemName;
+
+        switch (item.rarity)
+        {
+            case Rarity.Common:
+                dropItemName = "<color=#696969>" + item.itemName + "</color>";
+                return dropItemName;
+            case Rarity.Normal:
+                dropItemName = "<color=yellow>" + item.itemName + "</color>";
+                return dropItemName;
+            case Rarity.Uncommon:
+                dropItemName = "<color=#bfff00>" + item.itemName + "</color>";
+                return dropItemName;
+            case Rarity.Rare:
+                dropItemName = "<color=#bc3c21>" + item.itemName + "</color>";
+                return dropItemName;
+            case Rarity.VeryRare:
+                dropItemName = "<color=#00CED1>" + item.itemName + "</color>";
+                return dropItemName;
+            case Rarity.Epic:
+                dropItemName = "<color=orange><b>" + item.itemName + "</b></color>";
+                return dropItemName;
+            case Rarity.Legendary:
+                dropItemName = "<color=#ff00ff><b>" + item.itemName + "</b></color>";
+                return dropItemName;
+            case Rarity.Mystical:
+                dropItemName = "<color=red><b>" + item.itemName + "</b></color>";
+                return dropItemName;
+            case Rarity.Artifact:
+                dropItemName = "<color=white><b>" + item.itemName + "</b></color>";
+                return dropItemName;
+        }
+
+        return null;
     }
 }

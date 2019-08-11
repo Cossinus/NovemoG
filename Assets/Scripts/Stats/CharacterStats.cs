@@ -6,14 +6,14 @@ using UnityEngine.AI;
 
 public class CharacterStats : MonoBehaviour
 {
+    public int level;
+    public int stars;
     public List<Stat> stats = new List<Stat>();
     public float CurrentHealth { get; set; }
     public float CurrentMana { get; set; }
     public float CurrentExperience { get; set; }
     public bool IsRegenHealth { get; set; }
     public bool IsRegenMana { get; set; }
-
-    public float Level;
 
     #region StatsAsNames
     
@@ -125,7 +125,7 @@ public class CharacterStats : MonoBehaviour
         IsRegenMana = false;
     }
 
-    #region Initialize properties
+    #region Assign properties
     
     private void SetStats()
     {

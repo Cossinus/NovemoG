@@ -15,28 +15,12 @@ public class Item : ScriptableObject
     public bool isDefaultItem;
     public int stackLimit = 1;
     public int value;
+    public UniqueEffect effect;
     public List<Modifier> Modifiers = new List<Modifier>();
 
     public virtual void Use()
     {
         Debug.Log(itemName + " has been used!");
-        UniqueEffect();
-    }
-
-    public virtual string UniqueEffect() // e.g. Custom Set, Unique Spells or Resistance to one or more types of monsters
-    {
-        string effectName = string.Empty;
-        string effectDescription = string.Empty;
-        
-        if (effectName != string.Empty)
-        {
-            return $"\n<color=yellow><size=20><b>{effectName}</b></size></color>\n" +
-                   $"<color=#ffffe0><size=18><i>{effectDescription}</i></size></color>";
-        }
-        else
-        {
-            return null;
-        }
     }
 
     public string GetTooltip()
@@ -92,26 +76,26 @@ public class Item : ScriptableObject
             return string.Format(
                 "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
                 "{0}</color></i>\nStats:{1}\n" + "\n<color=#999900><size=20><i>{2}</i></size></color>" +
-                UniqueEffect(), description, stats, specials);
+                effect.EffectText(), description, stats, specials);
         }
         else if (stats != string.Empty && specials == string.Empty)
         {
             return string.Format(
                 "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
-                "{0}</color></i>\nStats:{1}</size>" + UniqueEffect(), description, stats);
+                "{0}</color></i>\nStats:{1}" + effect.EffectText(), description, stats);
         }
         else if (stats == string.Empty && specials != string.Empty)
         {
             return string.Format(
                 "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
-                "{0}</color></i></size>" + "\n<color=#999900><size=20><i>{1}</i></size></color>" +
-                UniqueEffect(), description, specials);
+                "{0}</color></i>" + "\n<color=#999900><size=20><i>{1}</i></size></color>" +
+                effect.EffectText(), description, specials);
         }
         else
         {
             return string.Format(
                 "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
-                "{0}</color></i></size>" + UniqueEffect(), description);
+                "{0}</color></i></size>", description);
         }
     }
 
