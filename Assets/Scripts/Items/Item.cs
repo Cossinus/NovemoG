@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class Item : ScriptableObject
 {
     public string itemName = "New Item";
+    [TextArea(2, 5)]
     public string description = "Item Description";
     public string specials = string.Empty;
     public Sprite icon;
@@ -120,6 +121,7 @@ public struct Modifier
 {
     public string Name;
     public float Value;
+    public float MaxValue; // For calculating random values from stats
 }
 
 public enum Rarity {

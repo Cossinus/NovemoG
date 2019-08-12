@@ -17,12 +17,17 @@ public class PlayerController : MonoBehaviour
 
 	public Quest quest;
 
-	public Class playerClass;
-
 	Camera cam;
 	PlayerMotor motor;
 
-    // Start is called before the first frame update
+	public ClassManager playerClass;
+
+	void Awake()
+	{
+		playerClass = gameObject.AddComponent<Warrior>(); // Add this to menu->pick class
+	}
+	
+	// Start is called before the first frame update
     void Start()
     {
 		cam = Camera.main;

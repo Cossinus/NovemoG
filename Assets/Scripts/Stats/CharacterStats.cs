@@ -55,6 +55,7 @@ public class CharacterStats : MonoBehaviour
     
     void Awake()
     {
+        SetStats();
         CurrentHealth = stats[0].GetValue();
         CurrentMana = stats[1].GetValue();
         GetComponent<NavMeshAgent>().speed = stats[6].GetValue();
@@ -71,7 +72,7 @@ public class CharacterStats : MonoBehaviour
             StartCoroutine(RegenMana(ManaRegen, ManaRegenRate));
     }
 
-    public void TakeDamage(float physicalDamage, float magicDamage, float lethalDamage)
+    public void TakeDamage(float physicalDamage, float magicDamage, float lethalPhysicalDamage, float lethalMagicDamage)
     {
         // Swap this with own formula (according to other effects, potions, scrolls, armor mostly in %)
         physicalDamage -= physicalDamage * ((Armor - ArmorPenetration) / (100 + Armor));
@@ -82,7 +83,7 @@ public class CharacterStats : MonoBehaviour
         magicDamage = Mathf.Clamp(magicDamage, 0, float.MaxValue);
         magicDamage = (float) Math.Round(magicDamage * 100f) / 100f;
 
-        float damage = physicalDamage + magicDamage + lethalDamage;
+        float damage = physicalDamage + magicDamage + lethalPhysicalDamage + lethalMagicDamage;
         
         CurrentHealth -= damage;
         Debug.Log(transform.name + " takes " + physicalDamage + " damage.");

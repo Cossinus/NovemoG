@@ -11,6 +11,11 @@ public class EquipmentManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        
+        _inventory = Inventory.Instance;
+        
+        int equipmentSlots = System.Enum.GetNames(typeof(EquipmentSlot)).Length;
+        _currentEquipment = new Equipment[equipmentSlots];
     }
     
     #endregion
@@ -21,14 +26,6 @@ public class EquipmentManager : MonoBehaviour
     public OnEquipmentChanged onEquipmentChanged;
     
     private Equipment[] _currentEquipment;
-    
-    void Start()
-    {
-        _inventory = Inventory.Instance;
-        
-        int equipmentSlots = System.Enum.GetNames(typeof(EquipmentSlot)).Length;
-        _currentEquipment = new Equipment[equipmentSlots];
-    }
 
     public void Equip(Equipment newItem)
     {

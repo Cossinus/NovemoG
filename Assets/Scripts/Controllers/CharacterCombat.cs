@@ -38,7 +38,7 @@ public class CharacterCombat : MonoBehaviour
     IEnumerator DoDamage(CharacterStats stats, float delay)
     {
         yield return new WaitForSeconds(delay);
-        stats.TakeDamage(myStats.stats[2].GetValue(), myStats.stats[9].GetValue(), myStats.stats[10].GetValue());
-        // TODO Change myStats.stats[9].GetValue() with spell damage
+        stats.TakeDamage(myStats.stats[2].GetValue(), myStats.stats[9].GetValue(), myStats.stats[10].GetValue(), myStats.stats[9].GetValue());
+        // TODO Change myStats.stats[9].GetValue() with spell damage nad lethal spell damage
     }
 }

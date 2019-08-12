@@ -363,7 +363,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &224361600
 PrefabInstance:
@@ -686,7 +686,7 @@ PrefabInstance:
     - target: {fileID: 7132513862513212794, guid: 7470a29016065b245be7e006d7610dc3,
         type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7132513862513212794, guid: 7470a29016065b245be7e006d7610dc3,
         type: 3}
@@ -1813,7 +1813,7 @@ Transform:
   - {fileID: 2017806763}
   - {fileID: 576577821}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &689615804
 Rigidbody:
@@ -1896,7 +1896,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   quest: {fileID: 0}
-  playerClass: {fileID: 11400000, guid: 3347b847227a12b4b803d3b0ad5b39bd, type: 2}
+  playerClass: {fileID: 0}
 --- !u!114 &689615809
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1999,6 +1999,9 @@ MonoBehaviour:
   - Name: Health Regen Rate
     BaseValue: 0.7
     Power: 0
+  - Name: Critical Strike
+    BaseValue: 0
+    Power: 0
 --- !u!114 &689615810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2026,7 +2029,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ddbcb2bfa68766469fa4e03b7634693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDelay: 0.6
+  attackDelay: 1
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -2116,7 +2119,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!114 &710091572 stripped
 MonoBehaviour:
@@ -2428,7 +2431,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1.0000002, z: 1.0000002}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 100, y: 0, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
@@ -2759,7 +2762,7 @@ Transform:
   - {fileID: 1347912676}
   - {fileID: 5460915732660196063}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1101810059
 GameObject:
@@ -2804,7 +2807,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1209570422 stripped
 MonoBehaviour:
@@ -3142,7 +3145,7 @@ PrefabInstance:
     - target: {fileID: 1783502942841236466, guid: 60e3458e1eaa6164ea363ec4b8ada8de,
         type: 3}
       propertyPath: m_RootOrder
-      value: 9
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1783502942841236466, guid: 60e3458e1eaa6164ea363ec4b8ada8de,
         type: 3}
@@ -3698,7 +3701,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1935611293
 GameObject:
@@ -3826,6 +3829,8 @@ GameObject:
   - component: {fileID: 2037371497}
   - component: {fileID: 2037371499}
   - component: {fileID: 2037371500}
+  - component: {fileID: 2037371501}
+  - component: {fileID: 2037371502}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -3896,6 +3901,40 @@ MonoBehaviour:
   splitSlider: {fileID: 866813313}
   canvas: {fileID: 1584387172}
   eventSystem: {fileID: 174847486}
+--- !u!114 &2037371501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037371496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96c885ff69bc45d428683e77bddd74ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  className: New Class
+  classDescription: Class Description
+  defaultWeapons: {fileID: 0}
+  abilities: {fileID: 0}
+  playerManager: {fileID: 2037371499}
+  myStats: {fileID: 689615809}
+--- !u!114 &2037371502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037371496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b52d2199f8580f45b781f03b04ca6e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  abilityName: Ability Name
+  abilityDescription: Ability Description
+  abilityDamage: 0
+  playerManager: {fileID: 0}
 --- !u!1 &2068250346 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4874144258965012181, guid: 7470a29016065b245be7e006d7610dc3,
@@ -3993,7 +4032,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4237,7 +4276,7 @@ PrefabInstance:
     - target: {fileID: 7143050259304002460, guid: 9e6a5eeaae8b79844a9f466358ce04ef,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7143050259304002460, guid: 9e6a5eeaae8b79844a9f466358ce04ef,
         type: 3}
