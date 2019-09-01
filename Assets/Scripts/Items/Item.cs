@@ -16,8 +16,11 @@ public class Item : ScriptableObject
     public bool isDefaultItem;
     public int stackLimit = 1;
     public int value;
-    public UniqueEffect effect;
     public List<Modifier> Modifiers = new List<Modifier>();
+    
+    public int level;
+    public float CurrentExperience { get; set; }
+    public float RequiredExperience { get; set; }
 
     public virtual void Use()
     {
@@ -29,11 +32,15 @@ public class Item : ScriptableObject
         string stats = string.Empty;
         string color = string.Empty;
         string newLine = string.Empty;
+        string itemLevel = level.ToString();
 
         if (description != string.Empty)
-        {
             newLine = "\n";
-        }
+
+        if (itemLevel == "1")
+            itemLevel = string.Empty;
+        else
+            itemLevel = $"{level} :Level";
 
         switch (rarity)
         {
@@ -76,21 +83,21 @@ public class Item : ScriptableObject
         {
             return string.Format(
                 "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
-                "{0}</color></i>\nStats:{1}\n" + "\n<color=#999900><size=20><i>{2}</i></size></color>" +
-                effect.EffectText(), description, stats, specials);
+                "{0}</color></i>\nStats:{1}\n" + "\n<color=#999900><size=20><i>{2}</i></size></color>"/* +
+                effect.EffectText()*/, description, stats, specials, itemLevel);
         }
         else if (stats != string.Empty && specials == string.Empty)
         {
             return string.Format(
                 "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
-                "{0}</color></i>\nStats:{1}" + effect.EffectText(), description, stats);
+                "{0}</color></i>\nStats:{1}"/* + effect.EffectText()*/, description, stats);
         }
         else if (stats == string.Empty && specials != string.Empty)
         {
             return string.Format(
                 "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
-                "{0}</color></i>" + "\n<color=#999900><size=20><i>{1}</i></size></color>" +
-                effect.EffectText(), description, specials);
+                "{0}</color></i>" + "\n<color=#999900><size=20><i>{1}</i></size></color>"/* +
+                effect.EffectText()*/, description, specials);
         }
         else
         {
@@ -121,7 +128,6 @@ public struct Modifier
 {
     public string Name;
     public float Value;
-    public float MaxValue; // For calculating random values from stats
 }
 
 public enum Rarity {

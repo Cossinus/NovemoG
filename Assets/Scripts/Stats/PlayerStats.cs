@@ -1,56 +1,55 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class PlayerStats : CharacterStats
+﻿namespace Novemo
 {
-    void Start()
+    public class PlayerStats : CharacterStats
     {
-        EquipmentManager.Instance.onEquipmentChanged += OnEquipmentChanged;
-    }
-
-    void OnEquipmentChanged(Equipment newItem, Equipment oldItem)
-    {
-        if (newItem != null)
+        void Start()
         {
-            foreach (var stat in stats)
+            EquipmentManager.Instance.onEquipmentChanged += OnEquipmentChanged;
+        }
+
+        void OnEquipmentChanged(Equipment newItem, Equipment oldItem)
+        {
+            if (newItem != null)
             {
-                foreach (var modifier in newItem.Modifiers)
+                foreach (var stat in stats)
                 {
-                    if (stat.Name == modifier.Name)
+                    foreach (var modifier in newItem.Modifiers)
                     {
-                        stat.AddModifier(modifier.Value);
-                        if (stat.Name == "Health")
-                            CurrentHealth += modifier.Value;
-                        if (stat.Name == "Mana")
-                            CurrentMana += modifier.Value;
+                        if (stat.statName == modifier.Name)
+                        {
+                            stat.AddModifier(modifier.Name, modifier.Value);
+                            if (stat.statName == "Health")
+                                CurrentHealth += modifier.Value;
+                            if (stat.statName == "Mana")
+                                CurrentMana += modifier.Value;
+                        }
+                    }
+                }
+            }
+
+            if (oldItem != null)
+            {
+                foreach (var stat in stats)
+                {
+                    foreach (var modifier in oldItem.Modifiers)
+                    {
+                        if (stat.statName == modifier.Name)
+                        {
+                            stat.RemoveModifier(modifier.Name, modifier.Value);
+                            if (stat.statName == "Health")
+                                CurrentHealth -= modifier.Value;
+                            if (stat.statName == "Mana")
+                                CurrentMana -= modifier.Value;
+                        }
                     }
                 }
             }
         }
 
-        if (oldItem != null)
+        public override void Die()
         {
-            foreach (var stat in stats)
-            {
-                foreach (var modifier in oldItem.Modifiers)
-                {
-                    if (stat.Name == modifier.Name)
-                    {
-                        stat.RemoveModifier(modifier.Value);
-                        if (stat.Name == "Health")
-                            CurrentHealth -= modifier.Value;
-                        if (stat.Name == "Mana")
-                            CurrentMana -= modifier.Value;
-                    }
-                }
-            }
+            base.Die();
+            PlayerManager.Instance.KillPlayer();
         }
-    }
-
-    public override void Die()
-    {
-        base.Die();
-        PlayerManager.Instance.KillPlayer();
     }
 }

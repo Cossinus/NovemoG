@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Novemo;
 using UnityEngine.EventSystems;
 using UnityEngine;
-using UnityEngine.AI;
 
 [RequireComponent(typeof(PlayerMotor))]
 public class PlayerController : MonoBehaviour
 {
 	private float Gold = 10;
-	
-	public float CurrentExperience { get; private set; }
-	public float ExperienceGoal { get; private set; }
 
 	public Interactable focus;
 	
@@ -32,6 +30,8 @@ public class PlayerController : MonoBehaviour
     {
 		cam = Camera.main;
 		motor = GetComponent<PlayerMotor>();
+
+		StartCoroutine(Equip());
     }
 
     // Update is called once per frame
@@ -63,16 +63,18 @@ public class PlayerController : MonoBehaviour
 			}
 		}
 
-		/*if (quest.isActive)
+		if (quest.isActive)
 		{
 			quest.goal.EnemyKilled();
 			if (quest.goal.IsReached())
 			{
-				CurrentExperience += quest.ExpReward;
-				Gold += quest.GoldReward;
+				//REWARDS
 				quest.Complete();
 			}
-		}*/
+		}
+		
+		if (Input.GetKeyDown(KeyCode.L))
+			playerClass.LevelUp();
     }
 
     void SetFocus(Interactable newFocus)
@@ -95,5 +97,11 @@ public class PlayerController : MonoBehaviour
 	    
 	    focus = null;
 	    motor.StopFollowingTarget();
+    }
+
+    IEnumerator Equip()
+    {
+	    yield return new WaitForSeconds(.1f);
+	    EquipmentManager.Instance.Equip(playerClass.defaultWeapon);
     }
 }

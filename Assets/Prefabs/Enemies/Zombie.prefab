@@ -145,47 +145,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0b64987ced18dc448b1c3e596039035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  level: 2
+  stars: 1
+  experienceModifier: 0
   stats:
-  - Name: Health
-    BaseValue: 70
-    Power: 0
-  - Name: Mana
-    BaseValue: 1
-    Power: 0
-  - Name: Damage
-    BaseValue: 12
-    Power: 0
-  - Name: Armor
-    BaseValue: 3
-    Power: 0
-  - Name: Magic Resist
-    BaseValue: 5
-    Power: 0
-  - Name: Attack Speed
-    BaseValue: 0.6
-    Power: 0
-  - Name: Health Regen
-    BaseValue: 1
-    Power: 0
-  - Name: Health Regen Rate
-    BaseValue: 0.25
-    Power: 0
-  - Name: Arcane
-    BaseValue: 0
-    Power: 0
-  - Name: Armor Penetration
-    BaseValue: 0
-    Power: 0
-  - Name: Lethal Damage
-    BaseValue: 0
-    Power: 0
-  - Name: Mana Regen Rate
-    BaseValue: 1000
-    Power: 0
-  - Name: Mana Regen
-    BaseValue: 0.1
-    Power: 0
-  Level: 1
+  - statName: Health
+    baseValue: 30
+  - statName: Mana
+    baseValue: 1
+  - statName: Damage
+    baseValue: 7
+  - statName: Armor
+    baseValue: 5
+  - statName: Magic Resist
+    baseValue: 5
+  - statName: Attack Speed
+    baseValue: 0.651
+  - statName: Movement Speed
+    baseValue: 2.75
+  - statName: Health Regen
+    baseValue: 0.5
+  - statName: Mana Regen
+    baseValue: 0.001
+  - statName: Arcane
+    baseValue: 0
+  - statName: Lethal Damage
+    baseValue: 0
+  - statName: Cooldown Reduction
+    baseValue: 0
+  - statName: +Gold
+    baseValue: 0
+  - statName: +Exp
+    baseValue: 0
+  - statName: Mana Burn Chance
+    baseValue: 0
+  - statName: Bleed Chance
+    baseValue: 0
+  - statName: Poison Chance
+    baseValue: 0
+  - statName: Withering Chance
+    baseValue: 0
+  - statName: Ignite Chance
+    baseValue: 0
+  - statName: Max Health Damage
+    baseValue: 0
+  - statName: Current Health Damage
+    baseValue: 0
+  - statName: Attack Pair Chance
+    baseValue: 0
+  - statName: Attack Block Chance
+    baseValue: 0
+  - statName: Armor Penetration
+    baseValue: 5
+  - statName: Magic Resist Penetration
+    baseValue: 0
+  - statName: Life Steal
+    baseValue: 0
+  - statName: Spell Vampirism
+    baseValue: 0
+  - statName: Luck
+    baseValue: 0
+  - statName: Health Regen Rate
+    baseValue: 1
+  - statName: Mana Regen Rate
+    baseValue: 1000
+  - statName: Crit Chance
+    baseValue: 0
 --- !u!114 &7143050259304002467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,6 +223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ddbcb2bfa68766469fa4e03b7634693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasAttacked: 0
   attackDelay: 0.8
 --- !u!1 &7143050261210932925
 GameObject:

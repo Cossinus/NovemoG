@@ -1,4 +1,5 @@
 ﻿using System;
+using Novemo;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,12 +25,16 @@ public class InfoUI : MonoBehaviour
             if (c.renderMode == RenderMode.WorldSpace)
             {
                 ui = Instantiate(uiPrefab, c.transform).transform;
+                ui.Find("Level/LevelText").GetComponent<TextMeshProUGUI>().text =
+                    GetComponent<CharacterStats>().level.ToString();
+                if (target.name == "Health ui target")
+                    ui.Find("Level").gameObject.SetActive(false);
                 healthSlider = ui.transform.Find("HealthMask/HealthBar").GetComponent<Image>();
                 ui.gameObject.SetActive(false);
                 break;
             }
         }
-
+        
         GetComponent<CharacterStats>().OnHealthChanged += OnHealthChanged;
     }
 
@@ -56,13 +61,12 @@ public class InfoUI : MonoBehaviour
             ui.position = target.position;
             ui.forward = -cam.forward;
             ui.right = cam.right;
-            ui.Find("Level/LevelText").GetComponent<TextMeshProUGUI>().text =
-                GetComponent<CharacterStats>().level.ToString();
 
             if (Time.time - lastMadeVisibleTime > visibleTime)
             {
                 ui.gameObject.SetActive(false);
             }
         }
+        
     }
 }

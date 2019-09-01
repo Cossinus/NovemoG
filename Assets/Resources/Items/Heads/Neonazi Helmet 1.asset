@@ -25,8 +25,12 @@ MonoBehaviour:
   Modifiers:
   - Name: Health
     Value: 15
+    MaxValue: 0
   - Name: Damage
     Value: 12
+    MaxValue: 0
   - Name: Armor
     Value: 7
+    MaxValue: 0
+  level: 3
   equipSlot: 0

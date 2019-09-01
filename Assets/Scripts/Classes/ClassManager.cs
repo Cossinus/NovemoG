@@ -3,30 +3,69 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClassManager : MonoBehaviour
+namespace Novemo
 {
-    public static ClassManager Instance;
-
-    void Awake()
+    public class ClassManager : MonoBehaviour
     {
-        Instance = this;
+        #region Singleton
+
+        public static ClassManager Instance;
+
+        void Awake()
+        {
+            Instance = this;
+        }
+
+        #endregion
+
+        public string className;
+        public string classDescription;
+
+        public string passiveName;
+        public string passiveDescription;
+
+        public RangeType rangeType;
+        public Role role;
+        public DamageType damageType;
+
+        public Equipment defaultWeapon;
+
+        public Ability ability;
+
+        public PlayerManager playerManager;
+        public CharacterStats myStats;
+
+        public virtual void LevelUp()
+        {
+            myStats.CurrentExperience = 0;
+            myStats.level++;
+        }
     }
-    
-    public string className = "New Class";
-    public string classDescription = "Class Description";
 
-    public Equipment defaultWeapons;
-
-    public AbilityManager abilities;
-
-    public PlayerManager playerManager;
-    public CharacterStats myStats;
-    
-    void Start()
+    public enum RangeType
     {
-        playerManager = PlayerManager.Instance;
-        myStats = playerManager.player.GetComponent<CharacterStats>();
+        Melee,
+        Ranged,
+        Thrower
     }
 
-    public virtual void Passive() { }
+    public enum Role
+    {
+        Tank,
+        Ranger,
+        Assassin,
+        DamageDealer,
+        Support,
+        Sniper
+    }
+
+    public enum DamageType
+    {
+        Physical,
+        Magical,
+        LethalPhysical,
+        LethalMagical,
+        Mixed,
+        MixedLethal
+    }
 }

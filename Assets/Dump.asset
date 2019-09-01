@@ -9,9 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a9dc307b6e9335439045b4c6299465d, type: 3}
+  m_Script: {fileID: 11500000, guid: baeafb5e2c8656e419f6b948b12be3f1, type: 3}
   m_Name: Dump
   m_EditorClassIdentifier: 
-  effectName: 
-  effectDescription: 
-  item: {fileID: 0}
+  isActive: 0
+  Title: Dump
+  Description: Dump
+  ExpReward: 1
+  GoldReward: 1
+  goal:
+    goalType: 0
+    requiredAmount: 999
+    currentAmount: 0

@@ -21,7 +21,7 @@ MonoBehaviour:
   isDefaultItem: 0
   stackLimit: 1
   value: 5
-  effect: {fileID: 0}
+  effect: {fileID: 11400000, guid: 2cbbd7742a911104983e3028f8729ba7, type: 2}
   Modifiers:
   - Name: Attack Speed
     Value: 0.852
@@ -29,4 +29,5 @@ MonoBehaviour:
   - Name: Damage
     Value: 7
     MaxValue: 12
+  level: 0
   equipSlot: 4

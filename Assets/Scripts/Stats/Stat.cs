@@ -1,36 +1,40 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
 public class Stat
 {
-    public string Name;
-    public float BaseValue;
-    public float Power; // Power of debuffs
-    private List<float> modifiers = new List<float>();
+    public string statName;
+    public float baseValue; 
+    public Dictionary<string, float> modifiers = new Dictionary<string, float>();
     
     public float GetValue()
     {
-        float finalValue = BaseValue;
-        modifiers.ForEach(x => finalValue += x);
+        var finalValue = baseValue;
+        foreach (var modifier in modifiers)
+        {
+            finalValue += modifier.Value;
+        }
         return finalValue;
     }
 
-    public void AddModifier(float modifier)
+    public void AddModifier(string name, float modifier)
     {
-        if (modifier != 0)
+        if (modifier > 1)
         {
-            modifiers.Add(modifier);
+            if (modifiers.ContainsKey(name))
+                modifiers[name] += modifier;
+            else
+                modifiers[name] = modifier;
         }
     }
     
-    public void RemoveModifier(float modifier)
+    public void RemoveModifier(string name, float modifier)
     {
-        if (modifier != 0)
+        if (modifier > 1)
         {
-            modifiers.Remove(modifier);
+            modifiers[name] -= modifier;
         }
     }
 }

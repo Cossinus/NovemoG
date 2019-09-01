@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Novemo;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterStats))]
@@ -7,7 +8,9 @@ public class CharacterCombat : MonoBehaviour
 {
     private CharacterStats myStats;
 
-    private float attackCooldown = 0f;
+    private float attackCooldown;
+
+    public bool hasAttacked;
 
     public float attackDelay = .6f;
 
@@ -27,6 +30,8 @@ public class CharacterCombat : MonoBehaviour
     {
         if (attackCooldown <= 0f)
         {
+            hasAttacked = true;
+            
             StartCoroutine(DoDamage(targetStats, attackDelay));
 
             OnAttack?.Invoke();
@@ -38,6 +43,7 @@ public class CharacterCombat : MonoBehaviour
     IEnumerator DoDamage(CharacterStats stats, float delay)
     {
         yield return new WaitForSeconds(delay);
+        Ability.Instance.attacksCount++;
         stats.TakeDamage(myStats.stats[2].GetValue(), myStats.stats[9].GetValue(), myStats.stats[10].GetValue(), myStats.stats[9].GetValue());
         // TODO Change myStats.stats[9].GetValue() with spell damage nad lethal spell damage
     }
