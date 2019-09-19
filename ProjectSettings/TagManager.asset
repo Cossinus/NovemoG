@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Slot
+  - Item
+  - EquipSlot
   layers:
   - Default
   - TransparentFX
@@ -12,6 +14,11 @@ TagManager:
   - 
   - Water
   - UI
+  - 
+  - 
+  - Player
+  - 
+  - 
   - 
   - 
   - Ground
@@ -33,12 +40,16 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Ground
+    uniqueID: 2141727695
+    locked: 0
+  - name: Interactable
+    uniqueID: 2515444907
+    locked: 0
+  - name: Player
+    uniqueID: 1816532605
     locked: 0
