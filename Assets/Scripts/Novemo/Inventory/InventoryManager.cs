@@ -42,14 +42,19 @@ namespace Novemo.Inventory
         public EventSystem eventSystem;
 
         // Slot Objects
+        public Slot.Slot movingSlotPlaceholder;
         public Slot.Slot MovingSlot { get; set; }
         public Slot.Slot From { get; set; }
         public Slot.Slot To { get; set; }
 
         public int MaxStackCount { get; private set; }
         public int SplitAmount { get; set; }
-    
-    
+
+        void Start()
+        {
+            MovingSlot = movingSlotPlaceholder;
+        }
+        
         public void SetStackInfo(int maxStackCount)
         {
             selectStackSize.SetActive(true);

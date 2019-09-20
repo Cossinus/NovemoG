@@ -12,8 +12,9 @@ namespace Novemo.Inventory.Slot
         {
             var slot = gameObject.GetComponentInParent(typeof(Slot)) as Slot;
 
-            if (eventData.button == PointerEventData.InputButton.Right && !GameObject.Find("Hover") &&
-                Inventory.Instance.inventoryUI.activeInHierarchy && Inventory.Instance.statsUI.activeInHierarchy)
+            if (eventData.button == PointerEventData.InputButton.Right && !GameObject.Find("Hover") && 
+                !clicked.GetComponent<Slot>().IsEmpty && Inventory.Instance.inventoryUI.activeInHierarchy && 
+                Inventory.Instance.statsUI.activeInHierarchy)
             {
                 if (slot.CurrentItem.type != ItemType.Material && slot.isEquipSlot == false)
                 {

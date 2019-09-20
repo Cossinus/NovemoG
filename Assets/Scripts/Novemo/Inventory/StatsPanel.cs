@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using Novemo.Player;
 using Novemo.Stats;
 using TMPro;
@@ -14,7 +15,7 @@ namespace Novemo.Inventory
         public TextMeshProUGUI sizeText;
         
         public GameObject statsTooltip;
-        
+
         private CharacterStats playerStats;
 
         void Start()
@@ -26,7 +27,7 @@ namespace Novemo.Inventory
         {
             StartCoroutine(UpdateStatsText());
             
-            if (!Inventory.Instance.inventoryUI.activeSelf)
+            if (Inventory.Instance.canvasGroup.alpha <= 0)
                 statsTooltip.SetActive(false);
         }
 
@@ -41,9 +42,9 @@ namespace Novemo.Inventory
             {
                 statsTooltip.SetActive(true);
                 
-                visualText.text = $"<i>{playerStats.stats[statIndex].statName}:</i> {statValue}\n" +
-                                  $"<i>Base Value:</i> {baseStatValue}\n" +
-                                  $"<i>Additional Value:</i> {additionalStatValue:F2}";
+                visualText.text = $"<i>{playerStats.stats[statIndex].statName}:</i> {statValue:F2}\n" +
+                                  $"<i>Base Value:</i> {baseStatValue:F2}\n" +
+                                  $"<i>Bonus Value:</i> {additionalStatValue:F2}";
                 sizeText.text = visualText.text;
 
                 var position = statsText[statIndex].GetComponent<RectTransform>().position;
@@ -58,11 +59,20 @@ namespace Novemo.Inventory
         {
             statsTooltip.SetActive(false);
         }
+
+        public void ShowAdvancedStats(GameObject placeholder)
+        {
+            placeholder.SetActive(!placeholder.activeSelf);
+        }
         
         private IEnumerator UpdateStatsText()
         {
             for (int i = 0; i < statsText.Count; i++)
-                statsText[i].text = $"<i>{playerStats.stats[i].statName}:</i> {playerStats.stats[i].GetValue().ToString()}";
+            {
+                statsText[i].text = playerStats.stats[i].statName == "Attack Speed"
+                    ? $"<i>{playerStats.stats[i].statName}:</i> {playerStats.stats[i].GetValue():F2}"
+                    : $"<i>{playerStats.stats[i].statName}:</i> {playerStats.stats[i].GetValue():F0}";
+            }
             
             yield return new WaitForSecondsRealtime(1f);
         }

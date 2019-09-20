@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: God Sword
   m_EditorClassIdentifier: 
   itemName: God Item
-  description: This item was used by gods. No one knows who could forge this...
+  description: This item was used by gods. No one knows who could that special and
+    ultra quality weapon...
   specials: There is no better sword than this!
   icon: {fileID: 21300000, guid: e2e5a167f38a7c346a50ae88961c2131, type: 3}
   type: 0
@@ -21,17 +22,16 @@ MonoBehaviour:
   isDefaultItem: 0
   stackLimit: 1
   value: 9999999
-  effect: {fileID: 11400000, guid: 2cbbd7742a911104983e3028f8729ba7, type: 2}
   Modifiers:
   - Name: Damage
     Value: 300
   - Name: Lethal Damage
     Value: 150
   - Name: Attack Speed
-    Value: 1.733
-  - Name: +Gold
+    Value: 130
+  - Name: Additional Gold
     Value: 7
-  - Name: +Exp
+  - Name: Additional Exp
     Value: 7
   - Name: Armor Penetration
     Value: 30
@@ -43,4 +43,16 @@ MonoBehaviour:
     Value: 3
   - Name: Bleed Chance
     Value: 25
+  level: 0
   equipSlot: 4
+  effects:
+  - effectName: 
+    effectDescription: 
+  - effectName: 
+    effectDescription: 
+  - effectName: 
+    effectDescription: 
+  - effectName: 
+    effectDescription: 
+  - effectName: 
+    effectDescription: 

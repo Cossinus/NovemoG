@@ -44,12 +44,12 @@ namespace Novemo.Items
                 {
                     var equipSlot = slot.GetComponent<EquipSlot>();
                 
+                    if (_currentEquipment[slotIndex] != null)
+                        equipSlot.RemoveItem();
+                    
                     equipSlot.icon.GetComponent<Image>().sprite = newItem.icon;
                     equipSlot.icon.gameObject.SetActive(true);
                     equipSlot.AddItem(newItem);
-
-                    if (_currentEquipment[slotIndex] != null)
-                        equipSlot.RemoveItem();
                 }
             }
         

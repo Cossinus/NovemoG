@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Novemo.Items
 {
@@ -7,6 +8,7 @@ namespace Novemo.Items
     {
         public EquipmentSlot equipSlot;
         public bool IsEquipped { get; set; }
+        public List<UniqueEffect> effects = new List<UniqueEffect>();
 
         public override void Use()
         {
@@ -15,13 +17,13 @@ namespace Novemo.Items
         }
     }
 
-// Weapon is for classes that uses only one weapon
-// Shield is for Warriors and Tanks (shields are not usable, they just give stats and effects)
-// Weapon + Dagger are for:
-// Assassins (2x Dirk/Dagger or Dirk + Dagger),
-// Elf's (Bow + Dagger), Hunters (Bow + Dirk),
-// Vikings (2x axes),
-// Mages (Weapon + Spellbook)
+    // Weapon is for classes that uses only one weapon
+    // Shield is for Warriors and Tanks (shields are not usable, they just give stats and effects)
+    // Weapon + Dagger are for:
+    // Assassins (2x Dirk/Dagger or Dirk + Dagger),
+    // Elf's (Bow + Dagger), Hunters (Bow + Dirk),
+    // Vikings (2x axes),
+    // Mages (Weapon + Spellbook)
     public enum EquipmentSlot
     {
         Head, Chest, Legs, Feet, Weapon, Shield, Dagger, Ring, Necklace, Rune1, Rune2, Rune3, Pet

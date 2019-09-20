@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace Novemo.Stats
 {
@@ -8,34 +9,61 @@ namespace Novemo.Stats
     {
         public string statName;
         public float baseValue; 
-        public Dictionary<string, float> modifiers = new Dictionary<string, float>();
-    
+        public ConcurrentDictionary<string, float> modifiers = new ConcurrentDictionary<string, float>();
+
+        private float _tmpAS;
+        
         public float GetValue()
         {
             var finalValue = baseValue;
-            foreach (var modifier in modifiers)
-            {
-                finalValue += modifier.Value;
-            }
+            Parallel.ForEach(modifiers, x => finalValue += x.Value);
             return finalValue;
         }
 
         public void AddModifier(string name, float modifier)
         {
-            if (modifier > 1)
+            if (modifier > 0)
             {
                 if (modifiers.ContainsKey(name))
-                    modifiers[name] += modifier;
+                {
+                    if (name == "Attack Speed")
+                    {
+                        _tmpAS += modifier;
+                        modifiers[name] = (100 + _tmpAS) / 100 * baseValue - baseValue;
+                    }
+                    else
+                    {
+                        modifiers[name] += modifier;
+                    }
+                }
                 else
-                    modifiers[name] = modifier;
+                {
+                    if (name == "Attack Speed")
+                    {
+                        _tmpAS += modifier;
+                        modifiers[name] = (100 + _tmpAS) / 100 * baseValue - baseValue;
+                    }
+                    else
+                    {
+                        modifiers[name] = modifier;
+                    }
+                }
             }
         }
     
         public void RemoveModifier(string name, float modifier)
         {
-            if (modifier > 1)
+            if (modifier > 0)
             {
-                modifiers[name] -= modifier;
+                if (name == "Attack Speed")
+                {
+                    _tmpAS -= modifier;
+                    modifiers[name] = (100 + _tmpAS) / 100 * baseValue - baseValue;
+                }
+                else
+                {
+                    modifiers[name] -= modifier;
+                }
             }
         }
     }

@@ -10,27 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12b40ea5ef81dce4b938c7145b7aca02, type: 3}
-  m_Name: Alexis' Pet
+  m_Name: Chest of Attack Speed
   m_EditorClassIdentifier: 
-  itemName: Alexis' Pet
-  description: An awesome pet! I promise... it'll be!
-  specials: Item made by Alexis, my close friend.
+  itemName: Chest of Attack Speed
+  description: This chest was made by magnificent goblins. It's weight is very low
+    that it raises wearer's attack speed significantly.
+  specials: 'Weight: 0.6kg'
   icon: {fileID: 21300000, guid: 8fc39e434f36f71459f01860bda1b591, type: 3}
   type: 0
-  rarity: 6
+  rarity: 4
   isDefaultItem: 0
   stackLimit: 1
-  value: 999
+  value: 42
   Modifiers:
-  - Name: Health
-    Value: 150
-  - Name: Mana
-    Value: 15
-  - Name: Armor
-    Value: 72
-  - Name: Damage
-    Value: 27
-  - Name: Lethal Damage
-    Value: 10
-  level: 50
-  equipSlot: 12
+  - Name: Attack Speed
+    Value: 70
+  - Name: Crit Chance
+    Value: 5
+  level: 3
+  equipSlot: 1

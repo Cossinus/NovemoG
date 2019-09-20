@@ -7,6 +7,7 @@ TagManager:
   - Slot
   - Item
   - EquipSlot
+  - Stats
   layers:
   - Default
   - TransparentFX

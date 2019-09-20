@@ -5,6 +5,8 @@ using Novemo.Items;
 using Novemo.Player;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
+using Image = UnityEngine.UI.Image;
 
 namespace Novemo.Inventory
 {
@@ -28,7 +30,6 @@ namespace Novemo.Inventory
         #endregion
 
         public delegate void OnItemChanged();
-
         public OnItemChanged onItemChangedCallback;
 
         // Inventory Parent Object
@@ -44,7 +45,6 @@ namespace Novemo.Inventory
 
         // All Slots in Inventory
         private Slot.Slot[] _slots;
-        public Slot.Slot movingSlot;
 
         // Floats
         private float _hoverYOffset;
@@ -78,8 +78,6 @@ namespace Novemo.Inventory
             _hoverYOffset = 100f * 0.01f;
 
             inventoryManager = InventoryManager.Instance;
-
-            inventoryManager.MovingSlot = movingSlot;
 
             inventoryUI.SetActive(false);
             statsUI.SetActive(false);
@@ -120,6 +118,17 @@ namespace Novemo.Inventory
                 inventoryManager.HoverObject.transform.position =
                     inventoryManager.canvas.transform.TransformPoint(position);
             }
+
+            if (inventoryManager.toolTipObject.activeSelf)
+            {
+                float xPos = Input.mousePosition.x;
+                float yPos = Input.mousePosition.y;
+
+                inventoryManager.toolTipObject.transform.position = new Vector2(xPos, yPos);
+            }
+            
+            if (!inventoryManager.MovingSlot.IsEmpty)
+                inventoryManager.toolTipObject.SetActive(false);
 
             emptySlots = EmptySlots;
         }
@@ -242,7 +251,7 @@ namespace Novemo.Inventory
                 }
             }
             else if (inventoryManager.To == null)
-            {
+            { 
                 inventoryManager.To = clicked.GetComponent<Slot.Slot>();
                 inventoryManager.Clicked = null;
                 Destroy(GameObject.Find("Hover"));
@@ -295,7 +304,7 @@ namespace Novemo.Inventory
             }
         }
 
-        private void CreateHoverIcon()
+        public void CreateHoverIcon()
         {
             inventoryManager.HoverObject = Instantiate(inventoryManager.iconPrefab,
                 GameObject.Find("Inventory Canvas").transform, true);
@@ -401,20 +410,6 @@ namespace Novemo.Inventory
                 inventoryManager.sizeTextObject.text = inventoryManager.visualTextObject.text;
 
                 inventoryManager.toolTipObject.SetActive(true);
-
-                float xPos = slot.transform.position.x;
-                float yPos;
-                
-                if (slot.CompareTag("Slot"))
-                    yPos = slot.transform.position.y + slot.GetComponent<RectTransform>().sizeDelta.y - 100f;
-                
-                else
-                {
-                    yPos = slot.transform.position.y + slot.GetComponent<RectTransform>().sizeDelta.y;
-                    xPos += 75f;
-                }
-
-                inventoryManager.toolTipObject.transform.position = new Vector2(xPos, yPos);
             }
         }
 
@@ -438,6 +433,7 @@ namespace Novemo.Inventory
                 while (progress < 1.0)
                 {
                     canvasGroup.alpha = Mathf.Lerp(startAlpha, 0, progress);
+
                     progress += rate * Time.deltaTime;
                     yield return null;
                 }
@@ -467,6 +463,7 @@ namespace Novemo.Inventory
                 while (progress < 1.0)
                 {
                     canvasGroup.alpha = Mathf.Lerp(startAlpha, 1, progress);
+
                     progress += rate * Time.deltaTime;
                     yield return null;
                 }
