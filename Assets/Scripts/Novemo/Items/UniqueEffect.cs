@@ -1,28 +1,18 @@
 ﻿using System;
+using System.Collections;
+using Novemo.Items.UniqueEffects;
+using UnityEngine;
 
 namespace Novemo.Items
 {
-    [Serializable]
-    public class UniqueEffect
+    public class UniqueEffect : ScriptableObject
     {
-        public string effectName;
-        public string effectDescription;
+        public string eName = "New Effect";
+        public string eDescription = "New Description";
+        public bool canCastOnSelf;
+        public EffectType eType;
     }
 
-    public enum EffectAspect
-    {
-        DealDamage,
-        Heal,
-        SpeedUp,
-        Dash,
-        Regenerate,
-        DamageBoost,
-        StatsBoost,
-        Blaze,
-        Bolt,
-        
-    }
-    
     public enum EffectType
     {
         Passive, Active

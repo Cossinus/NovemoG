@@ -19,7 +19,7 @@ namespace Novemo.Inventory.Slot
 
         public bool IsMoreThanOneInSlot => Items.Count > 1;
 
-        public Item CurrentItem => Items.Peek();
+        public Item CurrentItem => Items?.Peek();
 
         public bool IsEmpty => Items.Count == 0;
 

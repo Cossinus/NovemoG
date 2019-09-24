@@ -1,38 +1,24 @@
-﻿using UnityEngine;
+﻿using System;
+using Novemo.Stats;
+using UnityEngine;
 
 namespace Novemo.Controllers
 {
     public class CameraController : MonoBehaviour
     {
-        public Transform target;
+        public GameObject target;
 
-        public Vector3 offset;
-        public float zoomSpeed = 4f;
-        public float minZoom = 10f;
-        public float maxZoom = 15f;
-    
-        public float pitch = 2f;
+        public float camSpeed;
 
-        public float yawSpeed = 100f;
+        private Vector3 _targetPos;
 
-        private float currentZoom = 10f;
-        private float currentYaw = 0f;
-    
-        void Update()
+        private void Update()
         {
-            currentZoom -= Input.GetAxis("Mouse ScrollWheel") * zoomSpeed;
-            currentZoom = Mathf.Clamp(currentZoom, minZoom, maxZoom);
-
-            //currentYaw -= Input.GetAxis("Horizontal") * yawSpeed * Time.deltaTime;
+            var targetPosition = target.transform.position;
+            var transformPosition = transform.position;
+            _targetPos = new Vector3(targetPosition.x, targetPosition.y, transformPosition.z);
+            transformPosition = Vector3.Lerp(transformPosition, _targetPos, camSpeed * Time.deltaTime);
+            transform.position = transformPosition;
         }
-    
-        private void LateUpdate()
-        {
-            transform.position = target.position - offset * currentZoom;
-            transform.LookAt(target.position + Vector3.up * pitch);
-        
-            transform.RotateAround(target.position, Vector3.up, currentYaw);
-        }
-    
     }
 }

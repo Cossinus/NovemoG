@@ -4,7 +4,7 @@ namespace Novemo.Enemies
 {
     public class EnemyStats : CharacterStats
     {
-        public override void Die()
+        protected override void Die()
         {
             base.Die();
             

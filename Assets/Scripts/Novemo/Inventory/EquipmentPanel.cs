@@ -47,10 +47,10 @@ namespace Novemo.Inventory
                 shield.SetActive(true);
             }
             /*if (playerClass == gameObject.GetComponent<Thief>() || gameObject.GetComponent<Collector>() || gameObject.GetComponent<Ninja>() || gameObject.GetComponent<HeadHunter>() || gameObject.GetComponent<Elf>() || gameObject.GetComponent<Hunter>())
-        {
+            {
             dagger.SetActive(true);
             weapon.SetActive(false);
-        }*/
+            }*/
         }
     }
 }

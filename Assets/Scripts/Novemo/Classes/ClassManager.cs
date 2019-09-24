@@ -1,4 +1,5 @@
-﻿using Novemo.Abilities;
+﻿using System;
+using Novemo.Abilities;
 using Novemo.Items;
 using Novemo.Player;
 using Novemo.Stats;
@@ -8,17 +9,6 @@ namespace Novemo.Classes
 {
     public class ClassManager : MonoBehaviour
     {
-        #region Singleton
-
-        public static ClassManager Instance;
-
-        void Awake()
-        {
-            Instance = this;
-        }
-
-        #endregion
-
         public string className;
         public string classDescription;
 
@@ -38,8 +28,8 @@ namespace Novemo.Classes
 
         public virtual void LevelUp()
         {
-            myStats.CurrentExperience = 0;
             myStats.level++;
+            myStats.RequiredExperience *= myStats.experienceMultiplier;
         }
     }
 

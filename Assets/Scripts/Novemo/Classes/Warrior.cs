@@ -21,14 +21,14 @@ namespace Novemo.Classes
 
         void Start()
         {
-            playerManager = PlayerManager.Instance;
-            myStats = playerManager.player.GetComponent<CharacterStats>();
+            var player = PlayerManager.Instance.player;
+            myStats = player.GetComponent<CharacterStats>();
             defaultWeapon = Resources.Load<Equipment>("Items/Weapons/WarriorSword");
             
-            playerManager.player.AddComponent<Charge>();
-            playerManager.player.AddComponent<ThickSkin>();
-            playerManager.player.AddComponent<StrongMental>();
-            playerManager.player.AddComponent<WrathFury>();
+            player.AddComponent<Charge>();
+            player.AddComponent<ThickSkin>();
+            player.AddComponent<StrongMental>();
+            player.AddComponent<WrathFury>();
             
             myStats.CurrentHealth += 25;
             myStats.stats[0].baseValue += 25;
@@ -42,7 +42,8 @@ namespace Novemo.Classes
             passiveDescription = "Gives you (<color=#ff3232><b>+3%</b></color> max HP) " +
                                  "and from the start player has <color=#ff3232><b>25 HP</b></color> more." +
                                  $"\nActually: (<color=#ff3232><b>+{myStats.Scale(0, .03f):F1} HP</b></color>)";
-            StartCoroutine(myStats.ScaleValues("WarriorHealthModifier"));
+            
+            StartCoroutine(myStats.ScaleValues("WarriorHealthModifier", 0, 0.03f));
         }
 
         public override void LevelUp()

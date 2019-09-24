@@ -46,13 +46,4 @@ MonoBehaviour:
   level: 0
   equipSlot: 4
   effects:
-  - effectName: 
-    effectDescription: 
-  - effectName: 
-    effectDescription: 
-  - effectName: 
-    effectDescription: 
-  - effectName: 
-    effectDescription: 
-  - effectName: 
-    effectDescription: 
+  - {fileID: 11400000, guid: db66bb58cc8caf24fb5440ac4421000f, type: 2}

@@ -1,13 +1,22 @@
-﻿using Novemo.Items;
+﻿using Novemo.Controllers;
+using Novemo.Items;
 using Novemo.Player;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Novemo.Stats
 {
     public class PlayerStats : CharacterStats
     {
+        public Image experienceSlider;
+
+        private PlayerController _controller;
+        
         void Start()
         {
             EquipmentManager.Instance.onEquipmentChanged += OnEquipmentChanged;
+            GetComponent<CharacterStats>().OnExperienceChanged += SetExperienceBar;
+            _controller = GetComponent<PlayerController>();
         }
 
         void OnEquipmentChanged(Equipment newItem, Equipment oldItem)
@@ -49,7 +58,29 @@ namespace Novemo.Stats
             }
         }
 
-        public override void Die()
+        private void SetExperienceBar(float requiredExperience, float currentExperience)
+        {
+            var experiencePercent = currentExperience / requiredExperience;
+            experienceSlider.fillAmount = experiencePercent;
+        }
+
+        protected override void LevelUp()
+        {
+            if (CurrentExperience >= RequiredExperience)
+            {
+                var moveToNext = CurrentExperience - RequiredExperience;
+
+                _controller.playerClass.LevelUp();
+                
+                experienceSlider.fillAmount = 0;
+
+                CurrentExperience = 0;
+                CurrentExperience += moveToNext;
+                base.LevelUp();
+            }
+        }
+
+        protected override void Die()
         {
             base.Die();
             PlayerManager.Instance.KillPlayer();
