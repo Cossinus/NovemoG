@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using Novemo.Player;
+﻿using System.Collections;
 using Novemo.Stats;
 using UnityEngine;
 
@@ -12,33 +10,38 @@ namespace Novemo.Items.UniqueEffects
         public int regenPower;
         public float regenRate;
 
-        public RegenerateType rType;
-        
-        private CharacterStats _targetStats;
+        public RegenerateType regenType;
 
-        public override IEnumerator Passive()
+        private void OnEnable()
         {
-            IsRegenerating = true;
-            
-            _targetStats = PlayerManager.Instance.player.GetComponent<CharacterStats>();
+            IsRegenerating = false;
+        }
 
-            if (rType == RegenerateType.Health)
+        public bool CheckForEffect(CharacterStats characterStats)
+        {
+            if ((int) regenType == 0 && characterStats.CurrentHealth < characterStats.stats[0].GetValue() && !IsRegenerating)
+                return true;
+            if ((int) regenType == 1 && characterStats.CurrentMana < characterStats.stats[1].GetValue() && !IsRegenerating)
+                return true;
+
+            return false;
+        }
+
+        public override IEnumerator Passive(CharacterStats characterStats)
+        {
+            if ((int) regenType == 0 && characterStats.CurrentHealth < characterStats.stats[0].GetValue() - 1)
             {
-                if (_targetStats.CurrentHealth < _targetStats.stats[0].GetValue())
-                {
-                    _targetStats.CurrentHealth += regenPower;
-                    Debug.Log("Regenerated: " + regenPower + "\nHealth: " + _targetStats.CurrentHealth);
-                    yield return new WaitForSecondsRealtime(regenRate);
-                }
+                characterStats.CurrentHealth += regenPower;
+                characterStats.OnHealthChangeInvoke();
+                IsRegenerating = true;
+                yield return new WaitForSeconds(regenRate);
             }
-            else
+            if ((int) regenType == 1 && characterStats.CurrentMana < characterStats.stats[1].GetValue() - 1)
             {
-                if (_targetStats.CurrentHealth < _targetStats.stats[0].GetValue())
-                {
-                    _targetStats.CurrentMana += regenPower;
-                    Debug.Log("Regenerated: " + regenPower + "\nMana: " + _targetStats.CurrentMana);
-                    yield return new WaitForSecondsRealtime(regenRate);
-                }
+                characterStats.CurrentMana += regenPower;
+                characterStats.OnManaChangeInvoke();
+                IsRegenerating = true;
+                yield return new WaitForSeconds(regenRate);
             }
 
             IsRegenerating = false;

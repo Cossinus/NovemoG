@@ -27,7 +27,7 @@ namespace Novemo.Abilities
         protected float Delay;
         public float cooldown;
         public float castTime;
-        public float cost;
+        public float abilityCost;
 
         public bool isEnabled;
         public bool canCastOnSelf;

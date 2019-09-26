@@ -10,44 +10,50 @@ namespace Novemo.Controllers
 {
 	public class PlayerController : MonoBehaviour
 	{
-		private float Gold = 10;
+		public float Gold { get; set; }
 
 		public Quest.Quest quest;
 
 		public ClassManager playerClass;
 
-		public Rigidbody2D rb;
+		public Animator animator;
+		
+		private Vector2 _movement;
+		private Vector2 _lastMovement;
 
-		private Vector2 movement;
-	
-		private Camera cam;
+		private CharacterStats _myStats;
 
-		private CharacterStats myStats;
-
-		private ItemPickup pickUp;
+		private ItemPickup _pickUp;
 
 		void Awake()
 		{
-			myStats = gameObject.GetComponent<CharacterStats>();
+			_myStats = gameObject.GetComponent<CharacterStats>();
+			Gold = 10;
 		}
 	
 		void Start()
 		{
-			cam = Camera.main;
-
 			StartCoroutine(Equip());
 		}
     
 		void Update()
 		{
-			transform.Translate(
-				Time.deltaTime * myStats.stats[6].GetValue() *
-				(transform.up * Input.GetAxisRaw("Vertical") + 
-				 transform.right * Input.GetAxisRaw("Horizontal")).normalized);
+			SetAnimatorValues();
+			
+			transform.Translate(Time.deltaTime * _myStats.stats[6].GetValue() *
+			                    (transform.up * _movement.y + transform.right * _movement.x).normalized);
 	    
 			if (EventSystem.current.IsPointerOverGameObject())
 				return;
 
+			Quest();
+		
+			if (Input.GetKeyDown(KeyCode.L))
+				playerClass.LevelUp();
+		}
+
+		private void Quest()
+		{
 			if (quest.isActive)
 			{
 				quest.goal.EnemyKilled();
@@ -57,16 +63,29 @@ namespace Novemo.Controllers
 					quest.Complete();
 				}
 			}
-		
-			if (Input.GetKeyDown(KeyCode.L))
-				playerClass.LevelUp();
 		}
 
-		void FixedUpdate()
+		private void SetAnimatorValues()
 		{
-			rb.MovePosition(rb.position + Time.fixedDeltaTime * myStats.stats[6].GetValue() * movement);
+			_movement.x = Input.GetAxisRaw("Horizontal");
+			_movement.y = Input.GetAxisRaw("Vertical");
+
+			if (Input.GetAxisRaw("Horizontal") > 0.5f || Input.GetAxisRaw("Horizontal") < -0.5f)
+			{
+				_lastMovement = new Vector2(Input.GetAxisRaw("Horizontal"), 0f);
+			}
+			if (Input.GetAxisRaw("Vertical") > 0.5f || Input.GetAxisRaw("Vertical") < -0.5f)
+			{
+				_lastMovement = new Vector2(0f, Input.GetAxisRaw("Vertical"));
+			}
+			
+			animator.SetFloat("Speed", _movement.sqrMagnitude);
+			animator.SetFloat("Horizontal", _movement.x);
+			animator.SetFloat("Vertical", _movement.y);
+			animator.SetFloat("LastHorizontal", _lastMovement.x);
+			animator.SetFloat("LastVertical", _lastMovement.y);
 		}
-    
+
 		void OnTriggerEnter2D(Collider2D other)
 		{
 			if (other.gameObject.CompareTag("Item"))

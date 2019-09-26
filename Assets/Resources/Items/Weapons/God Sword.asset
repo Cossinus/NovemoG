@@ -46,4 +46,4 @@ MonoBehaviour:
   level: 0
   equipSlot: 4
   effects:
-  - {fileID: 11400000, guid: db66bb58cc8caf24fb5440ac4421000f, type: 2}
+  - {fileID: 11400000, guid: 59442d9d9b6a6004c91362c397f8d36f, type: 2}

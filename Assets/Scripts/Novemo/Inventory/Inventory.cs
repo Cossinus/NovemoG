@@ -137,24 +137,26 @@ namespace Novemo.Inventory
         {
             if (!inventoryManager.MovingSlot.IsEmpty)
             {
-                foreach (Item item in inventoryManager.MovingSlot.Items)
+                var amount = 0;
+
+                for (var i = 0; i < inventoryManager.MovingSlot.Items.Count; i++)
                 {
-                    float angle = UnityEngine.Random.Range(0.0f, Mathf.PI * 2);
-                    int amount = 0;
                     amount++;
-
-                    Vector3 v = new Vector3(Mathf.Sin(angle), Mathf.Cos(angle));
-                    v *= 1f;
-
-                    GameObject tmpDrp = Instantiate(inventoryManager.dropItem, _playerRef.transform.position - v,
-                        Quaternion.identity);
-                    tmpDrp.tag = "Item";
-
-                    tmpDrp.GetComponentInChildren<SpriteRenderer>().sprite = item.icon;
-                    tmpDrp.GetComponentInChildren<SpriteRenderer>().sortingLayerName = "Interactable";
-                    tmpDrp.GetComponent<ItemPickup>().item = inventoryManager.MovingSlot.CurrentItem;
-                    tmpDrp.GetComponent<ItemPickup>().amount = amount;
                 }
+                
+                var angle = UnityEngine.Random.Range(0.0f, Mathf.PI * 2);
+                
+                Vector3 v = new Vector3(Mathf.Sin(angle), Mathf.Cos(angle));
+                v *= 1f;
+
+                GameObject tmpDrp = Instantiate(inventoryManager.dropItem, _playerRef.transform.position - v,
+                    Quaternion.identity);
+                tmpDrp.tag = "Item";
+
+                tmpDrp.GetComponentInChildren<SpriteRenderer>().sprite = inventoryManager.MovingSlot.CurrentItem.icon;
+                tmpDrp.GetComponentInChildren<SpriteRenderer>().sortingLayerName = "Interactable";
+                tmpDrp.GetComponent<ItemPickup>().item = inventoryManager.MovingSlot.CurrentItem;
+                tmpDrp.GetComponent<ItemPickup>().amount = amount;
 
                 inventoryManager.MovingSlot.ClearSlot();
                 Destroy(GameObject.Find("Hover"));
@@ -338,33 +340,6 @@ namespace Novemo.Inventory
                 inventoryManager.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
                     inventoryManager.From.Items.Count > 1 ? inventoryManager.From.Items.Count.ToString() : string.Empty;
         }
-
-        /*private void PutItemBack()
-        {
-            if (EmptySlots == 0)
-            {
-                DropItem();
-            }
-            else
-            {
-                if (!inventoryManager.MovingSlot.IsEmpty)
-                {
-                    Destroy(GameObject.Find("Hover"));
-                    foreach (var item in inventoryManager.MovingSlot.Items)
-                    {
-                        if (inventoryManager.clicked != null)
-                            inventoryManager.clicked.GetComponent<Slot.Slot>().AddItem(item);
-                        else if (inventoryManager.Clicked != null)
-                            inventoryManager.Clicked.GetComponent<Slot.Slot>().AddItem(item);
-                    }
-
-                    EmptySlots--;
-                    inventoryManager.MovingSlot.ClearSlot();
-                }
-            }
-
-            inventoryManager.selectStackSize.SetActive(false);
-        }*/
 
         public void SplitStack()
         {

@@ -7,10 +7,9 @@ namespace Novemo.Items
 {
     public class UniqueEffect : ScriptableObject
     {
-        public string eName = "New Effect";
-        public string eDescription = "New Description";
-        public bool canCastOnSelf;
-        public EffectType eType;
+        public string effectName = "New Effect";
+        public string effectDescription = "New Description";
+        public EffectType effectType;
     }
 
     public enum EffectType

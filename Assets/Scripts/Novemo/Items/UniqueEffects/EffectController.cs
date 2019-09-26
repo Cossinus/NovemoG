@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
+using Novemo.Player;
+using Novemo.Stats;
 using UnityEngine;
 
 namespace Novemo.Items.UniqueEffects
@@ -7,50 +10,54 @@ namespace Novemo.Items.UniqueEffects
     {
         [SerializeField] public List<UniqueEffect> uniqueEffects;
 
-        private UniqueEffect UniqueEffect
-        {
-            get
-            {
-                foreach (var effect in uniqueEffects)
-                {
-                    return effect;
-                }
+        private UniqueEffect UniqueEffect => uniqueEffects.FirstOrDefault();
 
-                return null;
-            }
+        private Equipment _equipmentWithEffect;
+
+        private CharacterStats _playerStats;
+
+        private void Start()
+        {
+            _playerStats = PlayerManager.Instance.player.GetComponent<CharacterStats>();
         }
 
-        void Update()
+        private void Update()
         {
-            var eqWithEffect = EquipmentManager.Instance.GetEquipmentWithEffect;
-            if (eqWithEffect != null)
+            _equipmentWithEffect = EquipmentManager.Instance.GetEquipmentWithEffect;
+            if (_equipmentWithEffect != null)
             {
-                if (eqWithEffect.effects[0].name == UniqueEffect.eName)
-                {
-                    if (UniqueEffect.eType == EffectType.Passive)
-                    {
-                        var effect = eqWithEffect.effects[0] as PassiveEffect;
-                        if (effect.pType == PassiveTypes.Regenerate)
-                        {
-                            if (effect.IsRegenerating == false)
-                                StartCoroutine(effect.Passive());
-                        }
-                        else
-                        {
-                            StartCoroutine(effect.Passive());
-                        }
-                    }
-                    else
-                    {
-                        var effect = UniqueEffect as ActiveEffect;
-                    }
-                }
+                InitializeEffect();
             }
         }
 
         private void InitializeEffect()
         {
-            
+            if (_equipmentWithEffect.effects[0].effectName == UniqueEffect.effectName)
+            {
+                switch (UniqueEffect.effectType)
+                {
+                    case EffectType.Passive:
+                    {
+                        var passiveEffect = (PassiveEffect) _equipmentWithEffect.effects[0];
+                        switch (passiveEffect.passiveType)
+                        {
+                            case PassiveTypes.Regenerate:
+                            {
+                                var regenerate = (RegenerateEffect) passiveEffect;
+                                if (regenerate.CheckForEffect(_playerStats))
+                                    StartCoroutine(regenerate.Passive(_playerStats));
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case EffectType.Active:
+                    {
+                        var activeEffect = (ActiveEffect) UniqueEffect;
+                        break;
+                    }
+                }
+            }
         }
     }
 }

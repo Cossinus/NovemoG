@@ -23,7 +23,7 @@ namespace Novemo.Abilities.WarriorAbilities
             abilityName = "Charge!";
             abilityDescription = "";
             
-            cost = 5f;
+            abilityCost = 5f;
             cooldown = 0.2f;
             castTime = 0.1f;
         }
@@ -33,7 +33,7 @@ namespace Novemo.Abilities.WarriorAbilities
             Delay -= Time.deltaTime;
 
             if (Input.GetKeyDown(KeyCode.Q))
-                Use(cost, cooldown);
+                Use(abilityCost, cooldown);
 
             CCharge();
         }

@@ -10,13 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d754640c8851dc4f95f9a00b17c00db, type: 3}
-  m_Name: Regenerate Mana Effect
+  m_Name: Regenerate Health
   m_EditorClassIdentifier: 
-  eName: Regenerate Mana Effect
-  eDescription: New Description
-  canCastOnSelf: 0
-  eType: 0
-  pType: 0
+  effectName: Regenerate Health
+  effectDescription: New Description
+  effectType: 0
+  passiveType: 0
   regenPower: 2
   regenRate: 1
-  rType: 1
+  regenType: 0

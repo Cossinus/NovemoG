@@ -12,7 +12,7 @@ namespace Novemo.Abilities.WarriorAbilities
             abilityName = "Strong Mental";
             abilityDescription = "";
             
-            cost = myStats.Scale(0, .01f);
+            abilityCost = myStats.Scale(0, .01f);
             cooldown = .7f;
             castTime = .05f;
         }
@@ -22,9 +22,9 @@ namespace Novemo.Abilities.WarriorAbilities
             Delay -= Time.deltaTime;
 
             if (Input.GetKeyDown(KeyCode.E))
-                Use(cost, cooldown);
+                Use(abilityCost, cooldown);
             
-            if (playerCombat.hasAttacked & isEnabled && myStats.CurrentHealth > cost + 1)
+            if (playerCombat.hasAttacked & isEnabled && myStats.CurrentHealth > abilityCost + 1)
                 StartCoroutine(AttackCost(playerCombat.attackDelay));
         }
 
@@ -62,7 +62,7 @@ namespace Novemo.Abilities.WarriorAbilities
         {
             playerCombat.hasAttacked = false;
             yield return new WaitForSeconds(attackDelay);
-            myStats.TakeDamage(0, 0, cost, 0);
+            myStats.TakeDamage(0, 0, abilityCost, 0);
         }
     }
 }

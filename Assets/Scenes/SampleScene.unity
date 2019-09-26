@@ -288,7 +288,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1888515264}
-  camSpeed: 5
+  camSpeed: 4
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -521,8 +521,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uniqueEffects:
-  - {fileID: 11400000, guid: db66bb58cc8caf24fb5440ac4421000f, type: 2}
-  - {fileID: 11400000, guid: a360cbb8e42c4ca42b1cb8a3a51c0a6a, type: 2}
+  - {fileID: 11400000, guid: 59442d9d9b6a6004c91362c397f8d36f, type: 2}
+  - {fileID: 11400000, guid: dcd163dbefa4f6c45853b3242b85e59d, type: 2}
 --- !u!114 &1393888177 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4124116295519164064, guid: 7470a29016065b245be7e006d7610dc3,
@@ -651,8 +651,8 @@ GameObject:
   - component: {fileID: 1888515270}
   - component: {fileID: 1888515272}
   m_Layer: 8
-  m_Name: Player
-  m_TagString: Untagged
+  m_Name: Warrior
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -671,7 +671,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   quest: {fileID: 11400000, guid: 20a55540a1de6014487b39b73fce77b1, type: 2}
   playerClass: {fileID: 0}
-  rb: {fileID: 1888515267}
+  animator: {fileID: 1888515273}
 --- !u!212 &1888515266
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -689,7 +689,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 353b2015fb30af74e8c2566b648c91ef, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -901,7 +901,7 @@ Animator:
   m_GameObject: {fileID: 1888515264}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fe475f3d57be77a4a896b6e2a5aab496, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2484,7 +2484,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.60784316, g: 0.88235295, b: 0.25490198, a: 1}
+  m_Color: {r: 0.49019608, g: 0.6862745, b: 0.253115, a: 1}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -3117,7 +3117,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5460915731911062836}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.135904, y: 2.3393745, z: -0.33}
+  m_LocalPosition: {x: -0.175, y: -0.146, z: -0.33}
   m_LocalScale: {x: 0.7, y: 0.7, z: 1}
   m_Children:
   - {fileID: 617243051002038807}

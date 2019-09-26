@@ -14,7 +14,6 @@ namespace Novemo.Player
 
         private void LateUpdate()
         {
-            itemSprite = GetComponentInChildren<SpriteRenderer>();
             itemSprite.sprite = item.icon;
             itemSprite.drawMode = SpriteDrawMode.Sliced;
             var itemSpriteSize = itemSprite.size;
@@ -32,10 +31,15 @@ namespace Novemo.Player
 
         void PickUp()
         {
-            var wasPickedUp = Inventory.Inventory.Instance.AddItem(item);
+            for (var i = 0; i < amount; i++)
+            {
+                Inventory.Inventory.Instance.AddItem(item);
 
-            if (wasPickedUp)
-                Destroy(gameObject);
+                if (i == amount - 1)
+                {
+                    Destroy(gameObject);
+                }
+            }
         }
     }
 }

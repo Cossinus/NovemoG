@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Novemo.Controllers;
-using Novemo.Player;
 using UnityEngine;
 
 namespace Novemo.Stats
@@ -96,6 +94,12 @@ namespace Novemo.Stats
 
             OnHealthChanged?.Invoke(stats[0].GetValue(), CurrentHealth);
         }
+
+        public void OnHealthChangeInvoke() { OnHealthChanged?.Invoke(stats[0].GetValue(), CurrentHealth); }
+
+        public void OnManaChangeInvoke() { OnManaChanged?.Invoke(stats[1].GetValue(), CurrentMana); }
+        
+        public void ExperienceInvoke() { OnExperienceChanged?.Invoke(RequiredExperience, CurrentExperience); }
 
         protected virtual void Die()
         {

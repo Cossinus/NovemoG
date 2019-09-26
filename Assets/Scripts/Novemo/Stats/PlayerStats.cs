@@ -1,7 +1,6 @@
 ﻿using Novemo.Controllers;
 using Novemo.Items;
 using Novemo.Player;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Novemo.Stats
@@ -66,18 +65,16 @@ namespace Novemo.Stats
 
         protected override void LevelUp()
         {
-            if (CurrentExperience >= RequiredExperience)
-            {
-                var moveToNext = CurrentExperience - RequiredExperience;
+            if (!(CurrentExperience >= RequiredExperience)) return;
+            var moveToNext = CurrentExperience - RequiredExperience;
 
-                _controller.playerClass.LevelUp();
+            _controller.playerClass.LevelUp();
                 
-                experienceSlider.fillAmount = 0;
+            experienceSlider.fillAmount = 0;
 
-                CurrentExperience = 0;
-                CurrentExperience += moveToNext;
-                base.LevelUp();
-            }
+            CurrentExperience = 0;
+            CurrentExperience += moveToNext;
+            base.LevelUp();
         }
 
         protected override void Die()

@@ -1,15 +1,19 @@
 using System.Collections;
-using UnityEngine;
+using Novemo.Stats;
 
 namespace Novemo.Items.UniqueEffects
 {
     public abstract class PassiveEffect : UniqueEffect
     {
-        public PassiveTypes pType;
-        
-        public bool IsRegenerating { get; protected set; }
+        public PassiveTypes passiveType;
 
-        public abstract IEnumerator Passive();
+        protected bool IsRegenerating { get; set; }
+        protected bool Thorned { get; set; }
+        protected bool Blazed { get; set; }
+        protected bool Bolted { get; set; }
+        protected bool Mitigated { get; set; }
+        
+        public abstract IEnumerator Passive(CharacterStats characterStats);
     }
 
     public enum PassiveTypes

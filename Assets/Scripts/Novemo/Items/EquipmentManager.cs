@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Novemo.Inventory;
 using Novemo.Inventory.Slot;
 using UnityEngine;
@@ -31,28 +32,12 @@ namespace Novemo.Items
     
         [NonSerialized] public Equipment[] currentEquipment;
 
-        public Equipment GetEquipmentWithEffect
-        {
-            get
-            {
-                foreach (var item in currentEquipment)
-                {
-                    if (item != null)
-                    {
-                        if (item.effects != null && item.effects.Count > 0)
-                        {
-                            return item;
-                        }
-                    }
-                }
-                
-                return null;
-            }
-        }
+        public Equipment GetEquipmentWithEffect => currentEquipment.Where(item => item != null)
+            .FirstOrDefault(item => item.effects != null && item.effects.Count > 0);
 
         public void Equip(Equipment newItem)
         {
-            int slotIndex = (int)newItem.equipSlot;
+            var slotIndex = (int)newItem.equipSlot;
 
             Equipment oldItem = null;
 

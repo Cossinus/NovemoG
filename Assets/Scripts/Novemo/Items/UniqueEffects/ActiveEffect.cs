@@ -1,8 +1,15 @@
+using System.Collections;
+
 namespace Novemo.Items.UniqueEffects
 {
-    public class ActiveEffect : UniqueEffect
+    public abstract class ActiveEffect : UniqueEffect
     {
-        
+        public ActiveTypes activeType;
+
+        protected bool CanCastOnSelf { get; set; }
+
+        public abstract void Cooldown();
+        public abstract IEnumerator Active();
     }
     
     public enum ActiveTypes
