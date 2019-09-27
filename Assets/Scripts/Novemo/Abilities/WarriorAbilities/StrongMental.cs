@@ -24,7 +24,7 @@ namespace Novemo.Abilities.WarriorAbilities
             if (Input.GetKeyDown(KeyCode.E))
                 Use(abilityCost, cooldown);
             
-            if (playerCombat.hasAttacked & isEnabled && myStats.CurrentHealth > abilityCost + 1)
+            if (playerCombat.HasAttacked & isEnabled && myStats.CurrentHealth > abilityCost + 1)
                 StartCoroutine(AttackCost(playerCombat.attackDelay));
         }
 
@@ -60,9 +60,9 @@ namespace Novemo.Abilities.WarriorAbilities
 
         private IEnumerator AttackCost(float attackDelay)
         {
-            playerCombat.hasAttacked = false;
+            playerCombat.HasAttacked = false;
             yield return new WaitForSeconds(attackDelay);
-            myStats.TakeDamage(0, 0, abilityCost, 0);
+            myStats.TakeLethalDamage(abilityCost, 0);
         }
     }
 }

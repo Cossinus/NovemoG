@@ -38,7 +38,7 @@ namespace Novemo.Inventory.Slot
             }
 
             icon.gameObject.SetActive(true);
-            icon.sprite = item.icon;
+            icon.sprite = item.itemIcon;
         }
 
         public void AddItems(Stack<Item> items)
@@ -50,7 +50,7 @@ namespace Novemo.Inventory.Slot
 
             if (Items?.Peek())
             {
-                icon.sprite = CurrentItem.icon;
+                icon.sprite = CurrentItem.itemIcon;
                 icon.gameObject.SetActive(true);
             }
             else

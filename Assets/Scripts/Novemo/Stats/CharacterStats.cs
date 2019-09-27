@@ -32,6 +32,8 @@ namespace Novemo.Stats
         public event Action<float, float> OnHealthChanged;
         public event Action<float, float> OnManaChanged;
         public event Action<float, float> OnExperienceChanged;
+        
+        public float GetLastDamage { get; set; }
 
         void Awake()
         {
@@ -48,7 +50,8 @@ namespace Novemo.Stats
             
             if (Input.GetKeyDown(KeyCode.T))
             {
-                TakeDamage(1, 1, 1, 1);
+                TakeDamage(1, 1);
+                TakeLethalDamage(1, 1);
             }
 
             if (Input.GetKeyDown(KeyCode.X))
@@ -75,7 +78,7 @@ namespace Novemo.Stats
             }
         }
 
-        public void TakeDamage(float physicalDamage, float magicDamage, float lethalPhysicalDamage, float lethalMagicDamage)
+        public void TakeDamage(float physicalDamage, float magicDamage)
         {
             //TODO Modify this formula (according to other effects, potions, scrolls mostly in %)
             physicalDamage -= physicalDamage * ((stats[3].GetValue() - stats[23].GetValue()) / (100 + stats[3].GetValue()));
@@ -86,20 +89,26 @@ namespace Novemo.Stats
             magicDamage = Mathf.Clamp(magicDamage, 0, float.MaxValue);
             magicDamage = (float) Math.Round(magicDamage * 100f) / 100f;
 
-            float damage = physicalDamage + magicDamage + lethalPhysicalDamage + lethalMagicDamage;
+            var damage = physicalDamage + magicDamage;
+            GetLastDamage = damage;
 
             CurrentHealth -= damage;
 
-            Debug.Log(transform.name + " takes " + damage + " damage.");
-
             OnHealthChanged?.Invoke(stats[0].GetValue(), CurrentHealth);
+            
+            Debug.Log(transform.name + " takes " + damage + " damage.");
         }
 
-        public void OnHealthChangeInvoke() { OnHealthChanged?.Invoke(stats[0].GetValue(), CurrentHealth); }
+        public void TakeLethalDamage(float lethalPhysicalDamage, float lethalMagicDamage)
+        {
+            var damage = lethalPhysicalDamage + lethalMagicDamage;
+            
+            CurrentHealth -= damage;
 
-        public void OnManaChangeInvoke() { OnManaChanged?.Invoke(stats[1].GetValue(), CurrentMana); }
-        
-        public void ExperienceInvoke() { OnExperienceChanged?.Invoke(RequiredExperience, CurrentExperience); }
+            OnHealthChanged?.Invoke(stats[0].GetValue(), CurrentHealth);
+            
+            Debug.Log(transform.name + " takes " + damage + " damage.");
+        }
 
         protected virtual void Die()
         {
@@ -111,6 +120,16 @@ namespace Novemo.Stats
         {
             OnExperienceChanged?.Invoke(RequiredExperience, CurrentExperience);
         }
+        
+        #region Invokes
+        
+        public void OnHealthChangeInvoke() { OnHealthChanged?.Invoke(stats[0].GetValue(), CurrentHealth); }
+
+        public void OnManaChangeInvoke() { OnManaChanged?.Invoke(stats[1].GetValue(), CurrentMana); }
+        
+        public void ExperienceInvoke() { OnExperienceChanged?.Invoke(RequiredExperience, CurrentExperience); }
+        
+        #endregion
 
         #region StatsScaling
         
@@ -121,10 +140,10 @@ namespace Novemo.Stats
         
         public IEnumerator ScaleValues(string modifierName, int statIndex, float modifierMultiplier)
         {
-            yield return new WaitForSeconds(1f);
             stats[0].modifiers[modifierName] -= scaleValues[modifierName];
             scaleValues[modifierName] = Scale(statIndex, modifierMultiplier);
             stats[0].modifiers[modifierName] += scaleValues[modifierName];
+            yield return new WaitForSeconds(1f);
         }
         
         #endregion

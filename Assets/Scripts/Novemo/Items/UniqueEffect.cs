@@ -8,6 +8,7 @@ namespace Novemo.Items
     public class UniqueEffect : ScriptableObject
     {
         public string effectName = "New Effect";
+        [TextArea(2, 5)]
         public string effectDescription = "New Description";
         public EffectType effectType;
     }

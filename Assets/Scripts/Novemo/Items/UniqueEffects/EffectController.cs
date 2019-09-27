@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
+using Novemo.Controllers;
 using Novemo.Player;
 using Novemo.Stats;
 using UnityEngine;
@@ -8,53 +7,68 @@ namespace Novemo.Items.UniqueEffects
 {
     public class EffectController : MonoBehaviour
     {
-        [SerializeField] public List<UniqueEffect> uniqueEffects;
-
-        private UniqueEffect UniqueEffect => uniqueEffects.FirstOrDefault();
-
-        private Equipment _equipmentWithEffect;
-
-        private CharacterStats _playerStats;
+        private PlayerStats _playerStats;
+        private CharacterCombat _playerCombat;
 
         private void Start()
         {
-            _playerStats = PlayerManager.Instance.player.GetComponent<CharacterStats>();
+            _playerStats = PlayerManager.Instance.player.GetComponent<PlayerStats>();
+            _playerCombat = PlayerManager.Instance.player.GetComponent<CharacterCombat>();
         }
 
         private void Update()
         {
-            _equipmentWithEffect = EquipmentManager.Instance.GetEquipmentWithEffect;
-            if (_equipmentWithEffect != null)
-            {
-                InitializeEffect();
-            }
+            InitializeEffect();
         }
 
         private void InitializeEffect()
         {
-            if (_equipmentWithEffect.effects[0].effectName == UniqueEffect.effectName)
+            foreach (var eq in EquipmentManager.Instance.currentEquipment)
             {
-                switch (UniqueEffect.effectType)
+                if (eq != null && eq.effects.Count > 0)
                 {
-                    case EffectType.Passive:
+                    switch (eq.effects[0].effectType)
                     {
-                        var passiveEffect = (PassiveEffect) _equipmentWithEffect.effects[0];
-                        switch (passiveEffect.passiveType)
+                        case EffectType.Passive:
                         {
-                            case PassiveTypes.Regenerate:
+                            var passiveEffect = (PassiveEffect) eq.effects[0];
+                            switch (passiveEffect.passiveType)
                             {
-                                var regenerate = (RegenerateEffect) passiveEffect;
-                                if (regenerate.CheckForEffect(_playerStats))
-                                    StartCoroutine(regenerate.Passive(_playerStats));
-                                break;
+                                case PassiveTypes.Regenerate:
+                                {
+                                    var regenerate = (RegenerateEffect) passiveEffect;
+                                    if (regenerate.CheckForEffect(_playerStats))
+                                        StartCoroutine(regenerate.Passive(_playerStats));
+                                    break;
+                                }
+                                case PassiveTypes.MitigateDamage:
+                                {
+                                    var mitigate = (MitigateEffect) passiveEffect;
+                                    if (mitigate.CheckForEffect())
+                                        StartCoroutine(mitigate.Passive(_playerStats));
+                                    break;
+                                }
+                                case PassiveTypes.Thorns:
+                                {
+                                    var thorn = (ThornsEffect) passiveEffect;
+                                    StartCoroutine(thorn.GetEffect(_playerCombat));
+                                    StartCoroutine(thorn.Passive(_playerStats));
+                                    break;
+                                }
+                                case PassiveTypes.StatBoost:
+                                {
+                                    var statBoost = (StatBoostEffect) passiveEffect;
+                                    StartCoroutine(statBoost.Passive(_playerStats));
+                                    break;
+                                }
                             }
+                            break;
                         }
-                        break;
-                    }
-                    case EffectType.Active:
-                    {
-                        var activeEffect = (ActiveEffect) UniqueEffect;
-                        break;
+                        case EffectType.Active:
+                        {
+                            var activeEffect = (ActiveEffect) eq.effects[0];
+                            break;
+                        }
                     }
                 }
             }

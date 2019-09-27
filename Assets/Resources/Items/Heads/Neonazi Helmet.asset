@@ -13,21 +13,19 @@ MonoBehaviour:
   m_Name: Neonazi Helmet
   m_EditorClassIdentifier: 
   itemName: Neonazi Helmet
-  description: A helmet of a neonazi troop.
+  itemDescription: Item Description
   specials: 
-  icon: {fileID: 21300000, guid: e6d019d1cf3851447963e4646de2ab72, type: 3}
-  type: 0
-  rarity: 2
+  itemIcon: {fileID: 21300000, guid: e6d019d1cf3851447963e4646de2ab72, type: 3}
+  itemType: 0
+  itemRarity: 0
   isDefaultItem: 0
   stackLimit: 1
   value: 70
-  Modifiers:
-  - Name: Health
-    Value: 15
-  - Name: Damage
-    Value: 12
-  - Name: Armor
-    Value: 7
   level: 3
   equipSlot: 0
+  modifiers:
+  - Name: Armor
+    Value: 100
+  - Name: Magic Resist
+    Value: 100
   effects: []

@@ -16,7 +16,7 @@ namespace Novemo.Inventory.Slot
                 !clicked.GetComponent<Slot>().IsEmpty && Inventory.Instance.inventoryUI.activeInHierarchy && 
                 Inventory.Instance.statsUI.activeInHierarchy)
             {
-                if (slot.CurrentItem.type != ItemType.Material && slot.isEquipSlot == false)
+                if (slot.CurrentItem.itemType != ItemType.Material && slot.isEquipSlot == false)
                 {
                     InventoryManager.Instance.toolTipObject.SetActive(false);
                     slot.UseItemFromInventory();

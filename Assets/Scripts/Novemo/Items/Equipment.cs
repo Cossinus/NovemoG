@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,8 +9,12 @@ namespace Novemo.Items
     public class Equipment : Item
     {
         public EquipmentSlot equipSlot;
-        public bool IsEquipped { get; set; }
+        
+        public List<Modifier> modifiers = new List<Modifier>();
+        
         public List<UniqueEffect> effects = new List<UniqueEffect>();
+        
+        public bool IsEquipped { get; set; }
 
         public override void Use()
         {

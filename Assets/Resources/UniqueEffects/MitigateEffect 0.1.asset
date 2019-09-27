@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdc15532cec942c0b23501ec9e0b03a3, type: 3}
+  m_Name: MitigateEffect 0.1
+  m_EditorClassIdentifier: 
+  effectName: Mitigate Effect
+  effectDescription: New Description
+  effectType: 0
+  passiveType: 4
+  mitigatePercentage: 0.1

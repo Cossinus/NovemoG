@@ -9,20 +9,25 @@ namespace Novemo.Items
     {
         public string itemName = "New Item";
         [TextArea(2, 5)]
-        public string description = "Item Description";
+        public string itemDescription = "Item Description";
         public string specials = string.Empty;
-        public Sprite icon;
-        public ItemType type;
-        public Rarity rarity;
+        public Sprite itemIcon;
+        public ItemType itemType;
+        public Rarity itemRarity;
         public bool isDefaultItem;
         public int stackLimit = 1;
         public int value;
-        public List<Modifier> Modifiers = new List<Modifier>();
-    
+
         public int level;
         public float CurrentExperience { get; set; }
         public float RequiredExperience { get; set; }
-
+        
+        #region GetModifiers
+        private Item _item;
+        private List<Modifier> _modifiers = new List<Modifier>();
+        private void OnEnable() { _item = this; }
+        #endregion
+        
         public virtual void Use()
         {
             Debug.Log(itemName + " has been used!");
@@ -30,20 +35,32 @@ namespace Novemo.Items
 
         public string GetTooltip()
         {
-            string stats = string.Empty;
-            string color = string.Empty;
-            string newLine = string.Empty;
-            string itemLevel = level.ToString();
+            var stats = string.Empty;
+            var color = string.Empty;
+            var newLine = string.Empty;
+            var itemLevel = level.ToString();
 
-            if (description != string.Empty)
+            if (itemDescription != string.Empty)
                 newLine = "\n";
 
-            if (itemLevel == "1")
+            if (itemLevel == "1" || itemLevel == "0")
                 itemLevel = string.Empty;
             else
                 itemLevel = $"{level} :Level";
 
-            switch (rarity)
+            if (_item.itemType == ItemType.Equipment)
+            {
+                var eq = (Equipment) _item;
+                _modifiers = eq.modifiers;
+            }
+            
+            foreach (var modifier in _modifiers)
+            {
+                if (modifier.Value > 0)
+                    stats += $"{Environment.NewLine}+{modifier.Value} {modifier.Name}";
+            }
+            
+            switch (itemRarity)
             {
                 case Rarity.Common:
                     color = "#696969><size=40>" + itemName + "</size>";
@@ -74,53 +91,32 @@ namespace Novemo.Items
                     break;
             }
 
-            foreach (var modifier in Modifiers)
-            {
-                if (modifier.Value > 0)
-                    stats += $"{Environment.NewLine}+{modifier.Value} {modifier.Name}";
-            }
-
             if (stats != string.Empty && specials != string.Empty)
             {
                 return string.Format(
                     "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
                     "{0}</color></i>\nStats:{1}\n" + "\n<color=#999900><size=20><i>{2}</i></size></color>"/* +
-                effect.EffectText()*/, description, stats, specials, itemLevel);
+                effect.EffectText()*/, itemDescription, stats, specials, itemLevel);
             }
             else if (stats != string.Empty && specials == string.Empty)
             {
                 return string.Format(
                     "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
-                    "{0}</color></i>\nStats:{1}"/* + effect.EffectText()*/, description, stats);
+                    "{0}</color></i>\nStats:{1}"/* + effect.EffectText()*/, itemDescription, stats);
             }
             else if (stats == string.Empty && specials != string.Empty)
             {
                 return string.Format(
                     "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
                     "{0}</color></i>" + "\n<color=#999900><size=20><i>{1}</i></size></color>"/* +
-                effect.EffectText()*/, description, specials);
+                effect.EffectText()*/, itemDescription, specials);
             }
             else
             {
                 return string.Format(
                     "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
-                    "{0}</color></i></size>", description);
+                    "{0}</color></i></size>", itemDescription);
             }
-        }
-
-        public void SetStats(Item item)
-        {
-            this.itemName = item.itemName;
-            this.description = item.description;
-            this.specials = item.specials;
-            this.icon = item.icon;
-            this.type = item.type;
-            this.rarity = item.rarity;
-            this.stackLimit = item.stackLimit;
-            this.isDefaultItem = item.isDefaultItem;
-            this.value = item.value;
-        
-            this.Modifiers = item.Modifiers;
         }
     }
 

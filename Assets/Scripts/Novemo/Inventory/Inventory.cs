@@ -56,7 +56,7 @@ namespace Novemo.Inventory
         public Item iron;
 
         // Instance of Manager
-        private InventoryManager inventoryManager;
+        private InventoryManager _inventoryManager;
 
         // EmptySlots and All Slots as an int
         public static int EmptySlots { get; set; }
@@ -77,7 +77,7 @@ namespace Novemo.Inventory
 
             _hoverYOffset = 100f * 0.01f;
 
-            inventoryManager = InventoryManager.Instance;
+            _inventoryManager = InventoryManager.Instance;
 
             inventoryUI.SetActive(false);
             statsUI.SetActive(false);
@@ -103,43 +103,43 @@ namespace Novemo.Inventory
                 }
             }
 
-            if (Input.GetMouseButtonUp(0) && !inventoryManager.eventSystem.IsPointerOverGameObject(-1))
+            if (Input.GetMouseButtonUp(0) && !_inventoryManager.eventSystem.IsPointerOverGameObject(-1))
             {
                 DropItem();
             }
 
-            if (inventoryManager.HoverObject != null)
+            if (_inventoryManager.HoverObject != null)
             {
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    inventoryManager.canvas.transform as RectTransform,
+                    _inventoryManager.canvas.transform as RectTransform,
                     Input.mousePosition,
-                    inventoryManager.canvas.worldCamera, out var position);
+                    _inventoryManager.canvas.worldCamera, out var position);
                 position.Set(position.x, position.y - _hoverYOffset);
-                inventoryManager.HoverObject.transform.position =
-                    inventoryManager.canvas.transform.TransformPoint(position);
+                _inventoryManager.HoverObject.transform.position =
+                    _inventoryManager.canvas.transform.TransformPoint(position);
             }
 
-            if (inventoryManager.toolTipObject.activeSelf)
+            if (_inventoryManager.toolTipObject.activeSelf)
             {
                 float xPos = Input.mousePosition.x;
                 float yPos = Input.mousePosition.y;
 
-                inventoryManager.toolTipObject.transform.position = new Vector2(xPos, yPos);
+                _inventoryManager.toolTipObject.transform.position = new Vector2(xPos, yPos);
             }
             
-            if (!inventoryManager.MovingSlot.IsEmpty)
-                inventoryManager.toolTipObject.SetActive(false);
+            if (!_inventoryManager.MovingSlot.IsEmpty)
+                _inventoryManager.toolTipObject.SetActive(false);
 
             emptySlots = EmptySlots;
         }
 
         private void DropItem()
         {
-            if (!inventoryManager.MovingSlot.IsEmpty)
+            if (!_inventoryManager.MovingSlot.IsEmpty)
             {
                 var amount = 0;
 
-                for (var i = 0; i < inventoryManager.MovingSlot.Items.Count; i++)
+                for (var i = 0; i < _inventoryManager.MovingSlot.Items.Count; i++)
                 {
                     amount++;
                 }
@@ -149,16 +149,16 @@ namespace Novemo.Inventory
                 Vector3 v = new Vector3(Mathf.Sin(angle), Mathf.Cos(angle));
                 v *= 1f;
 
-                GameObject tmpDrp = Instantiate(inventoryManager.dropItem, _playerRef.transform.position - v,
+                GameObject tmpDrp = Instantiate(_inventoryManager.dropItem, _playerRef.transform.position - v,
                     Quaternion.identity);
                 tmpDrp.tag = "Item";
 
-                tmpDrp.GetComponentInChildren<SpriteRenderer>().sprite = inventoryManager.MovingSlot.CurrentItem.icon;
+                tmpDrp.GetComponentInChildren<SpriteRenderer>().sprite = _inventoryManager.MovingSlot.CurrentItem.itemIcon;
                 tmpDrp.GetComponentInChildren<SpriteRenderer>().sortingLayerName = "Interactable";
-                tmpDrp.GetComponent<ItemPickup>().item = inventoryManager.MovingSlot.CurrentItem;
+                tmpDrp.GetComponent<ItemPickup>().item = _inventoryManager.MovingSlot.CurrentItem;
                 tmpDrp.GetComponent<ItemPickup>().amount = amount;
 
-                inventoryManager.MovingSlot.ClearSlot();
+                _inventoryManager.MovingSlot.ClearSlot();
                 Destroy(GameObject.Find("Hover"));
             }
         }
@@ -174,16 +174,16 @@ namespace Novemo.Inventory
                     var tmp = slot.GetComponent<Slot.Slot>();
 
                     if (tmp.IsEmpty) continue;
-                    if (tmp.CurrentItem.type != item.type || !tmp.IsAvailable) continue;
-                    if (inventoryManager.clicked != null &&
-                        inventoryManager.clicked.GetComponent<Slot.Slot>() == tmp.GetComponent<Slot.Slot>() &&
-                        tmp.Items.Count == item.stackLimit - inventoryManager.MovingSlot.Items.Count)
+                    if (tmp.CurrentItem.itemType != item.itemType || !tmp.IsAvailable) continue;
+                    if (_inventoryManager.clicked != null &&
+                        _inventoryManager.clicked.GetComponent<Slot.Slot>() == tmp.GetComponent<Slot.Slot>() &&
+                        tmp.Items.Count == item.stackLimit - _inventoryManager.MovingSlot.Items.Count)
                     {
                         continue;
                     }
-                    else if (inventoryManager.Clicked != null &&
-                             inventoryManager.Clicked.GetComponent<Slot.Slot>() == tmp.GetComponent<Slot.Slot>() &&
-                             tmp.Items.Count == item.stackLimit - inventoryManager.MovingSlot.Items.Count)
+                    else if (_inventoryManager.Clicked != null &&
+                             _inventoryManager.Clicked.GetComponent<Slot.Slot>() == tmp.GetComponent<Slot.Slot>() &&
+                             tmp.Items.Count == item.stackLimit - _inventoryManager.MovingSlot.Items.Count)
                     {
                         continue;
                     }
@@ -221,62 +221,62 @@ namespace Novemo.Inventory
 
         public void MoveItem(GameObject clicked)
         {
-            inventoryManager.Clicked = clicked;
-            inventoryManager.selectStackSize.SetActive(false);
+            _inventoryManager.Clicked = clicked;
+            _inventoryManager.selectStackSize.SetActive(false);
 
-            if (!inventoryManager.MovingSlot.IsEmpty)
+            if (!_inventoryManager.MovingSlot.IsEmpty)
             {
                 var tmp = clicked.GetComponent<Slot.Slot>();
 
                 if (tmp.IsEmpty)
                 {
-                    tmp.AddItems(inventoryManager.MovingSlot.Items);
-                    inventoryManager.MovingSlot.Items.Clear();
+                    tmp.AddItems(_inventoryManager.MovingSlot.Items);
+                    _inventoryManager.MovingSlot.Items.Clear();
                     Destroy(GameObject.Find("Hover"));
                     EmptySlots--;
                 }
-                else if (!tmp.IsEmpty && inventoryManager.MovingSlot.CurrentItem.type == tmp.CurrentItem.type &&
+                else if (!tmp.IsEmpty && _inventoryManager.MovingSlot.CurrentItem.itemType == tmp.CurrentItem.itemType &&
                          tmp.IsAvailable)
                 {
-                    MergeStacks(inventoryManager.MovingSlot, tmp);
+                    MergeStacks(_inventoryManager.MovingSlot, tmp);
                 }
             }
-            else if (inventoryManager.From == null && canvasGroup.alpha >= 1)
+            else if (_inventoryManager.From == null && canvasGroup.alpha >= 1)
             {
                 if (!clicked.GetComponent<Slot.Slot>().IsEmpty)
                 {
                     EmptySlots++;
-                    inventoryManager.MovingSlot.Items = clicked.GetComponent<Slot.Slot>()
+                    _inventoryManager.MovingSlot.Items = clicked.GetComponent<Slot.Slot>()
                         .RemoveItems(clicked.GetComponent<Slot.Slot>().Items.Count);
                     CreateHoverIcon();
                     clicked.GetComponent<Slot.Slot>().ClearSlot();
                 }
             }
-            else if (inventoryManager.To == null)
+            else if (_inventoryManager.To == null)
             { 
-                inventoryManager.To = clicked.GetComponent<Slot.Slot>();
-                inventoryManager.Clicked = null;
+                _inventoryManager.To = clicked.GetComponent<Slot.Slot>();
+                _inventoryManager.Clicked = null;
                 Destroy(GameObject.Find("Hover"));
             }
 
-            if (inventoryManager.To != null && !inventoryManager.MovingSlot.IsEmpty)
+            if (_inventoryManager.To != null && !_inventoryManager.MovingSlot.IsEmpty)
             {
-                var tmpTo = new Stack<Item>(inventoryManager.To.Items);
+                var tmpTo = new Stack<Item>(_inventoryManager.To.Items);
                 if (tmpTo.Count == 0)
                 {
-                    foreach (var item in inventoryManager.MovingSlot.Items)
+                    foreach (var item in _inventoryManager.MovingSlot.Items)
                         clicked.GetComponent<Slot.Slot>().AddItem(item);
 
-                    inventoryManager.MovingSlot.ClearSlot();
+                    _inventoryManager.MovingSlot.ClearSlot();
                     EmptySlots--;
                 }
                 else
                 {
-                    MergeStacks(inventoryManager.From, inventoryManager.To);
+                    MergeStacks(_inventoryManager.From, _inventoryManager.To);
                 }
 
-                inventoryManager.To = null;
-                inventoryManager.From = null;
+                _inventoryManager.To = null;
+                _inventoryManager.From = null;
                 Destroy(GameObject.Find("Hover"));
             }
 
@@ -291,11 +291,11 @@ namespace Novemo.Inventory
             for (var i = 0; i < count; i++)
             {
                 destination.AddItem(source.RemoveItem());
-                if (!inventoryManager.MovingSlot.IsEmpty)
-                    inventoryManager.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
-                        inventoryManager.MovingSlot.Items.Count.ToString();
+                if (!_inventoryManager.MovingSlot.IsEmpty)
+                    _inventoryManager.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
+                        _inventoryManager.MovingSlot.Items.Count.ToString();
                 else
-                    inventoryManager.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
+                    _inventoryManager.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
                         source.Items.Count.ToString();
             }
 
@@ -308,89 +308,89 @@ namespace Novemo.Inventory
 
         public void CreateHoverIcon()
         {
-            inventoryManager.HoverObject = Instantiate(inventoryManager.iconPrefab,
+            _inventoryManager.HoverObject = Instantiate(_inventoryManager.iconPrefab,
                 GameObject.Find("Inventory Canvas").transform, true);
-            inventoryManager.HoverObject.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite =
-                inventoryManager.clicked == null
-                    ? inventoryManager.Clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite
-                    : inventoryManager.clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite;
+            _inventoryManager.HoverObject.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite =
+                _inventoryManager.clicked == null
+                    ? _inventoryManager.Clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite
+                    : _inventoryManager.clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite;
 
-            inventoryManager.HoverObject.transform.Find("ItemButton/Icon").gameObject.SetActive(true);
-            inventoryManager.HoverObject.name = "Hover";
+            _inventoryManager.HoverObject.transform.Find("ItemButton/Icon").gameObject.SetActive(true);
+            _inventoryManager.HoverObject.name = "Hover";
 
-            var hoverTransform = inventoryManager.HoverObject.GetComponent<RectTransform>();
-            var clickedTransform = inventoryManager.clicked == null
-                ? inventoryManager.Clicked.GetComponent<RectTransform>()
-                : inventoryManager.clicked.GetComponent<RectTransform>();
+            var hoverTransform = _inventoryManager.HoverObject.GetComponent<RectTransform>();
+            var clickedTransform = _inventoryManager.clicked == null
+                ? _inventoryManager.Clicked.GetComponent<RectTransform>()
+                : _inventoryManager.clicked.GetComponent<RectTransform>();
 
             hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, clickedTransform.sizeDelta.x - 50f);
             hoverTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, clickedTransform.sizeDelta.y - 50f);
 
-            inventoryManager.HoverObject.transform.localScale = inventoryManager.clicked == null
-                ? inventoryManager.Clicked.gameObject.transform.localScale
-                : inventoryManager.clicked.gameObject.transform.localScale;
+            _inventoryManager.HoverObject.transform.localScale = _inventoryManager.clicked == null
+                ? _inventoryManager.Clicked.gameObject.transform.localScale
+                : _inventoryManager.clicked.gameObject.transform.localScale;
 
-            inventoryManager.HoverObject.transform.Find("ItemButton/Amount").gameObject.SetActive(true);
-            if (!inventoryManager.MovingSlot.IsEmpty)
-                inventoryManager.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
-                    inventoryManager.MovingSlot.Items.Count > 1
-                        ? inventoryManager.MovingSlot.Items.Count.ToString()
+            _inventoryManager.HoverObject.transform.Find("ItemButton/Amount").gameObject.SetActive(true);
+            if (!_inventoryManager.MovingSlot.IsEmpty)
+                _inventoryManager.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
+                    _inventoryManager.MovingSlot.Items.Count > 1
+                        ? _inventoryManager.MovingSlot.Items.Count.ToString()
                         : string.Empty;
             else
-                inventoryManager.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
-                    inventoryManager.From.Items.Count > 1 ? inventoryManager.From.Items.Count.ToString() : string.Empty;
+                _inventoryManager.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
+                    _inventoryManager.From.Items.Count > 1 ? _inventoryManager.From.Items.Count.ToString() : string.Empty;
         }
 
         public void SplitStack()
         {
-            inventoryManager.selectStackSize.SetActive(false);
+            _inventoryManager.selectStackSize.SetActive(false);
 
-            if (inventoryManager.SplitAmount == inventoryManager.MaxStackCount)
+            if (_inventoryManager.SplitAmount == _inventoryManager.MaxStackCount)
             {
-                inventoryManager.MovingSlot.Items = inventoryManager.clicked.GetComponent<Slot.Slot>()
-                    .RemoveItems(inventoryManager.SplitAmount);
+                _inventoryManager.MovingSlot.Items = _inventoryManager.clicked.GetComponent<Slot.Slot>()
+                    .RemoveItems(_inventoryManager.SplitAmount);
                 CreateHoverIcon();
-                inventoryManager.clicked.GetComponent<Slot.Slot>().ClearSlot();
+                _inventoryManager.clicked.GetComponent<Slot.Slot>().ClearSlot();
                 EmptySlots++;
             }
-            else if (inventoryManager.SplitAmount > 0)
+            else if (_inventoryManager.SplitAmount > 0)
             {
-                inventoryManager.MovingSlot.Items = inventoryManager.clicked.GetComponent<Slot.Slot>()
-                    .RemoveItems(inventoryManager.SplitAmount);
+                _inventoryManager.MovingSlot.Items = _inventoryManager.clicked.GetComponent<Slot.Slot>()
+                    .RemoveItems(_inventoryManager.SplitAmount);
                 CreateHoverIcon();
             }
 
-            inventoryManager.splitSlider.value = 0;
+            _inventoryManager.splitSlider.value = 0;
         }
 
         public void ChangeStackText()
         {
-            inventoryManager.SplitAmount = (int) inventoryManager.splitSlider.value;
+            _inventoryManager.SplitAmount = (int) _inventoryManager.splitSlider.value;
 
-            if (inventoryManager.SplitAmount < 0) inventoryManager.SplitAmount = 0;
-            if (inventoryManager.SplitAmount > inventoryManager.MaxStackCount)
-                inventoryManager.SplitAmount = inventoryManager.MaxStackCount;
+            if (_inventoryManager.SplitAmount < 0) _inventoryManager.SplitAmount = 0;
+            if (_inventoryManager.SplitAmount > _inventoryManager.MaxStackCount)
+                _inventoryManager.SplitAmount = _inventoryManager.MaxStackCount;
 
-            inventoryManager.stackTxt.text = inventoryManager.SplitAmount.ToString();
+            _inventoryManager.stackTxt.text = _inventoryManager.SplitAmount.ToString();
         }
 
         public void ShowToolTip(GameObject slot)
         {
             var tmpSlot = slot.GetComponent<Slot.Slot>();
 
-            if (!tmpSlot.IsEmpty && inventoryManager.HoverObject == null &&
-                !inventoryManager.selectStackSize.activeSelf)
+            if (!tmpSlot.IsEmpty && _inventoryManager.HoverObject == null &&
+                !_inventoryManager.selectStackSize.activeSelf)
             {
-                inventoryManager.visualTextObject.text = tmpSlot.CurrentItem.GetTooltip();
-                inventoryManager.sizeTextObject.text = inventoryManager.visualTextObject.text;
+                _inventoryManager.visualTextObject.text = tmpSlot.CurrentItem.GetTooltip();
+                _inventoryManager.sizeTextObject.text = _inventoryManager.visualTextObject.text;
 
-                inventoryManager.toolTipObject.SetActive(true);
+                _inventoryManager.toolTipObject.SetActive(true);
             }
         }
 
         public void HideToolTip()
         {
-            inventoryManager.toolTipObject.SetActive(false);
+            _inventoryManager.toolTipObject.SetActive(false);
         }
 
         private IEnumerator FadeOut()
@@ -456,7 +456,7 @@ namespace Novemo.Inventory
             {
                 var tmp = _slots[i].GetComponent<Slot.Slot>();
 
-                if (!tmp.IsEmpty) content += i + "-" + tmp.CurrentItem.type + "-" + tmp.Items.Count + ";";
+                if (!tmp.IsEmpty) content += i + "-" + tmp.CurrentItem.itemType + "-" + tmp.Items.Count + ";";
             }
 
             PlayerPrefs.SetString("content", content);
@@ -489,44 +489,6 @@ namespace Novemo.Inventory
                 {
                 }
             }
-        }
-
-        private string SetDropItemName(Item item)
-        {
-            string dropItemName;
-
-            switch (item.rarity)
-            {
-                case Rarity.Common:
-                    dropItemName = "<color=#696969>" + item.itemName + "</color>";
-                    return dropItemName;
-                case Rarity.Normal:
-                    dropItemName = "<color=yellow>" + item.itemName + "</color>";
-                    return dropItemName;
-                case Rarity.Uncommon:
-                    dropItemName = "<color=#bfff00>" + item.itemName + "</color>";
-                    return dropItemName;
-                case Rarity.Rare:
-                    dropItemName = "<color=#bc3c21>" + item.itemName + "</color>";
-                    return dropItemName;
-                case Rarity.VeryRare:
-                    dropItemName = "<color=#00CED1>" + item.itemName + "</color>";
-                    return dropItemName;
-                case Rarity.Epic:
-                    dropItemName = "<color=orange><b>" + item.itemName + "</b></color>";
-                    return dropItemName;
-                case Rarity.Legendary:
-                    dropItemName = "<color=#ff00ff><b>" + item.itemName + "</b></color>";
-                    return dropItemName;
-                case Rarity.Mystical:
-                    dropItemName = "<color=red><b>" + item.itemName + "</b></color>";
-                    return dropItemName;
-                case Rarity.Artifact:
-                    dropItemName = "<color=white><b>" + item.itemName + "</b></color>";
-                    return dropItemName;
-            }
-
-            return null;
         }
     }
 }

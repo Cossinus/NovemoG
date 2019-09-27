@@ -24,7 +24,7 @@ namespace Novemo.Stats
             {
                 foreach (var stat in stats)
                 {
-                    foreach (var modifier in newItem.Modifiers)
+                    foreach (var modifier in newItem.modifiers)
                     {
                         if (stat.statName == modifier.Name)
                         {
@@ -42,7 +42,7 @@ namespace Novemo.Stats
             {
                 foreach (var stat in stats)
                 {
-                    foreach (var modifier in oldItem.Modifiers)
+                    foreach (var modifier in oldItem.modifiers)
                     {
                         if (stat.statName == modifier.Name)
                         {

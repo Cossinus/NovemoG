@@ -42,13 +42,13 @@ namespace Novemo.Inventory
             {
                 statsTooltip.SetActive(true);
                 
-                visualText.text = $"<i>{playerStats.stats[statIndex].statName}:</i> {statValue:F2}\n" +
-                                  $"<i>Base Value:</i> {baseStatValue:F2}\n" +
-                                  $"<i>Bonus Value:</i> {additionalStatValue:F2}";
+                visualText.text = $"{playerStats.stats[statIndex].statName}: {statValue:F2}\n" +
+                                  $"Base Value: {baseStatValue:F2}\n" +
+                                  $"Bonus Value: {additionalStatValue:F2}";
                 sizeText.text = visualText.text;
 
                 var position = statsText[statIndex].GetComponent<RectTransform>().position;
-                var xPos = position.x - statsText[statIndex].GetComponent<RectTransform>().rect.width / 2 - 5f;
+                var xPos = position.x - statsText[statIndex].GetComponent<RectTransform>().rect.width / 2;
                 var yPos = position.y + 20f;
 
                 statsTooltip.transform.position = new Vector2(xPos, yPos);
@@ -70,8 +70,8 @@ namespace Novemo.Inventory
             for (int i = 0; i < statsText.Count; i++)
             {
                 statsText[i].text = playerStats.stats[i].statName == "Attack Speed"
-                    ? $"<i>{playerStats.stats[i].statName}:</i> {playerStats.stats[i].GetValue():F2}"
-                    : $"<i>{playerStats.stats[i].statName}:</i> {playerStats.stats[i].GetValue():F0}";
+                    ? $"{playerStats.stats[i].statName}: {playerStats.stats[i].GetValue():F2}"
+                    : $"{playerStats.stats[i].statName}: {playerStats.stats[i].GetValue():F0}";
             }
             
             yield return new WaitForSecondsRealtime(1f);

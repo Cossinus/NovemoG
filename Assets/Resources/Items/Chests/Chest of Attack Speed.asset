@@ -13,19 +13,19 @@ MonoBehaviour:
   m_Name: Chest of Attack Speed
   m_EditorClassIdentifier: 
   itemName: Chest of Attack Speed
-  description: This chest was made by magnificent goblins. It's weight is very low
-    that it raises wearer's attack speed significantly.
+  itemDescription: Item Description
   specials: 'Weight: 0.6kg'
-  icon: {fileID: 21300000, guid: 8fc39e434f36f71459f01860bda1b591, type: 3}
-  type: 0
-  rarity: 4
+  itemIcon: {fileID: 21300000, guid: 8fc39e434f36f71459f01860bda1b591, type: 3}
+  itemType: 0
+  itemRarity: 0
   isDefaultItem: 0
   stackLimit: 1
   value: 42
-  Modifiers:
-  - Name: Attack Speed
-    Value: 70
-  - Name: Crit Chance
-    Value: 5
   level: 3
   equipSlot: 1
+  modifiers:
+  - Name: Attack Speed
+    Value: 150
+  - Name: Bleed Chance
+    Value: 5
+  effects: []

@@ -13,7 +13,7 @@ namespace Novemo.Items.UniqueEffects
         protected bool Bolted { get; set; }
         protected bool Mitigated { get; set; }
         
-        public abstract IEnumerator Passive(CharacterStats characterStats);
+        public abstract IEnumerator Passive(PlayerStats playerStats);
     }
 
     public enum PassiveTypes
@@ -23,6 +23,6 @@ namespace Novemo.Items.UniqueEffects
         Blaze,
         Bolt,
         MitigateDamage,
-        StatsBoost
+        StatBoost
     }
 }

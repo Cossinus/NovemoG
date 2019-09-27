@@ -13,37 +13,30 @@ MonoBehaviour:
   m_Name: God Sword
   m_EditorClassIdentifier: 
   itemName: God Item
-  description: This item was used by gods. No one knows who could that special and
-    ultra quality weapon...
+  itemDescription: Item Description
   specials: There is no better sword than this!
-  icon: {fileID: 21300000, guid: e2e5a167f38a7c346a50ae88961c2131, type: 3}
-  type: 0
-  rarity: 8
+  itemIcon: {fileID: 21300000, guid: e2e5a167f38a7c346a50ae88961c2131, type: 3}
+  itemType: 0
+  itemRarity: 0
   isDefaultItem: 0
   stackLimit: 1
   value: 9999999
-  Modifiers:
+  level: 0
+  equipSlot: 4
+  modifiers:
   - Name: Damage
     Value: 300
   - Name: Lethal Damage
-    Value: 150
+    Value: 300
+  - Name: Lethal Magic Damage
+    Value: 300
   - Name: Attack Speed
-    Value: 130
-  - Name: Additional Gold
-    Value: 7
-  - Name: Additional Exp
-    Value: 7
+    Value: 300
   - Name: Armor Penetration
-    Value: 30
+    Value: 300
   - Name: Magic Resist Penetration
-    Value: 70
-  - Name: Current Health Damage
-    Value: 6
-  - Name: Max Health Damage
-    Value: 3
-  - Name: Bleed Chance
-    Value: 25
-  level: 0
-  equipSlot: 4
+    Value: 300
+  - Name: Health
+    Value: 300
   effects:
   - {fileID: 11400000, guid: 59442d9d9b6a6004c91362c397f8d36f, type: 2}

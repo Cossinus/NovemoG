@@ -13,18 +13,19 @@ MonoBehaviour:
   m_Name: WarriorSword
   m_EditorClassIdentifier: 
   itemName: Big Sword
-  description: Big Sword, Common item used by warri
+  itemDescription: Item Description
   specials: 
-  icon: {fileID: 21300000, guid: e2e5a167f38a7c346a50ae88961c2131, type: 3}
-  type: 0
-  rarity: 0
+  itemIcon: {fileID: 21300000, guid: e2e5a167f38a7c346a50ae88961c2131, type: 3}
+  itemType: 0
+  itemRarity: 0
   isDefaultItem: 0
   stackLimit: 1
   value: 5
-  Modifiers:
-  - Name: Attack Speed
-    Value: 30
-  - Name: Damage
-    Value: 7
   level: 0
   equipSlot: 4
+  modifiers:
+  - Name: Attack Speed
+    Value: 45
+  - Name: Damage
+    Value: 12
+  effects: []

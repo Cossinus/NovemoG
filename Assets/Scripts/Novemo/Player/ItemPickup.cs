@@ -14,7 +14,7 @@ namespace Novemo.Player
 
         private void LateUpdate()
         {
-            itemSprite.sprite = item.icon;
+            itemSprite.sprite = item.itemIcon;
             itemSprite.drawMode = SpriteDrawMode.Sliced;
             var itemSpriteSize = itemSprite.size;
             itemSpriteSize.x = 0.1f;

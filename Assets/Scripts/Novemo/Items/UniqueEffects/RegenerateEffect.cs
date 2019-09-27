@@ -15,31 +15,32 @@ namespace Novemo.Items.UniqueEffects
         private void OnEnable()
         {
             IsRegenerating = false;
+            Mitigated = false;
+            Bolted = false;
+            Thorned = false;
+            Blazed = false;
         }
 
-        public bool CheckForEffect(CharacterStats characterStats)
+        public bool CheckForEffect(PlayerStats playerStats)
         {
-            if ((int) regenType == 0 && characterStats.CurrentHealth < characterStats.stats[0].GetValue() && !IsRegenerating)
-                return true;
-            if ((int) regenType == 1 && characterStats.CurrentMana < characterStats.stats[1].GetValue() && !IsRegenerating)
-                return true;
-
-            return false;
+            return (playerStats.CurrentHealth < playerStats.stats[0].GetValue() ||
+                    playerStats.CurrentMana < playerStats.stats[1].GetValue()) && !IsRegenerating;
         }
 
-        public override IEnumerator Passive(CharacterStats characterStats)
+        public override IEnumerator Passive(PlayerStats playerStats)
         {
-            if ((int) regenType == 0 && characterStats.CurrentHealth < characterStats.stats[0].GetValue() - 1)
+            var intRegen = (int) regenType;
+            if (intRegen == 0 && playerStats.CurrentHealth < playerStats.stats[0].GetValue())
             {
-                characterStats.CurrentHealth += regenPower;
-                characterStats.OnHealthChangeInvoke();
+                playerStats.CurrentHealth += regenPower;
+                playerStats.OnHealthChangeInvoke();
                 IsRegenerating = true;
                 yield return new WaitForSeconds(regenRate);
             }
-            if ((int) regenType == 1 && characterStats.CurrentMana < characterStats.stats[1].GetValue() - 1)
+            if (intRegen == 1 && playerStats.CurrentMana < playerStats.stats[1].GetValue())
             {
-                characterStats.CurrentMana += regenPower;
-                characterStats.OnManaChangeInvoke();
+                playerStats.CurrentMana += regenPower;
+                playerStats.OnManaChangeInvoke();
                 IsRegenerating = true;
                 yield return new WaitForSeconds(regenRate);
             }

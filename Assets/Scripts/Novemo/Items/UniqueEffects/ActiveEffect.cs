@@ -1,4 +1,5 @@
 using System.Collections;
+using Novemo.Stats;
 
 namespace Novemo.Items.UniqueEffects
 {
@@ -6,10 +7,12 @@ namespace Novemo.Items.UniqueEffects
     {
         public ActiveTypes activeType;
 
+        public float effectCooldown;
+        
         protected bool CanCastOnSelf { get; set; }
 
         public abstract void Cooldown();
-        public abstract IEnumerator Active();
+        public abstract IEnumerator Active(PlayerStats playerStats);
     }
     
     public enum ActiveTypes

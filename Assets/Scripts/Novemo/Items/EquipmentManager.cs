@@ -32,9 +32,6 @@ namespace Novemo.Items
     
         [NonSerialized] public Equipment[] currentEquipment;
 
-        public Equipment GetEquipmentWithEffect => currentEquipment.Where(item => item != null)
-            .FirstOrDefault(item => item.effects != null && item.effects.Count > 0);
-
         public void Equip(Equipment newItem)
         {
             var slotIndex = (int)newItem.equipSlot;
@@ -50,7 +47,7 @@ namespace Novemo.Items
                     if (currentEquipment[slotIndex] != null)
                         equipSlot.RemoveItem();
                     
-                    equipSlot.icon.GetComponent<Image>().sprite = newItem.icon;
+                    equipSlot.icon.GetComponent<Image>().sprite = newItem.itemIcon;
                     equipSlot.icon.gameObject.SetActive(true);
                     equipSlot.AddItem(newItem);
                 }

@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d754640c8851dc4f95f9a00b17c00db, type: 3}
-  m_Name: Regenerate Mana
+  m_Script: {fileID: 11500000, guid: 90522e71a2ef486e84ab174cfbc62ab4, type: 3}
+  m_Name: HealthBoostEffect 10
   m_EditorClassIdentifier: 
-  effectName: Regenerate Mana
+  effectName: Health Boost Effect
   effectDescription: New Description
   effectType: 0
-  passiveType: 0
-  regenPower: 2
-  regenRate: 1
-  regenType: 1
+  passiveType: 5
+  statBoostName: HealthBoost
+  statIndex: 0
+  statModifier: 10
