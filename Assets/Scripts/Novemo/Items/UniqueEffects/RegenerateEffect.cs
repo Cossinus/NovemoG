@@ -17,7 +17,6 @@ namespace Novemo.Items.UniqueEffects
             IsRegenerating = false;
             Mitigated = false;
             Bolted = false;
-            Thorned = false;
             Blazed = false;
         }
 

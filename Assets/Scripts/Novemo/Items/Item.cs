@@ -11,6 +11,7 @@ namespace Novemo.Items
         [TextArea(2, 5)]
         public string itemDescription = "Item Description";
         public string specials = string.Empty;
+        public string itemDictionary = string.Empty;
         public Sprite itemIcon;
         public ItemType itemType;
         public Rarity itemRarity;

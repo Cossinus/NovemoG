@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HealthBoostEffect 10
   m_EditorClassIdentifier: 
   effectName: Health Boost Effect
-  effectDescription: New Description
+  effectDescription: 'Stat Boost Effect: Boosts specified stat by a percentage.'
   effectType: 0
   passiveType: 5
   statBoostName: HealthBoost

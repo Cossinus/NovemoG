@@ -39,7 +39,7 @@ namespace Novemo.Inventory
 
             allEquipSlots = Inventory.Instance.statsUI.GetComponentsInChildren<EquipSlot>();
         
-            // Do this after choosing class
+            //TODO Do this after choosing class
             _playerRef.GetComponent<PlayerController>().playerClass = _playerRef.AddComponent<Warrior>();
         
             if (_playerRef.GetComponent<PlayerController>().playerClass == gameObject.GetComponent<Warrior>()/* || gameObject.GetComponent<Viking>() || gameObject.GetComponent<Warlock>() || gameObject.GetComponent<Elementar>() || gameObject.GetComponent<Necromancer>() || gameObject.GetComponent<MonsterHunter>()*/)

@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Regenerate Mana 2,1
   m_EditorClassIdentifier: 
   effectName: Regenerate Mana
-  effectDescription: New Description
+  effectDescription: 'Regenerate Mana Effect: Regenerates some Mana constantly with
+    specified cooldown. '
   effectType: 0
   passiveType: 0
   regenPower: 2

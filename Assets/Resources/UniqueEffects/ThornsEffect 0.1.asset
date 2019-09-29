@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: ThornsEffect 0.1
   m_EditorClassIdentifier: 
   effectName: Thorns Effect
-  effectDescription: New Description
+  effectDescription: 'Thorns Effect: Returns some taken physical and magic damage
+    as lethal physical damage.'
   effectType: 0
   passiveType: 1
   thornsPercentage: 0.1

@@ -8,7 +8,6 @@ namespace Novemo.Items.UniqueEffects
         public PassiveTypes passiveType;
 
         protected bool IsRegenerating { get; set; }
-        protected bool Thorned { get; set; }
         protected bool Blazed { get; set; }
         protected bool Bolted { get; set; }
         protected bool Mitigated { get; set; }

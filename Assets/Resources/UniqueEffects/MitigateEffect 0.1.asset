@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: MitigateEffect 0.1
   m_EditorClassIdentifier: 
   effectName: Mitigate Effect
-  effectDescription: New Description
+  effectDescription: 'Mitigate Effect: Mitigates some taken damage as heal (can be
+    boosted by other effects).'
   effectType: 0
   passiveType: 4
   mitigatePercentage: 0.1
