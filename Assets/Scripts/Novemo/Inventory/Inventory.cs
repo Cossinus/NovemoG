@@ -29,9 +29,6 @@ namespace Novemo.Inventory
 
         #endregion
 
-        public delegate void OnItemChanged();
-        public OnItemChanged onItemChangedCallback;
-
         // Inventory Parent Object
         public Transform itemsParent;
 
@@ -41,68 +38,48 @@ namespace Novemo.Inventory
         // Game Objects
         private static GameObject _playerRef;
         public GameObject inventoryUI;
-        public GameObject statsUI;
 
         // All Slots in Inventory
-        private Slot.Slot[] _slots;
+        protected Slot.Slot[] slots;
 
         // Floats
         private float _hoverYOffset;
         public float fadeTime;
 
+        public bool IsOpen { get; private set; }
         private bool _fadingIn;
         private bool _fadingOut;
-
-        public Item iron;
 
         // Instance of Manager
         private InventoryManager _inventoryManager;
 
         // EmptySlots and All Slots as an int
-        public static int EmptySlots { get; set; }
+        public int EmptySlots { get; set; }
         public int emptySlots;
-        public int slots;
+        public int slotsCount;
 
         void Start()
         {
             _playerRef = PlayerManager.Instance.player;
 
-            if (_slots != null)
-                foreach (var go in _slots)
+            if (slots != null)
+                foreach (var go in slots)
                     Destroy(go);
 
-            _slots = itemsParent.GetComponentsInChildren<Slot.Slot>();
+            slots = itemsParent.GetComponentsInChildren<Slot.Slot>();
 
-            EmptySlots = slots;
+            EmptySlots = slotsCount;
 
             _hoverYOffset = 100f * 0.01f;
 
             _inventoryManager = InventoryManager.Instance;
 
-            inventoryUI.SetActive(false);
-            statsUI.SetActive(false);
+            canvasGroup.blocksRaycasts = false;
+            IsOpen = false;
         }
 
         void Update()
         {
-            if (Input.GetKey(KeyCode.C))
-            {
-                AddItem(iron);
-            }
-
-            if (Input.GetButtonDown("Inventory"))
-            {
-                if (canvasGroup.alpha <= 0)
-                {
-                    StartCoroutine(nameof(FadeIn));
-                }
-                else
-                {
-                    StartCoroutine(nameof(FadeOut));
-                    DropItem();
-                }
-            }
-
             if (Input.GetMouseButtonUp(0) && !_inventoryManager.eventSystem.IsPointerOverGameObject(-1))
             {
                 DropItem();
@@ -121,8 +98,8 @@ namespace Novemo.Inventory
 
             if (_inventoryManager.toolTipObject.activeSelf)
             {
-                float xPos = Input.mousePosition.x;
-                float yPos = Input.mousePosition.y;
+                var xPos = Input.mousePosition.x;
+                var yPos = Input.mousePosition.y;
 
                 _inventoryManager.toolTipObject.transform.position = new Vector2(xPos, yPos);
             }
@@ -131,6 +108,23 @@ namespace Novemo.Inventory
                 _inventoryManager.toolTipObject.SetActive(false);
 
             emptySlots = EmptySlots;
+        }
+
+        public void Open()
+        {
+            if (canvasGroup.alpha <= 0)
+            {
+                StartCoroutine(nameof(FadeIn));
+                IsOpen = true;
+            }
+            else
+            {
+                StartCoroutine(nameof(FadeOut));
+                InventoryManager.Instance.selectStackSize.SetActive(false);
+                IsOpen = false;
+                HideToolTip();
+                DropItem();
+            }
         }
 
         private void DropItem()
@@ -146,10 +140,10 @@ namespace Novemo.Inventory
                 
                 var angle = UnityEngine.Random.Range(0.0f, Mathf.PI * 2);
                 
-                Vector3 v = new Vector3(Mathf.Sin(angle), Mathf.Cos(angle));
+                var v = new Vector3(Mathf.Sin(angle), Mathf.Cos(angle));
                 v *= 1f;
 
-                GameObject tmpDrp = Instantiate(_inventoryManager.dropItem, _playerRef.transform.position - v,
+                var tmpDrp = Instantiate(_inventoryManager.dropItem, _playerRef.transform.position - v,
                     Quaternion.identity);
                 tmpDrp.tag = "Item";
 
@@ -165,11 +159,14 @@ namespace Novemo.Inventory
 
         public bool AddItem(Item item)
         {
-            if (item.stackLimit == 1 && EmptySlots > 0) return PlaceEmpty(item);
+            if (item.stackLimit == 1 && EmptySlots > 0)
+            {
+                return PlaceEmpty(item);
+            }
 
             if (item.stackLimit > 1)
             {
-                foreach (var slot in _slots)
+                foreach (var slot in slots)
                 {
                     var tmp = slot.GetComponent<Slot.Slot>();
 
@@ -194,10 +191,12 @@ namespace Novemo.Inventory
                     }
                 }
 
-                if (EmptySlots > 0) return PlaceEmpty(item);
+                if (EmptySlots > 0)
+                {
+                    
+                    return PlaceEmpty(item);
+                }
             }
-
-            onItemChangedCallback?.Invoke();
 
             return false;
         }
@@ -205,7 +204,7 @@ namespace Novemo.Inventory
         private bool PlaceEmpty(Item item)
         {
             if (EmptySlots > 0)
-                foreach (var slot in _slots)
+                foreach (var slot in slots)
                 {
                     var tmp = slot.GetComponent<Slot.Slot>();
                     if (tmp.IsEmpty)
@@ -367,7 +366,8 @@ namespace Novemo.Inventory
         {
             _inventoryManager.SplitAmount = (int) _inventoryManager.splitSlider.value;
 
-            if (_inventoryManager.SplitAmount < 0) _inventoryManager.SplitAmount = 0;
+            if (_inventoryManager.SplitAmount < 0) 
+                _inventoryManager.SplitAmount = 0;
             if (_inventoryManager.SplitAmount > _inventoryManager.MaxStackCount)
                 _inventoryManager.SplitAmount = _inventoryManager.MaxStackCount;
 
@@ -404,7 +404,7 @@ namespace Novemo.Inventory
                 var startAlpha = canvasGroup.alpha;
                 var rate = 1.0f / fadeTime;
                 var progress = 0.0f;
-
+                
                 while (progress < 1.0)
                 {
                     canvasGroup.alpha = Mathf.Lerp(startAlpha, 0, progress);
@@ -412,9 +412,7 @@ namespace Novemo.Inventory
                     progress += rate * Time.deltaTime;
                     yield return null;
                 }
-
-                statsUI.SetActive(!statsUI.activeSelf);
-                inventoryUI.SetActive(!inventoryUI.activeSelf);
+                canvasGroup.blocksRaycasts = false;
 
                 canvasGroup.alpha = 0;
                 _fadingOut = false;
@@ -432,9 +430,8 @@ namespace Novemo.Inventory
                 var startAlpha = canvasGroup.alpha;
                 var rate = 1.0f / fadeTime;
                 var progress = 0.0f;
-
-                statsUI.SetActive(!statsUI.activeSelf);
-                inventoryUI.SetActive(!inventoryUI.activeSelf);
+                
+                canvasGroup.blocksRaycasts = true;
                 while (progress < 1.0)
                 {
                     canvasGroup.alpha = Mathf.Lerp(startAlpha, 1, progress);
@@ -452,29 +449,29 @@ namespace Novemo.Inventory
         {
             var content = string.Empty;
 
-            for (var i = 0; i < _slots.Length; i++)
+            for (var i = 0; i < slots.Length; i++)
             {
-                var tmp = _slots[i].GetComponent<Slot.Slot>();
+                var tmp = slots[i].GetComponent<Slot.Slot>();
 
                 if (!tmp.IsEmpty) content += i + "-" + tmp.CurrentItem.itemType + "-" + tmp.Items.Count + ";";
             }
 
-            PlayerPrefs.SetString("content", content);
-            PlayerPrefs.SetInt("slots", slots);
+            PlayerPrefs.SetString(gameObject.name + "content", content);
+            PlayerPrefs.SetInt(gameObject.name + "slots", slotsCount);
             var position = inventoryUI.transform.position;
-            PlayerPrefs.SetFloat("xPos", position.x);
-            PlayerPrefs.SetFloat("yPos", position.y);
+            PlayerPrefs.SetFloat(gameObject.name + "xPos", position.x);
+            PlayerPrefs.SetFloat(gameObject.name + "yPos", position.y);
 
             PlayerPrefs.Save();
         }
 
         private void LoadInventory()
         {
-            var content = PlayerPrefs.GetString("content");
-            slots = PlayerPrefs.GetInt("slots");
+            var content = PlayerPrefs.GetString(gameObject.name + "content");
+            slotsCount = PlayerPrefs.GetInt(gameObject.name + "slots");
 
-            inventoryUI.transform.position = new Vector3(PlayerPrefs.GetFloat("xPos"), PlayerPrefs.GetFloat("yPos"),
-                inventoryUI.transform.position.z);
+            inventoryUI.transform.position = new Vector3(PlayerPrefs.GetFloat(gameObject.name + "xPos"),
+                PlayerPrefs.GetFloat(gameObject.name + "yPos"), inventoryUI.transform.position.z);
 
             var splitContent = content.Split(';');
             for (var x = 0; x < splitContent.Length - 1; x++)

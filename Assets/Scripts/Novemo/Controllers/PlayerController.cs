@@ -1,22 +1,29 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Novemo.Classes;
+using Novemo.Inventory;
 using Novemo.Items;
 using Novemo.Player;
 using Novemo.Stats;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Novemo.Controllers
 {
 	public class PlayerController : MonoBehaviour
 	{
+		public Item iron;
+		
 		public float Gold { get; set; }
 
 		public Quest.Quest quest;
 
 		public ClassManager playerClass;
 
+		public Inventory.Inventory inventory;
+		
 		public Animator animator;
+
+		private Inventory.Inventory chest;
 		
 		private Vector2 _movement;
 		private Vector2 _lastMovement;
@@ -40,16 +47,63 @@ namespace Novemo.Controllers
 		{
 			SetAnimatorValues();
 			
+			if (Input.GetKey(KeyCode.C))
+            {
+                inventory.AddItem(iron);
+            }
+			
 			transform.Translate(Time.deltaTime * _myStats.stats[6].GetValue() *
 			                    (transform.up * _movement.y + transform.right * _movement.x).normalized);
-	    
-			if (EventSystem.current.IsPointerOverGameObject())
-				return;
 
 			Quest();
 		
 			if (Input.GetKeyDown(KeyCode.L))
 				playerClass.LevelUp();
+
+			OpenInventory();
+
+			OpenChest();
+		}
+
+		private void OpenChest()
+		{
+			if (Input.GetButtonDown("Chest"))
+			{
+				if (chest != null)
+				{
+					if (!inventory.IsOpen && !chest.IsOpen)
+					{
+						chest.Open();
+						inventory.Open();
+					}
+					else if (inventory.IsOpen && !chest.IsOpen)
+					{
+						chest.Open();
+					}
+					else if (!inventory.IsOpen && !chest.IsOpen)
+					{
+						chest.Open();
+						inventory.Open();
+					}
+					else if (inventory.IsOpen && chest.IsOpen)
+					{
+						chest.Open();
+						inventory.Open();
+					}
+				}
+			}
+		}
+
+		private void OpenInventory()
+		{
+			if (Input.GetButtonDown("Inventory"))
+			{
+				inventory.Open();
+				if (chest != null && chest.IsOpen)
+				{
+					chest.Open();
+				}
+			}
 		}
 
 		private void Quest()
@@ -91,6 +145,24 @@ namespace Novemo.Controllers
 			if (other.gameObject.CompareTag("Item"))
 			{
 				other.gameObject.GetComponent<ItemPickup>().Interact();
+			}
+
+			if (other.gameObject.CompareTag("Chest"))
+			{
+				chest = other.GetComponent<ChestScript>().chestInventory;
+			}
+		}
+
+		private void OnTriggerExit2D(Collider2D other)
+		{
+			if (other.gameObject.CompareTag("Chest"))
+			{
+				if (chest.IsOpen)
+				{
+					chest.Open();
+					inventory.Open();
+				}
+				chest = null;
 			}
 		}
 

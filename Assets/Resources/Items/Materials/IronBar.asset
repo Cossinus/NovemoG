@@ -10,15 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57f623b80025cf141844a18f06d311a4, type: 3}
-  m_Name: Iron Bar
+  m_Name: IronBar
   m_EditorClassIdentifier: 
   itemName: Iron Bar
   itemDescription: Item Description
   specials: 
+  itemDictionary: ironBar
+  craftName: IRON
   itemIcon: {fileID: 21300000, guid: 53bc913a57d9f6045807f3cf79368e92, type: 3}
   itemType: 2
   itemRarity: 0
-  isDefaultItem: 0
   stackLimit: 6
   value: 15
   level: 0

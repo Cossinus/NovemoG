@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Novemo.Items;
 using UnityEngine;
 
@@ -24,15 +25,40 @@ namespace Novemo.Crafting
         #endregion
         
         public Dictionary<string, Item> craftingRecipe = new Dictionary<string, Item>();
+        public Dictionary<Item, Item> processingRecipe = new Dictionary<Item, Item>();
 
         public void CreateBlueprints()
         {
-            craftingRecipe.Add("EMPTY-Iron-EMPTY-Iron-Iron-Iron-EMPTY-Iron-EMPTY-", Resources.Load<Item>("CraftingMaterials/IronPlate"));
+            PlayersLayout();
+            EliteCrafting();
+            AdvancedCrafting();
+            BasicCrafting();
+            ProcessingCrafting();
         }
 
-        public void CraftItem()
+        private void PlayersLayout()
+        {
+            craftingRecipe.Add("EMPTY-Iron-EMPTY-Iron-Iron-Iron-EMPTY-Iron-EMPTY-", Resources.Load<Item>("Items/CraftingMaterials/IronPlate"));
+        }
+
+        private void EliteCrafting()
         {
             
+        }
+
+        private void AdvancedCrafting()
+        {
+            
+        }
+
+        private void BasicCrafting()
+        {
+            
+        }
+
+        private void ProcessingCrafting()
+        {
+            processingRecipe.Add(Resources.Load<Item>("Items/Materials/IronBar"), Resources.Load<Item>("Items/CraftingMaterials/IronPlate"));
         }
     }
 }

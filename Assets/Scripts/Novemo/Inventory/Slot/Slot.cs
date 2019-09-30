@@ -72,7 +72,7 @@ namespace Novemo.Inventory.Slot
                 {
                     icon.sprite = null;
                     icon.gameObject.SetActive(false);
-                    Inventory.EmptySlots++;
+                    transform.parent.parent.GetComponent<Inventory>().EmptySlots++;
                 }
             }
         }

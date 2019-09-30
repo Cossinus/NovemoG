@@ -7,14 +7,20 @@ namespace Novemo.Inventory.Slot
     public class UseSlot : MonoBehaviour, IPointerClickHandler
     {
         public GameObject clicked;
-    
+        
+        private Inventory _inventory;
+
+        private void Start()
+        {
+            _inventory = GameObject.FindWithTag("Inventory").GetComponent<Inventory>();
+        }
+
         public void OnPointerClick(PointerEventData eventData)
         {
-            var slot = gameObject.GetComponentInParent(typeof(Slot)) as Slot;
+            var slot = (Slot) gameObject.GetComponentInParent(typeof(Slot));
 
             if (eventData.button == PointerEventData.InputButton.Right && !GameObject.Find("Hover") && 
-                !clicked.GetComponent<Slot>().IsEmpty && Inventory.Instance.inventoryUI.activeInHierarchy && 
-                Inventory.Instance.statsUI.activeInHierarchy)
+                !clicked.GetComponent<Slot>().IsEmpty && _inventory.canvasGroup.alpha > 0)
             {
                 if (slot.CurrentItem.itemType != ItemType.Material && slot.isEquipSlot == false)
                 {
@@ -30,7 +36,7 @@ namespace Novemo.Inventory.Slot
                 }
             }
             else if (eventData.button == PointerEventData.InputButton.Middle && slot.IsMoreThanOneInSlot && !slot.IsEmpty &&
-                     !GameObject.Find("Hover"))
+                     !GameObject.Find("Hover") && _inventory.canvasGroup.alpha > 0)
             {
                 InventoryManager.Instance.clicked = clicked;
 

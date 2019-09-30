@@ -59,6 +59,7 @@ namespace Novemo.Inventory
         {
             selectStackSize.SetActive(true);
             toolTipObject.SetActive(false);
+            splitSlider.value = 0;
             SplitAmount = 0;
             MaxStackCount = maxStackCount;
             splitSlider.maxValue = maxStackCount;

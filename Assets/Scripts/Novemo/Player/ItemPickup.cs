@@ -12,6 +12,15 @@ namespace Novemo.Player
         
         public int amount = 1;
 
+        private Inventory.Inventory _inventory;
+        private Inventory.Inventory _chestInventory;
+
+        private void Start()
+        {
+            _inventory = GameObject.FindWithTag("Inventory").GetComponent<Inventory.Inventory>();
+            _chestInventory = GameObject.FindWithTag("ChestInventory").GetComponent<Inventory.Inventory>();
+        }
+
         private void LateUpdate()
         {
             itemSprite.sprite = item.itemIcon;
@@ -31,13 +40,19 @@ namespace Novemo.Player
 
         void PickUp()
         {
-            for (var i = 0; i < amount; i++)
+            var tmpAmount = amount;
+            for (var i = 0; i < tmpAmount; i++)
             {
-                Inventory.Inventory.Instance.AddItem(item);
-
-                if (i == amount - 1)
+                var wasAdded = _inventory.AddItem(item);
+                amount--;
+                if (wasAdded && i == tmpAmount - 1)
                 {
                     Destroy(gameObject);
+                }
+
+                if (!_chestInventory.IsOpen)
+                {
+                    return;
                 }
             }
         }

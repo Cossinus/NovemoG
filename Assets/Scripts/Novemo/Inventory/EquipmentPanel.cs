@@ -37,8 +37,6 @@ namespace Novemo.Inventory
         {
             _playerRef = PlayerManager.Instance.player;
 
-            allEquipSlots = Inventory.Instance.statsUI.GetComponentsInChildren<EquipSlot>();
-        
             //TODO Do this after choosing class
             _playerRef.GetComponent<PlayerController>().playerClass = _playerRef.AddComponent<Warrior>();
         

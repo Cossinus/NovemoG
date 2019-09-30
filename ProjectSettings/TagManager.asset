@@ -8,6 +8,9 @@ TagManager:
   - Item
   - EquipSlot
   - Stats
+  - Chest
+  - Inventory
+  - ChestInventory
   layers:
   - Default
   - TransparentFX
