@@ -13,12 +13,10 @@ namespace Novemo.Player
         public int amount = 1;
 
         private Inventory.Inventory _inventory;
-        private Inventory.Inventory _chestInventory;
 
         private void Start()
         {
             _inventory = GameObject.FindWithTag("Inventory").GetComponent<Inventory.Inventory>();
-            _chestInventory = GameObject.FindWithTag("ChestInventory").GetComponent<Inventory.Inventory>();
         }
 
         private void LateUpdate()
@@ -48,11 +46,6 @@ namespace Novemo.Player
                 if (wasAdded && i == tmpAmount - 1)
                 {
                     Destroy(gameObject);
-                }
-
-                if (!_chestInventory.IsOpen)
-                {
-                    return;
                 }
             }
         }

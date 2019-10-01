@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Novemo.Inventory;
 using Novemo.Inventory.Slot;
 using UnityEngine;
@@ -17,9 +16,9 @@ namespace Novemo.Items
         {
             Instance = this;
         
-            _inventory = Novemo.Inventory.Inventory.Instance;
+            _inventory = GameObject.FindWithTag("Inventory").GetComponent<Inventory.Inventory>();
         
-            int equipmentSlots = System.Enum.GetNames(typeof(EquipmentSlot)).Length;
+            int equipmentSlots = Enum.GetNames(typeof(EquipmentSlot)).Length;
             currentEquipment = new Equipment[equipmentSlots];
         }
     
@@ -43,9 +42,11 @@ namespace Novemo.Items
                 if ((int) newItem.equipSlot == slot.equipSlotIndex)
                 {
                     var equipSlot = slot.GetComponent<EquipSlot>();
-                
+
                     if (currentEquipment[slotIndex] != null)
-                        equipSlot.RemoveItem();
+                    {
+                        equipSlot.ClearSlot();
+                    }
                     
                     equipSlot.icon.GetComponent<Image>().sprite = newItem.itemIcon;
                     equipSlot.icon.gameObject.SetActive(true);
@@ -55,19 +56,19 @@ namespace Novemo.Items
         
             if (currentEquipment[slotIndex] != null)
             {
-                currentEquipment[slotIndex].IsEquipped = true;
                 oldItem = currentEquipment[slotIndex];
                 _inventory.AddItem(oldItem);
             }
 
             onEquipmentChanged?.Invoke(newItem, oldItem);
-
+            
             currentEquipment[slotIndex] = newItem;
+            currentEquipment[slotIndex].IsEquipped = true;
         }
 
         public void Unequip(int slotIndex)
         {
-            if (currentEquipment[slotIndex] != null && _inventory.emptySlots > 0)
+            if (currentEquipment[slotIndex] != null && _inventory.EmptySlots > 0)
             {
                 foreach (var slot in EquipmentPanel.Instance.allEquipSlots)
                 {
@@ -80,11 +81,11 @@ namespace Novemo.Items
                         equipSlot.RemoveItem();
                     }
                 }
-            
-                currentEquipment[slotIndex].IsEquipped = false;
+                
                 Equipment oldItem = currentEquipment[slotIndex];
                 _inventory.AddItem(oldItem);
 
+                currentEquipment[slotIndex].IsEquipped = false;
                 currentEquipment[slotIndex] = null;
 
                 onEquipmentChanged?.Invoke(null, oldItem);

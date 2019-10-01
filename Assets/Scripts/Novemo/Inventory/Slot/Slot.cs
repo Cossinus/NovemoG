@@ -74,6 +74,10 @@ namespace Novemo.Inventory.Slot
                     icon.gameObject.SetActive(false);
                     transform.parent.parent.GetComponent<Inventory>().EmptySlots++;
                 }
+                else if (CurrentItem.itemType == ItemType.Equipment)
+                {
+                    transform.parent.parent.GetComponent<Inventory>().EmptySlots++;
+                }
             }
         }
 

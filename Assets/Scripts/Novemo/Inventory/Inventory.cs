@@ -75,6 +75,7 @@ namespace Novemo.Inventory
             _inventoryManager = InventoryManager.Instance;
 
             canvasGroup.blocksRaycasts = false;
+            _inventoryManager.blur.SetActive(false);
             IsOpen = false;
         }
 
@@ -412,6 +413,7 @@ namespace Novemo.Inventory
                     progress += rate * Time.deltaTime;
                     yield return null;
                 }
+                _inventoryManager.blur.SetActive(false);
                 canvasGroup.blocksRaycasts = false;
 
                 canvasGroup.alpha = 0;
@@ -432,6 +434,7 @@ namespace Novemo.Inventory
                 var progress = 0.0f;
                 
                 canvasGroup.blocksRaycasts = true;
+                _inventoryManager.blur.SetActive(true);
                 while (progress < 1.0)
                 {
                     canvasGroup.alpha = Mathf.Lerp(startAlpha, 1, progress);

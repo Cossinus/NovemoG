@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Novemo.Classes;
 using Novemo.Inventory;
 using Novemo.Items;
@@ -79,11 +78,6 @@ namespace Novemo.Controllers
 					else if (inventory.IsOpen && !chest.IsOpen)
 					{
 						chest.Open();
-					}
-					else if (!inventory.IsOpen && !chest.IsOpen)
-					{
-						chest.Open();
-						inventory.Open();
 					}
 					else if (inventory.IsOpen && chest.IsOpen)
 					{

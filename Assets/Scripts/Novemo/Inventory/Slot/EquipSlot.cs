@@ -6,7 +6,7 @@ namespace Novemo.Inventory.Slot
     {
         public int equipSlotIndex;
 
-        public Equipment CurrentEquipment
+        /*public Equipment CurrentEquipment
         {
             get
             {
@@ -21,7 +21,7 @@ namespace Novemo.Inventory.Slot
                 
                 return null;
             }
-        } 
+        }*/
         
         void Start()
         {
