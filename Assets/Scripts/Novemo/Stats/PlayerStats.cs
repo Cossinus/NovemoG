@@ -9,6 +9,8 @@ namespace Novemo.Stats
     {
         public Image experienceSlider;
 
+        public int CraftSkill { get; set; } = 1;
+
         private PlayerController _controller;
         
         void Start()

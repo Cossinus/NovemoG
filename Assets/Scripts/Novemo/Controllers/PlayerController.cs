@@ -19,6 +19,8 @@ namespace Novemo.Controllers
 		public ClassManager playerClass;
 
 		public Inventory.Inventory inventory;
+
+		public Crafting.Crafting craftingBench;
 		
 		public Animator animator;
 
@@ -46,7 +48,7 @@ namespace Novemo.Controllers
 		{
 			SetAnimatorValues();
 			
-			if (Input.GetKey(KeyCode.C))
+			if (Input.GetKey(KeyCode.X))
             {
                 inventory.AddItem(iron);
             }
@@ -61,7 +63,18 @@ namespace Novemo.Controllers
 
 			OpenInventory();
 
+			OpenCrafting();
+			
 			OpenChest();
+		}
+
+		private void OpenCrafting()
+		{
+			if (Input.GetButtonDown("Crafting"))
+			{
+				inventory.Open();
+				craftingBench.Open();
+			}
 		}
 
 		private void OpenChest()

@@ -101,9 +101,20 @@ namespace Novemo.Inventory.Slot
 
         public Item RemoveItem()
         {
-            var tmp = Items.Pop();
-            stackAmount.text = IsMoreThanOneInSlot ? Items.Count.ToString() : string.Empty;
-            return tmp;
+            if (!IsEmpty)
+            {
+                var tmp = Items.Pop();
+                stackAmount.text = IsMoreThanOneInSlot ? Items.Count.ToString() : string.Empty;
+
+                if (IsEmpty)
+                {
+                    ClearSlot();
+                }
+                
+                return tmp;
+            }
+
+            return null;
         }
     }
 }

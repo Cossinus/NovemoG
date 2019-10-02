@@ -42,10 +42,17 @@ namespace Novemo.Player
             for (var i = 0; i < tmpAmount; i++)
             {
                 var wasAdded = _inventory.AddItem(item);
-                amount--;
-                if (wasAdded && i == tmpAmount - 1)
+                if (wasAdded)
                 {
-                    Destroy(gameObject);
+                    amount--;
+                    if (i == tmpAmount - 1)
+                    {
+                        Destroy(gameObject);
+                    }
+                }
+                else
+                {
+                    return;
                 }
             }
         }

@@ -18,12 +18,6 @@ namespace Novemo.Inventory
 
         private void Awake()
         {
-            if (Instance != null)
-            {
-                Debug.LogWarning("More than one instance of Inventory found!");
-                return;
-            }
-
             Instance = this;
         }
 
@@ -55,10 +49,10 @@ namespace Novemo.Inventory
 
         // EmptySlots and All Slots as an int
         public int EmptySlots { get; set; }
-        public int emptySlots;
+        public int debugEmptySlots;
         public int slotsCount;
 
-        void Start()
+        public virtual void Start()
         {
             _playerRef = PlayerManager.Instance.player;
 
@@ -79,7 +73,7 @@ namespace Novemo.Inventory
             IsOpen = false;
         }
 
-        void Update()
+        public virtual void Update()
         {
             if (Input.GetMouseButtonUp(0) && !_inventoryManager.eventSystem.IsPointerOverGameObject(-1))
             {
@@ -108,7 +102,7 @@ namespace Novemo.Inventory
             if (!_inventoryManager.MovingSlot.IsEmpty)
                 _inventoryManager.toolTipObject.SetActive(false);
 
-            emptySlots = EmptySlots;
+            debugEmptySlots = EmptySlots;
         }
 
         public void Open()
@@ -219,7 +213,7 @@ namespace Novemo.Inventory
             return false;
         }
 
-        public void MoveItem(GameObject clicked)
+        public virtual void MoveItem(GameObject clicked)
         {
             _inventoryManager.Clicked = clicked;
             _inventoryManager.selectStackSize.SetActive(false);
@@ -280,7 +274,12 @@ namespace Novemo.Inventory
                 Destroy(GameObject.Find("Hover"));
             }
 
-            emptySlots = EmptySlots;
+            debugEmptySlots = EmptySlots;
+
+            if (Crafting.Crafting.Instance.IsOpen)
+            {
+                Crafting.Crafting.Instance.Preview();
+            }
         }
 
         public void MergeStacks(Slot.Slot source, Slot.Slot destination)
@@ -292,11 +291,19 @@ namespace Novemo.Inventory
             {
                 destination.AddItem(source.RemoveItem());
                 if (!_inventoryManager.MovingSlot.IsEmpty)
+                {
                     _inventoryManager.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
                         _inventoryManager.MovingSlot.Items.Count.ToString();
-                else
+                    _inventoryManager.HoverObject.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite =
+                        _inventoryManager.MovingSlot.CurrentItem.itemIcon;
+                }
+                /*else
+                {
                     _inventoryManager.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
                         source.Items.Count.ToString();
+                    _inventoryManager.HoverObject.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite =
+                        source.CurrentItem.itemIcon;
+                }*/
             }
 
             if (source.Items.Count == 0)

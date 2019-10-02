@@ -20,6 +20,8 @@ namespace Novemo.Crafting
             }
 
             Instance = this;
+            
+            CreateBlueprints();
         }
 
         #endregion
@@ -27,7 +29,7 @@ namespace Novemo.Crafting
         public Dictionary<string, Item> craftingRecipe = new Dictionary<string, Item>();
         public Dictionary<Item, Item> processingRecipe = new Dictionary<Item, Item>();
 
-        public void CreateBlueprints()
+        private void CreateBlueprints()
         {
             PlayersLayout();
             EliteCrafting();
@@ -38,7 +40,7 @@ namespace Novemo.Crafting
 
         private void PlayersLayout()
         {
-            craftingRecipe.Add("EMPTY-Iron-EMPTY-Iron-Iron-Iron-EMPTY-Iron-EMPTY-", Resources.Load<Item>("Items/CraftingMaterials/IronPlate"));
+            craftingRecipe.Add("EMPTY-IRON-EMPTY-IRON-IRON-IRON-EMPTY-IRON-EMPTY-", Resources.Load<Item>("Items/CraftingMaterials/IronPlate"));
         }
 
         private void EliteCrafting()
