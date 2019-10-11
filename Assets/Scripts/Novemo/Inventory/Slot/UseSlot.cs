@@ -38,7 +38,7 @@ namespace Novemo.Inventory.Slot
             else if (eventData.button == PointerEventData.InputButton.Middle && slot.IsMoreThanOneInSlot && !slot.IsEmpty &&
                      !GameObject.Find("Hover") && _inventory.canvasGroup.alpha > 0)
             {
-                InventoryManager.Instance.clicked = clicked;
+                InventoryManager.Instance.Clicked = clicked;
 
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     InventoryManager.Instance.canvas.transform as RectTransform, Input.mousePosition,

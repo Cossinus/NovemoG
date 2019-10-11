@@ -33,18 +33,18 @@ namespace Novemo.Controllers
 
 		private ItemPickup _pickUp;
 
-		void Awake()
+		private void Awake()
 		{
 			_myStats = gameObject.GetComponent<CharacterStats>();
 			Gold = 10;
 		}
 	
-		void Start()
+		private void Start()
 		{
 			StartCoroutine(Equip());
 		}
     
-		void Update()
+		private void Update()
 		{
 			SetAnimatorValues();
 			
@@ -53,8 +53,7 @@ namespace Novemo.Controllers
                 inventory.AddItem(iron);
             }
 			
-			transform.Translate(Time.deltaTime * _myStats.stats[6].GetValue() *
-			                    (transform.up * _movement.y + transform.right * _movement.x).normalized);
+			transform.Translate(Time.deltaTime * _myStats.stats[6].GetValue() * (transform.up * _movement.y + transform.right * _movement.x).normalized);
 
 			Quest();
 		
@@ -72,8 +71,20 @@ namespace Novemo.Controllers
 		{
 			if (Input.GetButtonDown("Crafting"))
 			{
-				inventory.Open();
-				craftingBench.Open();
+				if (!inventory.IsOpen && !craftingBench.IsOpen)
+				{
+					craftingBench.Open();
+					inventory.Open();
+				}
+				else if (inventory.IsOpen && !craftingBench.IsOpen)
+				{
+					craftingBench.Open();
+				}
+				else if (inventory.IsOpen && craftingBench.IsOpen)
+				{
+					craftingBench.Open();
+					inventory.Open();
+				}
 			}
 		}
 
@@ -109,6 +120,10 @@ namespace Novemo.Controllers
 				if (chest != null && chest.IsOpen)
 				{
 					chest.Open();
+				}
+				if (craftingBench.IsOpen)
+				{
+					craftingBench.Open();
 				}
 			}
 		}

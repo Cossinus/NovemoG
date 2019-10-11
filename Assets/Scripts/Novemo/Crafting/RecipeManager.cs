@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Novemo.Items;
 using UnityEngine;
 
@@ -13,23 +12,26 @@ namespace Novemo.Crafting
 
         private void Awake()
         {
-            if (Instance != null)
+	        CreateBlueprints();
+
+			if (Instance != null)
             {
                 Debug.LogWarning("More than one instance of Inventory found!");
                 return;
             }
 
             Instance = this;
-            
-            CreateBlueprints();
         }
 
-        #endregion
-        
-        public Dictionary<string, Item> craftingRecipe = new Dictionary<string, Item>();
-        public Dictionary<Item, Item> processingRecipe = new Dictionary<Item, Item>();
+		#endregion
 
-        private void CreateBlueprints()
+		public Dictionary<string, Item> playersCraftingRecipe = new Dictionary<string, Item>();   // 5 Ingredients recipe  (in player's layout)
+		public Dictionary<string, Item> eliteRecipe = new Dictionary<string, Item>();             // 10 Ingredients recipe
+		public Dictionary<string, Item> advancedRecipe = new Dictionary<string, Item>();          // 7 Ingredients recipe
+		public Dictionary<string, Item> basicRecipe = new Dictionary<string, Item>();             // 5 Ingredients recipe  (in special layout)
+		public Dictionary<Item, Item> processingRecipe = new Dictionary<Item, Item>();            // 1 Ingredient recipe
+
+		private void CreateBlueprints()
         {
             PlayersLayout();
             EliteCrafting();
@@ -40,7 +42,7 @@ namespace Novemo.Crafting
 
         private void PlayersLayout()
         {
-            craftingRecipe.Add("EMPTY-IRON-EMPTY-IRON-IRON-IRON-EMPTY-IRON-EMPTY-", Resources.Load<Item>("Items/CraftingMaterials/IronPlate"));
+            playersCraftingRecipe.Add("EMPTY-IRON-EMPTY-IRON-IRON-IRON-EMPTY-IRON-EMPTY-", Resources.Load<Item>("Items/CraftingMaterials/IronPlate"));
         }
 
         private void EliteCrafting()

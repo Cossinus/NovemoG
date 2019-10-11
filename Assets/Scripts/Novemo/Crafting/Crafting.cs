@@ -12,7 +12,7 @@ namespace Novemo.Crafting
     {
         #region Singleton
 
-        public static Crafting Instance;
+        public new static Crafting Instance;
 
         private void Awake()
         {
@@ -20,22 +20,22 @@ namespace Novemo.Crafting
         }
 
         #endregion
-        
+
         private RecipeManager _recipeManager;
 
         private PlayerStats _playerStats;
 
         public TextMeshProUGUI craftSkillText;
         
-        public GameObject craftPrefabButton; // also preview slot
+        public GameObject craftPrefabButton; // also a preview slot
 
         public override void Start()
         {
             base.Start();
             _recipeManager = RecipeManager.Instance;
-            craftPrefabButton.GetComponentInChildren<Button>().onClick.AddListener(CraftItem);
             _playerStats = PlayerManager.Instance.player.GetComponent<PlayerStats>();
-        }
+            craftPrefabButton.GetComponentInChildren<Button>().onClick.AddListener(CraftItem);
+		}
 
         public override void Update()
         {
@@ -45,10 +45,10 @@ namespace Novemo.Crafting
 
         public override void MoveItem(GameObject clicked)
         {
-            base.MoveItem(clicked);
-            
-            Preview();
-        }
+	        base.MoveItem(clicked);
+
+	        Preview();
+		}
 
         public void CraftItem()
         {
@@ -68,9 +68,9 @@ namespace Novemo.Crafting
                 }
             }
 
-            if (_recipeManager.craftingRecipe.ContainsKey(output))
+            if (_recipeManager.playersCraftingRecipe.ContainsKey(output))
             {
-                _recipeManager.craftingRecipe.TryGetValue(output, out var craftedItem);
+                _recipeManager.playersCraftingRecipe.TryGetValue(output, out var craftedItem);
 
                 if (craftedItem != null)
                 {
@@ -107,14 +107,17 @@ namespace Novemo.Crafting
                 }
             }
 
-            if (_recipeManager.craftingRecipe.ContainsKey(output))
+            if (_recipeManager.playersCraftingRecipe.ContainsKey(output))
             {
-                _recipeManager.craftingRecipe.TryGetValue(output, out var craftedItem);
+	            _recipeManager.playersCraftingRecipe.TryGetValue(output, out var craftedItem);
 
                 if (craftedItem != null)
                 {
-                    craftPrefabButton.GetComponent<Slot>().AddItem(craftedItem);
-                }
+	                craftPrefabButton.GetComponent<Slot>().ClearSlot();
+					craftPrefabButton.transform.Find("ItemButton/Icon").gameObject.SetActive(true);
+					craftPrefabButton.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite = craftedItem.itemIcon;
+					craftPrefabButton.GetComponent<Slot>().AddItem(craftedItem);
+				}
             }
         }
     }

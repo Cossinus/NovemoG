@@ -35,14 +35,14 @@ namespace Novemo.Stats
         
         public float GetLastDamage { get; set; }
 
-        void Awake()
+        private void Awake()
         {
             CurrentHealth = stats[0].GetValue();
             CurrentMana = stats[1].GetValue();
             RequiredExperience = 50;
         }
 
-        void Update()
+        private void Update()
         {
             //Set movement speed
             
@@ -54,7 +54,7 @@ namespace Novemo.Stats
                 TakeLethalDamage(1, 1);
             }
 
-            if (Input.GetKeyDown(KeyCode.X))
+            if (Input.GetKey(KeyCode.X))
             {
                 CurrentExperience += 5;
                 OnExperienceChanged?.Invoke(RequiredExperience, CurrentExperience);

@@ -21,7 +21,6 @@ namespace Novemo.Inventory
         // Game Objects
         public GameObject HoverObject { get; set; }
         public GameObject Clicked { get; set; }
-        public GameObject clicked { get; set; }
         public GameObject selectStackSize;
         public GameObject iconPrefab;
         public GameObject toolTipObject;
