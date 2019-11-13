@@ -28,6 +28,8 @@ namespace Novemo.Stats
         public float RequiredExperience { get; set; } 
         public float experienceMultiplier;
 
+        public bool CanAttack { get; set; } = true;
+
         //Events
         public event Action<float, float> OnHealthChanged;
         public event Action<float, float> OnManaChanged;
@@ -110,6 +112,37 @@ namespace Novemo.Stats
             Debug.Log(transform.name + " takes " + damage + " damage.");
         }
 
+        public void ApplyDebuff(string debuffName, float debuffDmgValue, float debuffTime)
+        {
+	        switch (debuffName)
+	        {
+		        case "Stun":
+                    TakeDamage(debuffDmgValue, 0);
+                    StartCoroutine(Stun(debuffTime));
+                    break;
+                case "Slow":
+                    break;
+                case "Bleed":
+                    break;
+                case "Poison":
+                    break;
+                case "Wither":
+                    break;
+                case "Ignite":
+                    break;
+                case "Weakness":
+                    break;
+	        }
+        }
+
+        public IEnumerator StopMoving(float time)
+        {
+            var tmpMS = stats[6].baseValue;
+            stats[6].baseValue = 0;
+            yield return new WaitForSeconds(time);
+            stats[6].baseValue = tmpMS;
+        }
+
         protected virtual void Die()
         {
             // Die in some way
@@ -119,6 +152,16 @@ namespace Novemo.Stats
         protected virtual void LevelUp()
         {
             OnExperienceChanged?.Invoke(RequiredExperience, CurrentExperience);
+        }
+
+        private IEnumerator Stun(float debuffTime)
+        {
+            CanAttack = false;
+            var tmpMS = stats[6].baseValue;
+            stats[6].baseValue = 0;
+            yield return new WaitForSeconds(debuffTime);
+            stats[6].baseValue = tmpMS;
+            CanAttack = true;
         }
         
         #region Invokes

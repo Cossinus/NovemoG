@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12b40ea5ef81dce4b938c7145b7aca02, type: 3}
-  m_Name: God Sword
+  m_Name: GodSword
   m_EditorClassIdentifier: 
   itemName: God Item
   itemDescription: Item Description
   specials: There is no better sword than this!
-  craftName: 
+  craftName: GodSword
   itemIcon: {fileID: 21300000, guid: e2e5a167f38a7c346a50ae88961c2131, type: 3}
   itemType: 0
   itemRarity: 8

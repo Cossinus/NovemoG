@@ -1,5 +1,4 @@
-﻿using System;
-using Novemo.Stats;
+﻿using Novemo.Stats;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,13 +17,11 @@ namespace Novemo
     
         private Transform ui;
         private Image healthSlider;
-        private Transform cam;
-    
+
         void Start()
         {
             var targetStats = target.GetComponent<CharacterStats>();
             levelText.text = targetStats.level.ToString();
-            if (Camera.main != null) cam = Camera.main.transform;
             foreach (Canvas c in FindObjectsOfType<Canvas>())
             {
                 if (c.renderMode == RenderMode.WorldSpace)

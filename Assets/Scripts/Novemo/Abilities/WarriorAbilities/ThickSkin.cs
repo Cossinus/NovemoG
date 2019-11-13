@@ -1,22 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Novemo.Abilities.WarriorAbilities
 {
-    public class ThickSkin : Ability
+    public class ThickSkin : MonoBehaviour
     {
-        public override void Start()
-        {
-            base.Start();
-            
-            abilityName = "Thick Skin";
-            abilityDescription = "";
-            
-            cooldown = 19f;
-        }
-
-        void Update()
-        {
-            Delay -= Time.deltaTime;
-        }
+        
     }
 }

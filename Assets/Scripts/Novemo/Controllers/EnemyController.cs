@@ -1,4 +1,5 @@
-﻿using Novemo.Player;
+﻿using System.Collections;
+using Novemo.Player;
 using Novemo.Stats;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,48 +9,78 @@ namespace Novemo.Controllers
     public class EnemyController : MonoBehaviour
     {
         public float lookRadius = 10f;
+        public float stoppingDistance = 1f;
+
+        public bool isRanged;
+        public bool IsChasing { get; set; }
 
         private Transform target;
-        private NavMeshAgent agent;
         private CharacterCombat combat;
-    
-        // Start is called before the first frame update
-        void Start()
+        private CharacterStats enemyStats;
+        
+        private void Start()
         {
             target = PlayerManager.Instance.player.transform;
-            agent = GetComponent<NavMeshAgent>();
             combat = GetComponent<CharacterCombat>();
+            enemyStats = GetComponent<CharacterStats>();
         }
-
-        // Update is called once per frame
-        void Update()
+        
+        private void Update()
         {
             float distance = Vector3.Distance(target.position, transform.position);
 
-            if (distance <= lookRadius)
+            if (!isRanged)
             {
-                agent.SetDestination(target.position);
-
-                if (distance <= agent.stoppingDistance)
+                if (distance <= lookRadius)
                 {
-                    CharacterStats targetStats = target.GetComponent<CharacterStats>();
-                    if (targetStats != null)
+                    IsChasing = true;
+                    
+                    if (distance >= stoppingDistance)
                     {
-                        combat.Attack(targetStats);
+                        transform.position = Vector2.MoveTowards(transform.position, target.position,
+                            enemyStats.stats[6].GetValue() * Time.deltaTime);
                     }
-                    FaceTarget();
+                    else if (distance <= stoppingDistance)
+                    {
+                        CharacterStats targetStats = target.GetComponent<CharacterStats>();
+                        if (targetStats != null)
+                        {
+                            combat.Attack(targetStats);
+                        }
+
+                        FaceTarget();
+                    }
                 }
+            }
+            else
+            {
+                //Check for distance, stopping distance is range
+            }
+
+            if (!IsChasing)
+            {
+                StartCoroutine(Patrol(lookRadius));
             }
         }
 
-        void FaceTarget()
+        private void FaceTarget()
         {
-            Vector3 direction = (target.position - transform.position).normalized;
-            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+            
+        }
+
+        private IEnumerator Patrol(float delay)
+        {
+            var randomXPosition = Random.Range(-lookRadius, lookRadius);
+            var randomYPosition = Random.Range(-lookRadius, lookRadius);
+            var randomPosition = new Vector2(randomXPosition, randomYPosition);
+            
+            yield return new WaitForSeconds(delay);
+                
+            transform.position = Vector2.MoveTowards(transform.position, randomPosition,
+                    enemyStats.stats[6].GetValue() * Time.deltaTime);
         }
     
-        void OnDrawGizmosSelected()
+        private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, lookRadius);

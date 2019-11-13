@@ -20,10 +20,7 @@ namespace Novemo.Classes
         public DamageType damageType;
 
         public Equipment defaultWeapon;
-
-        public Ability ability;
-
-        public PlayerManager playerManager;
+        
         public CharacterStats myStats;
 
         public virtual void LevelUp()

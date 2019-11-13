@@ -1,103 +1,82 @@
 ﻿using System.Collections;
+using Novemo.Player;
+using Novemo.Stats;
 using UnityEngine;
 
 namespace Novemo.Abilities.WarriorAbilities
 {
-    public class Charge : Ability
+	public class Charge : Ability
     {
-        public float lookRadius = 4f;
+	    private const string Name = "Charge!";
+	    private const string Description = "Player charges to a specified destination and stuns any enemy hit.";
+	    private static readonly Sprite Icon;// = (Sprite) Resources.Load("Abilities/Charge");
+	    
+	    private bool _isCharging;
 
-        private float distance;
+	    private CharacterStats PlayerStats { get; set; }
 
-        private bool isCharging;
+	    private void Awake()
+	    {
+		    PlayerStats = PlayerManager.Instance.player.GetComponent<CharacterStats>();
+		    AbilityRadius = 3f;
+		    CastTime = 0.05f;
+		    Cooldown = 7f - 7f * PlayerManager.Instance.player.GetComponent<PlayerStats>().stats[11].GetValue() / 100;
+	    }
 
-        private Vector3 targetPoint;
-        
-        private Camera cam;
+	    private void FixedUpdate()
+	    {
+		    Delay -= Time.deltaTime;
+		    
+		    if (Input.GetKeyDown(KeyCode.Q))
+		    {
+			    if (Delay <= 0f && PlayerStats.CurrentHealth > Cost + 1 && !_isCharging)
+			    {
+				    PlayerStats.CurrentMana -= Cost;
 
-        public override void Start()
-        {
-            base.Start();
-            cam = Camera.main;
+				    Delay = Cooldown;
+				    
+				    StartCoroutine(Active());
+			    }
+		    }
+		}
 
-            abilityName = "Charge!";
-            abilityDescription = "";
-            
-            abilityCost = 5f;
-            cooldown = 0.2f;
-            castTime = 0.1f;
-        }
+	    public override IEnumerator Active()
+		{
+			_isCharging = true;
+			PlayerStats.CanAttack = false;
+			var activeMoveSpeed = PlayerStats.stats[6].GetValue() + 0.5f;
+			StartCoroutine(PlayerStats.StopMoving(CastTime + activeMoveSpeed * Time.deltaTime + 1f));
+			
+			yield return new WaitForSeconds(CastTime);
+			
+			var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			
+			const float rate = 1f;
+			var progress = 0.0f;
+			while (progress < 1.0)
+			{
+				transform.position = Vector2.MoveTowards(transform.position, mousePos, activeMoveSpeed * Time.deltaTime);
 
-        void Update()
-        {
-            Delay -= Time.deltaTime;
+				progress += rate * Time.deltaTime;
+				yield return null;
+			}
+			
+			yield return new WaitForSeconds(Cooldown);
+			_isCharging = false;
+			PlayerStats.CanAttack = true;
+		}
 
-            if (Input.GetKeyDown(KeyCode.Q))
-                Use(abilityCost, cooldown);
-
-            CCharge();
-        }
-
-        protected override void Use(float cost, float cd)
-        {
-            if (Delay <= 0f && myStats.CurrentHealth > cost + 1)
-            {
-                StartCoroutine(AAbility(cd, " "));
-
-                myStats.CurrentMana -= cost;
-
-                Delay = cd - cd * myStats.stats[11].GetValue() / 100;
-            }
-        }
-        
-        public override IEnumerator AAbility(float cd, string statName)
-        {
-            yield return new WaitForSeconds(castTime);
-            
-            /*Plane playerPlane = new Plane(Vector3.up, transform.position);
-
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-
-            if (playerPlane.Raycast(ray, out var hitdist))
-            {
-                targetPoint = ray.GetPoint(hitdist);
-                Quaternion targetRotation = Quaternion.LookRotation(targetPoint - transform.position);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 100f * Time.deltaTime);
-
-                distance = Vector3.Distance(targetPoint, transform.position);
-                
-                isCharging = true;
-            }*/
-
-            yield return new WaitForSeconds(cd);
-        }
-
-        void CCharge()
-        {
-            /*if (distance <= lookRadius)
-            {
-                while (Vector3.Distance(transform.position, targetPoint) > 0.001f)
-                {
-                    transform.position = Vector3.MoveTowards(transform.position, targetPoint, 0.01f * Time.deltaTime);
-                    // Charge to the hitpoint
-                    // Stun every enemy hit and deal damage to them
-                    // focus nearest target and attack him once
-                    // Check if player hits any obstacle and stop the Charge
-                }
-
-                isCharging = false;
-            }
-            else
-            {
-                isCharging = false;
-            }
-            //playerCombat.Attack(myStats);*/
-        }
-
-        void OnDrawGizmosSelected()
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(transform.position, lookRadius);
-        }
+	    private void OnTriggerEnter2D(Collider2D other)
+		{
+			if (_isCharging)
+			{
+				if (other.CompareTag("Enemy"))
+				{
+					Target = other.gameObject;
+					Target.GetComponent<CharacterStats>().ApplyDebuff("Stun", PlayerStats.Scale(2, 0.02f), 2.4f);
+					Target.GetComponent<CharacterStats>().ApplyDebuff("Slow", 0, 1f);
+				}
+			}
+		}
     }
 }

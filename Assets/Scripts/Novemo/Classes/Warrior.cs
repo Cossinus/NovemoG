@@ -11,7 +11,7 @@ namespace Novemo.Classes
         void Awake()
         {
             className = "Warrior";
-            classDescription = "";
+            classDescription = "Default";
             passiveName = "Thick Skin";
             
             rangeType = RangeType.Melee;
@@ -27,8 +27,8 @@ namespace Novemo.Classes
             
             player.AddComponent<Charge>();
             player.AddComponent<ThickSkin>();
-            player.AddComponent<StrongMental>();
-            player.AddComponent<WrathFury>();
+            //player.AddComponent<StrongMental>();
+            //player.AddComponent<WrathFury>();
             
             myStats.CurrentHealth += 25;
             myStats.stats[0].baseValue += 25;

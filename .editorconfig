@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# UNT0010: MonoBehavior instance creation is not recommended
+dotnet_diagnostic.UNT0010.severity = none

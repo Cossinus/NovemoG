@@ -20,25 +20,25 @@ namespace Novemo.Controllers
 
         public event System.Action OnAttack;
 
-        void Start()
+        private void Start()
         {
             _myStats = GetComponent<CharacterStats>();
         }
 
-        void Update()
+        private void FixedUpdate()
         {
             _attackCooldown -= Time.deltaTime;
         }
     
         public void Attack(CharacterStats targetStats)
         {
-            if (_attackCooldown <= 0f)
+            if (targetStats.CanAttack && _attackCooldown <= 0f)
             {
                 HasAttacked = true;
 
                 enemyCurrentlyFightingWith = targetStats.GetComponent<GameObject>();
                 
-                StartCoroutine(DoDamage(targetStats, attackDelay));
+                StartCoroutine(DoBasicAttackDamage(targetStats, attackDelay));
 
                 OnAttack?.Invoke();
 
@@ -46,13 +46,26 @@ namespace Novemo.Controllers
             }
         }
 
-        IEnumerator DoDamage(CharacterStats stats, float delay)
+        private IEnumerator DoBasicAttackDamage(CharacterStats stats, float delay)
         {
             yield return new WaitForSeconds(delay);
-            Ability.Instance.attacksCount++;
             stats.TakeDamage(_myStats.stats[2].GetValue(), _myStats.stats[9].GetValue());
+            // TODO Change myStats.stats[9].GetValue() with spell damage nad lethal spell damage
+        }
+        
+        private IEnumerator DoBasicAttackLethalDamage(CharacterStats stats, float delay)
+        {
+            yield return new WaitForSeconds(delay);
             stats.TakeLethalDamage(_myStats.stats[10].GetValue(), _myStats.stats[9].GetValue());
             // TODO Change myStats.stats[9].GetValue() with spell damage nad lethal spell damage
         }
+
+        public float DoPhysicalSpellDamage() { return 0; }
+        
+        public float DoMagicSpellDamage() { return 0; }
+        
+        public float DoMixedSpellDamage() { return 0; }
+        
+        public float DoLethalSpellDamage() { return 0; }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Novemo.Controllers;
 using Novemo.Player;
 using Novemo.Stats;
 using UnityEngine;
@@ -8,48 +7,32 @@ namespace Novemo.Abilities
 {
     public class Ability : MonoBehaviour
     {
-        #region Singleton
+	    public float Delay { get; set; }
+        public float Cooldown { get; set; }
+		public float CastTime { get; set; }
+		public float Cost { get; set; }
 
-        public static Ability Instance;
+		public float AbilityRadius { get; set; }
+		
+		public bool CanCastOnSelf { get; set; }
+		public bool RequiresTarget { get; set; }
 
-        void Awake()
-        {
-            Instance = this;
-        }
+		public AbilityType Type { get; set; }
 
-        #endregion
-        
-        public string abilityName;
-        public string abilityDescription;
-        
-        public int attacksCount;
+		protected GameObject Target { get; set; }
 
-        protected float Delay;
-        public float cooldown;
-        public float castTime;
-        public float abilityCost;
+		//private Stopwatch durationTimer = new Stopwatch(); For AoE
+		//durationTimer.Start();
+		//while (durationTimer.Elapsed.TotalSeconds <= effectDuration) { }
+		//durationTimer.Stop();
+		//durationTimer.Reset();
+		//yield return null;
 
-        public bool isEnabled;
-        public bool canCastOnSelf;
+		public virtual IEnumerator Active() { yield return null; }
 
-        public CharacterCombat playerCombat;
-        public PlayerManager playerManager;
-        public CharacterStats myStats;
-
-        public virtual void Start()
-        {
-            playerManager = PlayerManager.Instance;
-            myStats = playerManager.player.GetComponent<CharacterStats>();
-            playerCombat = playerManager.player.GetComponent<CharacterCombat>();
-        }
-        
-        protected virtual void Use(float cost, float cd) { }
-
-        public virtual IEnumerator AAbility(float cd, string statName)
-        {
-            yield return new WaitForSecondsRealtime(cd);
-            
-            // do stuff
-        } 
+		public enum AbilityType
+		{
+			
+		}
     }
 }

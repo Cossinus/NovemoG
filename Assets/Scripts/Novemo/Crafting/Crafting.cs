@@ -1,4 +1,5 @@
 using Novemo.Controllers;
+using Novemo.Inventory;
 using Novemo.Inventory.Slot;
 using Novemo.Player;
 using Novemo.Stats;
@@ -43,6 +44,25 @@ namespace Novemo.Crafting
             craftSkillText.text = _playerStats.CraftSkill.ToString();
         }
 
+        public override void Open()
+        {
+			base.Open();
+
+			foreach (var slot in slots)
+			{
+				var tmpSlot = slot;
+
+				int count = tmpSlot.Items.Count;
+				for (int i = 0; i < count; i++)
+				{
+					var tmpItem = tmpSlot.RemoveItem();
+					PlayerManager.Instance.player.GetComponent<PlayerController>().inventory.AddItem(tmpItem);
+				}
+			}
+
+			Preview();
+        }
+
         public override void MoveItem(GameObject clicked)
         {
 	        base.MoveItem(clicked);
@@ -52,29 +72,30 @@ namespace Novemo.Crafting
 
         public void CraftItem()
         {
-            var output = string.Empty;
+	        var output = string.Empty;
             
             foreach (var slot in slots)
             {
-                var tmp = slot.GetComponent<Slot>();
+	            var tmpSlot = slot.GetComponent<Slot>();
                 
-                if (tmp.IsEmpty)
+                if (tmpSlot.IsEmpty)
                 {
                     output += "EMPTY-";
                 }
                 else
                 {
-                    output += tmp.CurrentItem.craftName + "-";
+                    output += tmpSlot.CurrentItem.craftName + "-";
                 }
             }
 
-            if (_recipeManager.playersCraftingRecipe.ContainsKey(output))
+            /*if (_recipeManager.playerRecipes.ContainsKey(output))
             {
                 _recipeManager.playersCraftingRecipe.TryGetValue(output, out var craftedItem);
 
                 if (craftedItem != null)
                 {
-                    if (PlayerManager.Instance.player.GetComponent<PlayerController>().inventory.AddItem(craftedItem))
+	                InventoryManager.Instance.Clicked = craftPrefabButton;
+					if (GameObject.FindWithTag("Inventory").GetComponent<Inventory.Inventory>().AddItem(craftedItem))
                     {
                         foreach (var slot in slots)
                         {
@@ -82,43 +103,42 @@ namespace Novemo.Crafting
                         }
                     }
                 }
-            }
-
-            Preview();
+            }*/
+			
+			Preview();
         }
         
         public void Preview()
         {
-            var output = string.Empty;
-            
-            craftPrefabButton.GetComponent<Slot>().ClearSlot();
-            
-            foreach (var slot in slots)
-            {
-                var tmp = slot.GetComponent<Slot>();
+	        craftPrefabButton.GetComponent<Slot>().ClearSlot();
+
+			var output = string.Empty;
+
+	        foreach (var slot in slots)
+	        {
+		        var tmpSlot = slot.GetComponent<Slot>();
                 
-                if (tmp.IsEmpty)
+                if (tmpSlot.IsEmpty)
                 {
                     output += "EMPTY-";
                 }
                 else
                 {
-                    output += tmp.CurrentItem.craftName + "-";
+                    output += tmpSlot.CurrentItem.craftName + "-";
                 }
             }
 
-            if (_recipeManager.playersCraftingRecipe.ContainsKey(output))
+			/*if (_recipeManager.playersCraftingRecipe.ContainsKey(output))
             {
 	            _recipeManager.playersCraftingRecipe.TryGetValue(output, out var craftedItem);
 
                 if (craftedItem != null)
                 {
-	                craftPrefabButton.GetComponent<Slot>().ClearSlot();
-					craftPrefabButton.transform.Find("ItemButton/Icon").gameObject.SetActive(true);
+	                craftPrefabButton.transform.Find("ItemButton/Icon").gameObject.SetActive(true);
 					craftPrefabButton.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite = craftedItem.itemIcon;
 					craftPrefabButton.GetComponent<Slot>().AddItem(craftedItem);
 				}
-            }
+            }*/
         }
     }
 }

@@ -5,8 +5,6 @@ using Novemo.Items;
 using Novemo.Player;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
-using Image = UnityEngine.UI.Image;
 
 namespace Novemo.Inventory
 {
@@ -105,7 +103,7 @@ namespace Novemo.Inventory
             debugEmptySlots = EmptySlots;
         }
 
-        public void Open()
+        public virtual void Open()
         {
             if (canvasGroup.alpha <= 0)
             {
@@ -156,6 +154,10 @@ namespace Novemo.Inventory
         {
             if (item.stackLimit == 1 && EmptySlots > 0)
             {
+	            if (!item.isDiscovered)
+	            {
+		            item.isDiscovered = true;
+	            }
 	            return PlaceEmpty(item);
 			}
 
@@ -163,25 +165,19 @@ namespace Novemo.Inventory
             {
                 foreach (var slot in slots)
                 {
-                    var tmp = slot.GetComponent<Slot.Slot>();
+	                var tmpSlot = slot.GetComponent<Slot.Slot>();
 
-                    if (tmp.IsEmpty) continue;
-                    if (tmp.CurrentItem.itemType != item.itemType || !tmp.IsAvailable) continue;
+                    if (tmpSlot.IsEmpty) continue;
+                    if (tmpSlot.CurrentItem.itemName != item.itemName || !tmpSlot.IsAvailable) continue;
                     if (_inventoryManager.Clicked != null &&
-                        _inventoryManager.Clicked.GetComponent<Slot.Slot>() == tmp.GetComponent<Slot.Slot>() &&
-                        tmp.Items.Count == item.stackLimit - _inventoryManager.MovingSlot.Items.Count)
+                        _inventoryManager.Clicked.GetComponent<Slot.Slot>() == tmpSlot.GetComponent<Slot.Slot>() &&
+                        tmpSlot.Items.Count == item.stackLimit - _inventoryManager.MovingSlot.Items.Count)
                     {
-                        continue;
+	                    continue;
                     }
-                    /*else if (_inventoryManager.Clicked != null &&
-                             _inventoryManager.Clicked.GetComponent<Slot.Slot>() == tmp.GetComponent<Slot.Slot>() &&
-                             tmp.Items.Count == item.stackLimit - _inventoryManager.MovingSlot.Items.Count)
-                    {
-                        continue;
-                    }*/
                     else
                     {
-                        tmp.AddItem(item);
+	                    tmpSlot.AddItem(item);
                         return true;
                     }
                 }

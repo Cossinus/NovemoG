@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: Neonazi Helmet
   itemDescription: Item Description
   specials: 
-  craftName: 
+  craftName: NeonaziHelmet
   itemIcon: {fileID: 21300000, guid: e6d019d1cf3851447963e4646de2ab72, type: 3}
   itemType: 0
   itemRarity: 2

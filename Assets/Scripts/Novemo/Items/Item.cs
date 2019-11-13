@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Novemo.Crafting;
 using UnityEngine;
 
 namespace Novemo.Items
@@ -12,14 +13,18 @@ namespace Novemo.Items
         public string itemDescription = "Item Description";
         public string specials = string.Empty;
         public string craftName = string.Empty;
-        
-        public Sprite itemIcon;
+
+        public int stackLimit = 1;
+        public int value;
+
+        public bool isDiscovered;
+
+        public Recipe recipe;
+
+		public Sprite itemIcon;
         
         public ItemType itemType;
         public Rarity itemRarity;
-        
-        public int stackLimit = 1;
-        public int value;
 
         public int level;
         public float CurrentExperience { get; set; }
@@ -28,12 +33,17 @@ namespace Novemo.Items
         #region GetModifiers
         private Item _item;
         private List<Modifier> _modifiers = new List<Modifier>();
-        private void OnEnable() { _item = this; }
         #endregion
+
+        private void OnEnable()
+        {
+            _item = this; 
+            RequiredExperience = level * (float) itemRarity / 100;
+        }
         
         public virtual void Use()
         {
-            Debug.Log(itemName + " has been used!");
+            Debug.Log($"{itemName} has been used!");
         }
 
         public string GetTooltip()
@@ -49,7 +59,7 @@ namespace Novemo.Items
             if (itemLevel == "1" || itemLevel == "0")
                 itemLevel = string.Empty;
             else
-                itemLevel = $"{level} :Level";
+                itemLevel = $"Level: {level}";
 
             if (_item.itemType == ItemType.Equipment)
             {
@@ -66,59 +76,59 @@ namespace Novemo.Items
             switch (itemRarity)
             {
                 case Rarity.Common:
-                    color = "#696969><size=40>" + itemName + "</size>";
+                    color = $"#696969><size=40>{itemName}</size>";
                     break;
                 case Rarity.Normal:
-                    color = "yellow><size=40>" + itemName + "</size>";
+                    color = $"yellow><size=40>{itemName}</size>";
                     break;
                 case Rarity.Uncommon:
-                    color = "#bfff00><size=40>" + itemName + "</size>";
+                    color = $"#bfff00><size=40>{itemName}</size>";
                     break;
                 case Rarity.Rare:
-                    color = "#bc3c21><size=40>" + itemName + "</size>";
+                    color = $"#bc3c21><size=40>{itemName}</size>";
                     break;
                 case Rarity.VeryRare:
-                    color = "#00CED1><size=40>" + itemName + "</size>";
+                    color = $"#00CED1><size=40>{itemName}</size>";
                     break;
                 case Rarity.Epic:
-                    color = "orange><size=40><b>" + itemName + "</b></size>";
+                    color = $"orange><size=40><b>{itemName}</b></size>";
                     break;
                 case Rarity.Legendary:
-                    color = "#ff00ff><size=40><b>" + itemName + "</b></size>";
+                    color = $"#ff00ff><size=40><b>{itemName}</b></size>";
                     break;
                 case Rarity.Mystical:
-                    color = "red><size=40><b>" + itemName + "</b></size>";
+                    color = $"red><size=40><b>{itemName}</b></size>";
                     break;
                 case Rarity.Artifact:
-                    color = "white><size=40><b>" + itemName + "</b></size>";
+                    color = $"white><size=40><b>{itemName}</b></size>";
                     break;
             }
 
             if (stats != string.Empty && specials != string.Empty)
             {
                 return string.Format(
-                    "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
-                    "{0}</color></i>\nStats:{1}\n" + "\n<color=#999900><size=20><i>{2}</i></size></color>"/* +
-                effect.EffectText()*/, itemDescription, stats, specials, itemLevel);
+                    "<color={4}</color><size=24><i><color=purple>{5}{0}</color></i>\nStats:{1}\n" +
+                    "\n<color=#999900><size=20><i>{2}</i></size></color>" /* +
+                effect.EffectText()*/, itemDescription, stats, specials, itemLevel, color, newLine);
             }
             else if (stats != string.Empty && specials == string.Empty)
             {
                 return string.Format(
-                    "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
-                    "{0}</color></i>\nStats:{1}"/* + effect.EffectText()*/, itemDescription, stats);
+                    "<color={2}</color><size=24><i><color=purple>{3}{0}</color></i>\nStats:{1}" /* + effect.EffectText()*/,
+                    itemDescription, stats, color, newLine);
             }
             else if (stats == string.Empty && specials != string.Empty)
             {
                 return string.Format(
-                    "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
-                    "{0}</color></i>" + "\n<color=#999900><size=20><i>{1}</i></size></color>"/* +
-                effect.EffectText()*/, itemDescription, specials);
+                    "<color={2}</color><size=24><i><color=purple>{3}{0}</color></i>" +
+                    "\n<color=#999900><size=20><i>{1}</i></size></color>" /* +
+                effect.EffectText()*/, itemDescription, specials, color, newLine);
             }
             else
             {
                 return string.Format(
-                    "<color=" + color + "</color><size=24><i><color=purple>" + newLine +
-                    "{0}</color></i></size>", itemDescription);
+                    "<color={1}</color><size=24><i><color=purple>{2}{0}</color></i></size>", itemDescription, color,
+                    newLine);
             }
         }
     }

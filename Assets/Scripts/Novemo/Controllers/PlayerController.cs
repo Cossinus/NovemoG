@@ -1,42 +1,55 @@
-﻿using System.Collections;
-using Novemo.Classes;
+﻿using Novemo.Classes;
 using Novemo.Inventory;
 using Novemo.Items;
 using Novemo.Player;
 using Novemo.Stats;
+using System.Collections;
 using UnityEngine;
 
 namespace Novemo.Controllers
 {
 	public class PlayerController : MonoBehaviour
 	{
+		//Currencies
+		public int Currency1 { get; set; }
+		public int Currency2 { get; set; }
+		public int Currency3 { get; set; }
+		public int Currency4 { get; set; }
+		public int Currency5 { get; set; }
+
 		public Item iron;
-		
-		public float Gold { get; set; }
+		public Item steel;
 
-		public Quest.Quest quest;
-
+		//Player's class
 		public ClassManager playerClass;
 
-		public Inventory.Inventory inventory;
-
-		public Crafting.Crafting craftingBench;
-		
+		//Player's animator
 		public Animator animator;
 
-		private Inventory.Inventory chest;
-		
-		private Vector2 _movement;
-		private Vector2 _lastMovement;
+		//Actual quest
+		public Quest.Quest quest;
 
+		//Player's stats
 		private CharacterStats _myStats;
 
-		private ItemPickup _pickUp;
+		//Player's inventory
+		public Inventory.Inventory inventory;
+		public GameObject playerStats;
+
+		//Player's bench
+		public Crafting.Crafting craftingBench;
+
+		//Player's chest
+		private Inventory.Inventory chest;
+		
+		//Animator values
+		private Vector2 _movement;
+		private Vector2 _lastMovement;
 
 		private void Awake()
 		{
 			_myStats = gameObject.GetComponent<CharacterStats>();
-			Gold = 10;
+			Currency1 = 10;
 		}
 	
 		private void Start()
@@ -51,6 +64,7 @@ namespace Novemo.Controllers
 			if (Input.GetKey(KeyCode.X))
             {
                 inventory.AddItem(iron);
+                inventory.AddItem(steel);
             }
 			
 			transform.Translate(Time.deltaTime * _myStats.stats[6].GetValue() * (transform.up * _movement.y + transform.right * _movement.x).normalized);
@@ -83,7 +97,6 @@ namespace Novemo.Controllers
 				else if (inventory.IsOpen && craftingBench.IsOpen)
 				{
 					craftingBench.Open();
-					inventory.Open();
 				}
 			}
 		}
@@ -120,6 +133,7 @@ namespace Novemo.Controllers
 				if (chest != null && chest.IsOpen)
 				{
 					chest.Open();
+					playerStats.SetActive(false);
 				}
 				if (craftingBench.IsOpen)
 				{
@@ -136,6 +150,7 @@ namespace Novemo.Controllers
 				if (quest.goal.IsReached())
 				{
 					//REWARDS
+					Currency1 += 7;
 					quest.Complete();
 				}
 			}
