@@ -2,18 +2,22 @@
 using Novemo.Player;
 using Novemo.Stats;
 using UnityEngine;
-using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 namespace Novemo.Controllers
 {
     public class EnemyController : MonoBehaviour
     {
-        public float lookRadius = 10f;
-        public float stoppingDistance = 1f;
+        public float lookRadius;
+        public float attackRadius;
+        public float stoppingDistance;
 
         public bool isRanged;
-        public bool IsChasing { get; set; }
 
+        private float patrolDelay = 10f;
+
+        private Coroutine patrol;
+        
         private Transform target;
         private CharacterCombat combat;
         private CharacterStats enemyStats;
@@ -27,14 +31,19 @@ namespace Novemo.Controllers
         
         private void Update()
         {
+            patrolDelay -= Time.deltaTime;
+            
             float distance = Vector3.Distance(target.position, transform.position);
 
             if (!isRanged)
             {
                 if (distance <= lookRadius)
                 {
-                    IsChasing = true;
-                    
+                    if (patrol != null)
+                    {
+                        StopCoroutine(patrol);
+                    }
+
                     if (distance >= stoppingDistance)
                     {
                         transform.position = Vector2.MoveTowards(transform.position, target.position,
@@ -51,15 +60,40 @@ namespace Novemo.Controllers
                         FaceTarget();
                     }
                 }
+                else
+                {
+                    if (patrolDelay <= 0f)
+                    {
+                        patrol = StartCoroutine(Patrol());
+
+                        patrolDelay = 10f;
+                    }
+                }
             }
             else
             {
-                //Check for distance, stopping distance is range
+                
             }
+        }
 
-            if (!IsChasing)
+        private IEnumerator Patrol()
+        {
+            var enemyPosition = transform.position;
+            var randomXPosition = Random.Range(enemyPosition.x - lookRadius, enemyPosition.x + lookRadius);
+            var randomYPosition = Random.Range(enemyPosition.y - lookRadius, enemyPosition.y + lookRadius);
+            var randomPosition = new Vector2(randomXPosition, randomYPosition);
+
+            const float rate = 1f;
+            var progress = 0.0f;
+            var distance = Vector2.Distance(randomPosition, enemyPosition);
+            
+            while (progress < distance)
             {
-                StartCoroutine(Patrol(lookRadius));
+                transform.position = Vector2.MoveTowards(transform.position, randomPosition,
+                    enemyStats.stats[6].GetValue() * Time.deltaTime);
+                
+                progress += rate * Time.deltaTime;
+                yield return null;
             }
         }
 
@@ -68,22 +102,11 @@ namespace Novemo.Controllers
             
         }
 
-        private IEnumerator Patrol(float delay)
-        {
-            var randomXPosition = Random.Range(-lookRadius, lookRadius);
-            var randomYPosition = Random.Range(-lookRadius, lookRadius);
-            var randomPosition = new Vector2(randomXPosition, randomYPosition);
-            
-            yield return new WaitForSeconds(delay);
-                
-            transform.position = Vector2.MoveTowards(transform.position, randomPosition,
-                    enemyStats.stats[6].GetValue() * Time.deltaTime);
-        }
-    
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, lookRadius);
+            Gizmos.DrawWireSphere(transform.position, attackRadius);
         }
     }
 }
