@@ -45,7 +45,7 @@ namespace Novemo.Abilities.WarriorAbilities
 			_isCharging = true;
 			PlayerStats.CanAttack = false;
 			var activeMoveSpeed = PlayerStats.stats[6].GetValue() + 0.5f;
-			StartCoroutine(PlayerStats.StopMoving(CastTime + activeMoveSpeed * Time.deltaTime + 1f));
+			//StartCoroutine(PlayerStats.StopMovement(CastTime + activeMoveSpeed * Time.deltaTime + 1f));
 			
 			yield return new WaitForSeconds(CastTime);
 			
@@ -73,8 +73,8 @@ namespace Novemo.Abilities.WarriorAbilities
 				if (other.CompareTag("Enemy"))
 				{
 					Target = other.gameObject;
-					Target.GetComponent<CharacterStats>().ApplyDebuff("Stun", PlayerStats.Scale(2, 0.02f), 2.4f);
-					Target.GetComponent<CharacterStats>().ApplyDebuff("Slow", 0, 1f);
+					//Target.GetComponent<CharacterStats>().AddDebuff("Stun", PlayerStats.GetScaledValue(2, 0.02f), 2.4f);
+					//Target.GetComponent<CharacterStats>().AddDebuff("Slow", 0, 1f);
 				}
 			}
 		}

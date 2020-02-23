@@ -16,11 +16,14 @@ MonoBehaviour:
   itemDescription: Item Description
   specials: Item made by Alexis, my close friend.
   craftName: AlexisPet
-  itemIcon: {fileID: 21300000, guid: 8fc39e434f36f71459f01860bda1b591, type: 3}
-  itemType: 0
-  itemRarity: 3
   stackLimit: 1
   value: 999
+  isDiscovered: 0
+  recipe: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 8fc39e434f36f71459f01860bda1b591, type: 3}
+  itemType: 0
+  itemSubType: 9
+  itemRarity: 3
   level: 50
   equipSlot: 12
   modifiers:

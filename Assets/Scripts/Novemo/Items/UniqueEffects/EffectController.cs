@@ -1,4 +1,5 @@
-using Novemo.Controllers;
+using System.Collections.Generic;
+using Novemo.Combat;
 using Novemo.Player;
 using Novemo.Stats;
 using UnityEngine;
@@ -7,69 +8,50 @@ namespace Novemo.Items.UniqueEffects
 {
     public class EffectController : MonoBehaviour
     {
-        private PlayerStats _playerStats;
-        private CharacterCombat _playerCombat;
+        private CharacterStats _targetStats;
+        private CharacterCombat _targetCombat;
 
         private void Start()
         {
-            _playerStats = PlayerManager.Instance.player.GetComponent<PlayerStats>();
-            _playerCombat = PlayerManager.Instance.player.GetComponent<CharacterCombat>();
+            _targetStats = PlayerManager.Instance.player.GetComponent<CharacterStats>(); //change it for every target
+            _targetCombat = GetComponent<CharacterCombat>();
+            EquipmentManager.Instance.onEquipmentChanged += InitializePassiveEffects;
         }
 
-        private void Update()
+        //TODO swap all hard coded values in effects with 'effectStrength' and 'effectRate'
+        private void InitializePassiveEffects(Equipment newItem, Equipment oldItem)
         {
-            InitializeEffect();
-        }
-
-        private void InitializeEffect()
-        {
-            foreach (var eq in EquipmentManager.Instance.currentEquipment)
+            // move this to item's namespace
+            List<Coroutine> coroutines = new List<Coroutine>();
+            
+            if (newItem == null && oldItem.effects.Count > 0)
             {
-                if (eq != null && eq.effects.Count > 0)
+                for (var i = 0; i < oldItem.effects.Count; i++)
                 {
-                    switch (eq.effects[0].effectType)
-                    {
-                        case EffectType.Passive:
-                        {
-                            var passiveEffect = (PassiveEffect) eq.effects[0];
-                            switch (passiveEffect.passiveType)
-                            {
-                                case PassiveTypes.Regenerate:
-                                {
-                                    var regenerate = (RegenerateEffect) passiveEffect;
-                                    if (regenerate.CheckForEffect(_playerStats))
-                                        StartCoroutine(regenerate.Passive(_playerStats));
-                                    break;
-                                }
-                                case PassiveTypes.MitigateDamage:
-                                {
-                                    var mitigate = (MitigateEffect) passiveEffect;
-                                    if (mitigate.CheckForEffect())
-                                        StartCoroutine(mitigate.Passive(_playerStats));
-                                    break;
-                                }
-                                case PassiveTypes.Thorns:
-                                {
-                                    var thorn = (ThornsEffect) passiveEffect;
-                                    StartCoroutine(thorn.GetEffect(_playerCombat));
-                                    StartCoroutine(thorn.Passive(_playerStats));
-                                    break;
-                                }
-                                case PassiveTypes.StatBoost:
-                                {
-                                    var statBoost = (StatBoostEffect) passiveEffect;
-                                    StartCoroutine(statBoost.Passive(_playerStats));
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                        case EffectType.Active:
-                        {
-                            var activeEffect = (ActiveEffect) eq.effects[0];
-                            break;
-                        }
-                    }
+                    var passiveEffect = (PassiveEffect) oldItem.effects[i];
+                    if (passiveEffect.effectType != EffectType.Passive) continue;
+
+                    if (passiveEffect.passiveType != PassiveTypes.StatBoost) continue;
+
+                    var statBoost = (StatBoostEffect) passiveEffect;
+                    statBoost.RemoveModifierValue();
+                    
+                    //stop item's coroutines
+                }
+            }
+
+            if (newItem == null || newItem.effects.Count == 0) return;
+
+            for (var i = 0; i < newItem.effects.Count; i++)
+            {
+                var passiveEffect = (PassiveEffect) newItem.effects[i];
+                if (passiveEffect.effectType != EffectType.Passive) continue;
+                    
+                if (passiveEffect.passiveType != PassiveTypes.StatBoost) continue;
+
+                if (passiveEffect.EffectReady(_targetStats))
+                { 
+                    coroutines.Add(_targetStats.StartCoroutine(passiveEffect.Passive(_targetStats)));
                 }
             }
         }

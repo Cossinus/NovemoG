@@ -12,6 +12,7 @@ TagManager:
   - Inventory
   - ChestInventory
   - Enemy
+  - Ingredient
   layers:
   - Default
   - TransparentFX

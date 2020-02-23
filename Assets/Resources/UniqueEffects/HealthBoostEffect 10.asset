@@ -15,7 +15,7 @@ MonoBehaviour:
   effectName: Health Boost Effect
   effectDescription: 'Stat Boost Effect: Boosts specified stat by a percentage.'
   effectType: 0
-  passiveType: 5
-  statBoostName: HealthBoost
+  effectPower: 0.075
+  effectRate: 0
   statIndex: 0
-  statModifier: 10
+  passiveType: 5

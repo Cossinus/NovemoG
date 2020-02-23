@@ -42,6 +42,10 @@ namespace Novemo.Controllers
 		//Player's chest
 		private Inventory.Inventory chest;
 		
+		//Player's weapon
+		public GameObject weapon;
+		private SpriteRenderer _weaponSprite;
+		
 		//Animator values
 		private Vector2 _movement;
 		private Vector2 _lastMovement;
@@ -54,7 +58,8 @@ namespace Novemo.Controllers
 	
 		private void Start()
 		{
-			StartCoroutine(Equip());
+			Invoke(nameof(Equip), 0.1f);
+			_weaponSprite = weapon.GetComponent<SpriteRenderer>();
 		}
     
 		private void Update()
@@ -73,6 +78,8 @@ namespace Novemo.Controllers
 		
 			if (Input.GetKeyDown(KeyCode.L))
 				playerClass.LevelUp();
+
+			SetWeaponSortingLayer();
 
 			OpenInventory();
 
@@ -156,6 +163,18 @@ namespace Novemo.Controllers
 			}
 		}
 
+		private void SetWeaponSortingLayer()
+		{
+			if (_lastMovement.y > 0.1f)
+			{
+				_weaponSprite.sortingOrder = 1;
+			}
+			else
+			{
+				_weaponSprite.sortingOrder = -1;
+			}
+		}
+
 		private void SetAnimatorValues()
 		{
 			_movement.x = Input.GetAxisRaw("Horizontal");
@@ -203,9 +222,8 @@ namespace Novemo.Controllers
 			}
 		}
 
-		IEnumerator Equip()
+		private void Equip()
 		{
-			yield return new WaitForSeconds(.1f);
 			EquipmentManager.Instance.Equip(playerClass.defaultWeapon);
 		}
 	}

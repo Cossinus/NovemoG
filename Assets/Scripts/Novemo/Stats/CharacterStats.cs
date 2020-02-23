@@ -1,40 +1,51 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using Novemo.Status_Effects.Buffs;
+using Novemo.Status_Effects.Debuffs;
 using UnityEngine;
 
 namespace Novemo.Stats
 {
     public class CharacterStats : MonoBehaviour
     {
-        // Character Level and Rarity
+        //Character Level and Rarity
         public int level;
         public int stars;
 
-        //Player Stats
+        //Character Stats
         public List<Stat> stats = new List<Stat>();
-        public Dictionary<string, float> scaleValues = new Dictionary<string, float>();
 
+        //Character status effects
+        public List<Debuff> remainingDebuffs = new List<Debuff>();
+        public List<Debuff> debuffs = new List<Debuff>();
+        public List<Buff> remainingBuffs = new List<Buff>();
+        public List<Buff> buffs = new List<Buff>();
+        
         //Health
         public float CurrentHealth { get; set; }
-        private bool IsRegenHealth { get; set; }
+        private float HealthRegenTimeElapsed { get; set; }
         
         //Mana
         public float CurrentMana { get; set; }
-        private bool IsRegenMana { get; set; }
+        private float ManaRegenTimeElapsed { get; set; }
         
         //Experience
         public float CurrentExperience { get; set; }
         public float RequiredExperience { get; set; } 
         public float experienceMultiplier;
 
+        //Character additional damage boost/reduce
+        public float DamageReducePercentage { get; set; }
+        public float DamageBoostPercentage { get; set; }
+        
         public bool CanAttack { get; set; } = true;
 
         //Events
+        public event Action<float> OnDamageTake;
         public event Action<float, float> OnHealthChanged;
         public event Action<float, float> OnManaChanged;
         public event Action<float, float> OnExperienceChanged;
-        
+
         public float GetLastDamage { get; set; }
 
         private void Awake()
@@ -46,13 +57,19 @@ namespace Novemo.Stats
 
         private void Update()
         {
-            //Set movement speed
-            
             LevelUp();
+            HandleDebuffs();
+            HandleBuffs();
+
+            if (DamageReducePercentage > 75f) {
+                DamageReducePercentage = 75f;
+            } if (DamageBoostPercentage > 125f) {
+                DamageBoostPercentage = 125f;
+            }
             
             if (Input.GetKeyDown(KeyCode.T))
             {
-                TakeDamage(1, 1);
+                TakeDamage(1, 1, 1, 1, false);
                 TakeLethalDamage(1, 1);
             }
 
@@ -61,18 +78,15 @@ namespace Novemo.Stats
                 CurrentExperience += 5;
                 OnExperienceChanged?.Invoke(RequiredExperience, CurrentExperience);
             }
+            
+            RegenerateHealth(stats[7].GetValue(), stats[28].GetValue());
+            RegenerateMana(stats[8].GetValue(), stats[29].GetValue());
 
-            if (CurrentHealth < stats[0].GetValue() && !IsRegenHealth)
-                StartCoroutine(RegenHealth(stats[7].GetValue(), stats[28].GetValue()));
-
-            if (CurrentMana < stats[1].GetValue() && !IsRegenMana)
-                StartCoroutine(RegenMana(stats[8].GetValue(), stats[29].GetValue()));
-
-            if (CurrentHealth > stats[0].GetValue())
+            if (CurrentHealth > stats[0].GetValue()) {
                 CurrentHealth = stats[0].GetValue();
-
-            if (CurrentMana > stats[1].GetValue())
+            } if (CurrentMana > stats[1].GetValue()) {
                 CurrentMana = stats[1].GetValue();
+            }
 
             if (CurrentHealth <= 0)
             {
@@ -80,25 +94,43 @@ namespace Novemo.Stats
             }
         }
 
-        public void TakeDamage(float physicalDamage, float magicDamage)
+        public void TakeDamage(float physicalDamage, float magicDamage, float physicalDamagePenetration, float magicDamagePenetration, bool isCrit)
         {
             //TODO Modify this formula (according to other effects, potions, scrolls mostly in %)
-            physicalDamage -= physicalDamage * ((stats[3].GetValue() - stats[23].GetValue()) / (100 + stats[3].GetValue()));
+            physicalDamage -= physicalDamage * ((stats[3].GetValue() - physicalDamagePenetration) / (stats[3].GetValue() + physicalDamagePenetration)) * 0.75f;
             physicalDamage = Mathf.Clamp(physicalDamage, 0, float.MaxValue);
             physicalDamage = (float) Math.Round(physicalDamage * 100f) / 100f;
 
-            magicDamage -= magicDamage * ((stats[4].GetValue() - stats[24].GetValue()) / (100 + stats[4].GetValue()));
+            magicDamage -= magicDamage * ((stats[4].GetValue() - magicDamagePenetration) / (stats[4].GetValue() + magicDamagePenetration)) * 0.75f;
             magicDamage = Mathf.Clamp(magicDamage, 0, float.MaxValue);
             magicDamage = (float) Math.Round(magicDamage * 100f) / 100f;
 
             var damage = physicalDamage + magicDamage;
+            
+            if (DamageBoostPercentage > 0)
+            {
+                var tmpPercentage = 1 + DamageBoostPercentage / 100;
+                damage *= tmpPercentage;
+            }
+
+            if (DamageReducePercentage > 0)
+            {
+                var tmpPercentage = 1 - DamageReducePercentage / 100;
+                damage *= tmpPercentage;
+            }
+            
+            if (isCrit)
+            {
+                damage *= 2;
+            }
+
+            OnDamageTake?.Invoke(damage);
             GetLastDamage = damage;
 
             CurrentHealth -= damage;
-
             OnHealthChanged?.Invoke(stats[0].GetValue(), CurrentHealth);
             
-            Debug.Log(transform.name + " takes " + damage + " damage.");
+            Debug.Log($"{transform.name} takes {damage} damage.");
         }
 
         public void TakeLethalDamage(float lethalPhysicalDamage, float lethalMagicDamage)
@@ -109,38 +141,7 @@ namespace Novemo.Stats
 
             OnHealthChanged?.Invoke(stats[0].GetValue(), CurrentHealth);
             
-            Debug.Log(transform.name + " takes " + damage + " damage.");
-        }
-
-        public void ApplyDebuff(string debuffName, float debuffDmgValue, float debuffTime)
-        {
-	        switch (debuffName)
-	        {
-		        case "Stun":
-                    TakeDamage(debuffDmgValue, 0);
-                    StartCoroutine(Stun(debuffTime));
-                    break;
-                case "Slow":
-                    break;
-                case "Bleed":
-                    break;
-                case "Poison":
-                    break;
-                case "Wither":
-                    break;
-                case "Ignite":
-                    break;
-                case "Weakness":
-                    break;
-	        }
-        }
-
-        public IEnumerator StopMoving(float time)
-        {
-            var tmpMS = stats[6].baseValue;
-            stats[6].baseValue = 0;
-            yield return new WaitForSeconds(time);
-            stats[6].baseValue = tmpMS;
+            Debug.Log($"{transform.name} takes {damage} damage.");
         }
 
         protected virtual void Die()
@@ -154,15 +155,90 @@ namespace Novemo.Stats
             OnExperienceChanged?.Invoke(RequiredExperience, CurrentExperience);
         }
 
-        private IEnumerator Stun(float debuffTime)
+        public float GetScaledValueByMultiplier(int statIndex, float modifierMultiplier)
         {
-            CanAttack = false;
-            var tmpMS = stats[6].baseValue;
-            stats[6].baseValue = 0;
-            yield return new WaitForSeconds(debuffTime);
-            stats[6].baseValue = tmpMS;
-            CanAttack = true;
+            return stats[statIndex].GetValue() * modifierMultiplier;
         }
+        
+        #region DebuffHandler
+        
+        public void ApplyDebuff(Debuff debuff)
+        {
+            if (debuffs.Contains(debuff))
+            {
+                remainingDebuffs.Add(debuff);
+            }
+            else
+            {
+                debuff.ApplyDebuff();
+            }
+        }
+
+        public void RemoveDebuff(Debuff debuff)
+        {
+            debuffs.Remove(debuff);
+        }
+
+        private void HandleDebuffs()
+        {
+            if (debuffs.Count >= 1)
+            {
+                for (var i = 0; i < debuffs.Count; i++)
+                {
+                    debuffs[i].Update();
+                }
+            }
+
+            if (remainingDebuffs.Count < 1) return;
+            for (var i = 0; i < remainingDebuffs.Count; i++)
+            {
+                ApplyDebuff(remainingDebuffs[i]);
+
+                remainingDebuffs.Remove(remainingDebuffs[i]);
+            }
+        }
+        
+        #endregion
+        
+        #region BuffHandler
+        
+        public void ApplyBuff(Buff buff)
+        {
+            if (buffs.Contains(buff))
+            {
+                remainingBuffs.Add(buff);
+            }
+            else
+            {
+                buff.ApplyBuff();
+            }
+        }
+
+        public void RemoveBuff(Buff buff)
+        {
+            buffs.Remove(buff);
+        }
+
+        private void HandleBuffs()
+        {
+            if (buffs.Count >= 1)
+            {
+                for (var i = 0; i < buffs.Count; i++)
+                {
+                    buffs[i].Update();
+                }
+            }
+
+            if (remainingBuffs.Count < 1) return;
+            for (var i = 0; i < remainingBuffs.Count; i++)
+            {
+                ApplyBuff(remainingBuffs[i]);
+
+                remainingBuffs.Remove(remainingBuffs[i]);
+            }
+        }
+        
+        #endregion
         
         #region Invokes
         
@@ -174,51 +250,32 @@ namespace Novemo.Stats
         
         #endregion
 
-        #region StatsScaling
-        
-        public float Scale(int statIndex, float modifier)
-        {
-            return stats[statIndex].GetValue() * modifier;
-        }
-        
-        public IEnumerator ScaleValues(string modifierName, int statIndex, float modifierMultiplier)
-        {
-            stats[0].modifiers[modifierName] -= scaleValues[modifierName];
-            scaleValues[modifierName] = Scale(statIndex, modifierMultiplier);
-            stats[0].modifiers[modifierName] += scaleValues[modifierName];
-            yield return new WaitForSeconds(1f);
-        }
-        
-        #endregion
-
         #region StatsRegen
-
-        IEnumerator RegenHealth(float regenValue, float healthRegenRate)
+        
+        private void RegenerateHealth(float regenValue, float regenRate)
         {
-            IsRegenHealth = true;
-            
-            while (CurrentHealth < stats[0].GetValue())
-            {
-                CurrentHealth += regenValue;
-                OnHealthChanged?.Invoke(stats[0].GetValue(), CurrentHealth);
-                yield return new WaitForSeconds(healthRegenRate);
-            }
+            HealthRegenTimeElapsed += Time.deltaTime;
 
-            IsRegenHealth = false;
+            if (!(HealthRegenTimeElapsed > 1f / regenRate)) return;
+            
+            if (!(CurrentHealth < stats[0].GetValue())) return;
+            
+            CurrentHealth += regenValue;
+            OnHealthChanged?.Invoke(stats[0].GetValue(), CurrentHealth);
+            HealthRegenTimeElapsed = 0;
         }
-
-        IEnumerator RegenMana(float regenValue, float manaRegenRate)
+        
+        private void RegenerateMana(float regenValue, float regenRate)
         {
-            IsRegenMana = true;
+            ManaRegenTimeElapsed += Time.deltaTime;
+
+            if (!(ManaRegenTimeElapsed > 1f / regenRate)) return;
             
-            while (CurrentMana < stats[1].GetValue())
-            {
-                CurrentMana += regenValue;
-                OnManaChanged?.Invoke(stats[1].GetValue(), CurrentMana);
-                yield return new WaitForSeconds(manaRegenRate);
-            }
+            if (!(CurrentMana < stats[1].GetValue())) return;
             
-            IsRegenMana = false;
+            CurrentMana += regenValue;
+            OnManaChanged?.Invoke(stats[1].GetValue(), CurrentMana);
+            ManaRegenTimeElapsed = 0;
         }
 
         #endregion

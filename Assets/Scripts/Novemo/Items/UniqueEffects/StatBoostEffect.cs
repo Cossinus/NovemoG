@@ -7,14 +7,29 @@ namespace Novemo.Items.UniqueEffects
     [CreateAssetMenu(menuName = "EquipmentEffects/PassiveEffects/StatBoostEffect")]
     public class StatBoostEffect : PassiveEffect
     {
-        public string statBoostName;
-        public int statIndex;
-        public float statModifier;
-
-        public override IEnumerator Passive(PlayerStats playerStats)
+        private CharacterStats _targetStats;
+        
+        public override bool EffectReady(CharacterStats targetStats)
         {
-            playerStats.StartCoroutine(playerStats.ScaleValues(statBoostName, statIndex, statModifier));
-            yield return new WaitForSeconds(1f);
+            _targetStats = targetStats;
+            return true;
+        }
+
+        public override IEnumerator Passive(CharacterStats targetStats)
+        {
+            _targetStats.stats[statIndex].modifierValue += effectPower;
+            yield return null;
+        }
+
+        public void RemoveModifierValue()
+        {
+            _targetStats.stats[statIndex].modifierValue -= effectPower;
+        }
+
+        public override void OnEnable()
+        {
+            Bolted = false;
+            Blazed = false;
         }
     }
 }

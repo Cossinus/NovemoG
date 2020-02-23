@@ -1,5 +1,4 @@
-﻿using System;
-using Novemo.Items;
+﻿using Novemo.Items;
 using UnityEngine;
 
 namespace Novemo.Player
@@ -19,13 +18,28 @@ namespace Novemo.Player
             _inventory = GameObject.FindWithTag("Inventory").GetComponent<Inventory.Inventory>();
         }
 
-        private void LateUpdate()
+        public void OnEnable()
+        {
+            Invoke(nameof(SetGFX), 0.1f);
+        }
+
+        private void SetGFX()
         {
             itemSprite.sprite = item.itemIcon;
             itemSprite.drawMode = SpriteDrawMode.Sliced;
             var itemSpriteSize = itemSprite.size;
-            itemSpriteSize.x = 0.1f;
-            itemSpriteSize.y = 0.1f;
+
+            if (item.itemSubType == ItemSubType.Sword || item.itemSubType == ItemSubType.Dagger || item.itemSubType == ItemSubType.Arrow)
+            {
+                itemSpriteSize.x = 0.05f;
+                itemSpriteSize.y = 0.1f;
+            }
+            else
+            {
+                itemSpriteSize.x = 0.1f;
+                itemSpriteSize.y = 0.1f;
+            }
+            
             itemSprite.size = itemSpriteSize;
         }
 

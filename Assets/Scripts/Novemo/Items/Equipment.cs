@@ -15,11 +15,21 @@ namespace Novemo.Items
         public List<UniqueEffect> effects = new List<UniqueEffect>();
         
         public bool IsEquipped { get; set; }
+        
+        public float CurrentExperience { get; set; }
+        public float RequiredExperience { get; set; }
 
-        public override void Use()
+        public override void OnEnable()
+        {
+            base.OnEnable();
+            RequiredExperience = level * (float) itemRarity / 100; //Swap with leveling algorithm
+        }
+
+        public override bool Use()
         {
             base.Use();
             EquipmentManager.Instance.Equip(this);
+            return true;
         }
     }
 

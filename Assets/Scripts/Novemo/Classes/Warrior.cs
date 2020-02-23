@@ -8,7 +8,7 @@ namespace Novemo.Classes
 {
     public class Warrior : ClassManager
     {
-        void Awake()
+        private void Awake()
         {
             className = "Warrior";
             classDescription = "Default";
@@ -19,7 +19,7 @@ namespace Novemo.Classes
             role = Role.Tank;
         }
 
-        void Start()
+        private void Start()
         {
             var player = PlayerManager.Instance.player;
             myStats = player.GetComponent<CharacterStats>();
@@ -32,18 +32,15 @@ namespace Novemo.Classes
             
             myStats.CurrentHealth += 25;
             myStats.stats[0].baseValue += 25;
-            myStats.scaleValues["WarriorHealthModifier"] = myStats.Scale(0, .03f);
-            myStats.stats[0].AddModifier("WarriorHealthModifier", myStats.scaleValues["WarriorHealthModifier"]);
-            myStats.CurrentHealth += myStats.scaleValues["WarriorHealthModifier"];
+            myStats.stats[0].modifierValue += 0.03f;
+            myStats.stats[0].Scale();
         }
 
-        void Update()
+        private void Update()
         {
             passiveDescription = "Gives you (<color=#ff3232><b>+3%</b></color> max HP) " +
                                  "and from the start player has <color=#ff3232><b>25 HP</b></color> more." +
-                                 $"\nActually: (<color=#ff3232><b>+{myStats.Scale(0, .03f):F1} HP</b></color>)";
-            
-            StartCoroutine(myStats.ScaleValues("WarriorHealthModifier", 0, 0.03f));
+                                 $"\nActually: (<color=#ff3232><b>+{myStats.GetScaledValueByMultiplier(0, 0.03f):F1} HP</b></color>)";
         }
 
         public override void LevelUp()

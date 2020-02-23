@@ -144,7 +144,7 @@ Animator:
   m_GameObject: {fileID: 3993834099555544549}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fe475f3d57be77a4a896b6e2a5aab496, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -166,8 +166,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lookRadius: 10
+  attackRadius: 0
   stoppingDistance: 1.1
+  patrolDelay: 10
   isRanged: 0
+  animator: {fileID: 3899995405604075337}
 --- !u!114 &3993834099555544568
 MonoBehaviour:
   m_ObjectHideFlags: 0

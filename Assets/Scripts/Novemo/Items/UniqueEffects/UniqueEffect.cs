@@ -11,6 +11,11 @@ namespace Novemo.Items
         [TextArea(2, 5)]
         public string effectDescription = "New Description";
         public EffectType effectType;
+
+        public float effectPower;
+        public float effectRate;
+        
+        public int statIndex;
     }
 
     public enum EffectType

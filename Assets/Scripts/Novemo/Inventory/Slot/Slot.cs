@@ -38,6 +38,7 @@ namespace Novemo.Inventory.Slot
 
             icon.gameObject.SetActive(true);
             icon.sprite = item.itemIcon;
+            SetGraphics();
         }
 
         public void AddItems(Stack<Item> items)
@@ -57,27 +58,38 @@ namespace Novemo.Inventory.Slot
                 icon.sprite = null;
                 icon.gameObject.SetActive(false);
             }
+            SetGraphics();
+        }
+
+        private void SetGraphics()
+        {
+            var rect = icon.GetComponent<RectTransform>();
+            
+            if (CurrentItem.itemSubType == ItemSubType.Sword || CurrentItem.itemSubType == ItemSubType.Dagger || CurrentItem.itemSubType == ItemSubType.Arrow)
+            {
+                rect.sizeDelta = new Vector2(60, 120);
+                rect.eulerAngles = new Vector3(0, 0, -45);
+            }
+            else
+            {
+                rect.sizeDelta = new Vector2(90, 90);
+                rect.eulerAngles = new Vector3(0, 0, 0);
+            }
         }
 
         public void UseItemFromInventory()
         {
-            if (!IsEmpty)
-            {
-                Items.Pop().Use();
+            if (IsEmpty) return;
+            if (!Items.Peek().Use()) return;
 
-                stackAmount.text = IsMoreThanOneInSlot ? Items.Count.ToString() : string.Empty;
+            Items.Pop();
 
-                if (IsEmpty)
-                {
-                    icon.sprite = null;
-                    icon.gameObject.SetActive(false);
-                    transform.parent.parent.GetComponent<Inventory>().EmptySlots++;
-                }
-                else if (CurrentItem.itemType == ItemType.Equipment)
-                {
-                    transform.parent.parent.GetComponent<Inventory>().EmptySlots++;
-                }
-            }
+            stackAmount.text = IsMoreThanOneInSlot ? Items.Count.ToString() : string.Empty;
+
+            if (!IsEmpty) return;
+            icon.sprite = null;
+            icon.gameObject.SetActive(false);
+            transform.parent.parent.GetComponent<Inventory>().EmptySlots++;
         }
 
         public void ClearSlot()

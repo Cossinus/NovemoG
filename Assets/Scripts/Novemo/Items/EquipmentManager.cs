@@ -20,6 +20,7 @@ namespace Novemo.Items
         
             int equipmentSlots = Enum.GetNames(typeof(EquipmentSlot)).Length;
             currentEquipment = new Equipment[equipmentSlots];
+            currentEquipmentWithEffect = new Equipment[equipmentSlots];
         }
     
         #endregion
@@ -30,6 +31,7 @@ namespace Novemo.Items
         public OnEquipmentChanged onEquipmentChanged;
     
         [NonSerialized] public Equipment[] currentEquipment;
+        [NonSerialized] public Equipment[] currentEquipmentWithEffect;
 
         public void Equip(Equipment newItem)
         {
@@ -47,20 +49,25 @@ namespace Novemo.Items
                     {
                         equipSlot.ClearSlot();
                     }
-                    
+
                     equipSlot.icon.GetComponent<Image>().sprite = newItem.itemIcon;
                     equipSlot.icon.gameObject.SetActive(true);
                     equipSlot.AddItem(newItem);
                 }
             }
-        
+            
             if (currentEquipment[slotIndex] != null)
             {
                 oldItem = currentEquipment[slotIndex];
                 _inventory.AddItem(oldItem);
             }
-
+            
             onEquipmentChanged?.Invoke(newItem, oldItem);
+            
+            /*if (newItem.effects.Count > 0)
+            {
+                currentEquipmentWithEffect[slotIndex] = newItem;
+            }*/
             
             currentEquipment[slotIndex] = newItem;
             currentEquipment[slotIndex].IsEquipped = true;
@@ -84,7 +91,8 @@ namespace Novemo.Items
                 
                 Equipment oldItem = currentEquipment[slotIndex];
                 _inventory.AddItem(oldItem);
-
+                
+                //currentEquipmentWithEffect[slotIndex] = null;
                 currentEquipment[slotIndex].IsEquipped = false;
                 currentEquipment[slotIndex] = null;
 

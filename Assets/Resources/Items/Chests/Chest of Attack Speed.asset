@@ -16,11 +16,14 @@ MonoBehaviour:
   itemDescription: Item Description
   specials: 'Weight: 0.6kg'
   craftName: ChestOfAttackSpeed
-  itemIcon: {fileID: 21300000, guid: 823f150e75d8582469dd87f626060a3b, type: 3}
-  itemType: 0
-  itemRarity: 4
   stackLimit: 1
   value: 42
+  isDiscovered: 0
+  recipe: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 823f150e75d8582469dd87f626060a3b, type: 3}
+  itemType: 0
+  itemSubType: 4
+  itemRarity: 4
   level: 3
   equipSlot: 1
   modifiers:

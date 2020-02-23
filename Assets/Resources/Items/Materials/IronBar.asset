@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: IronBar
   m_EditorClassIdentifier: 
   itemName: Iron Bar
-  itemDescription: Item Description
+  itemDescription: "Common material used only for crafting and smithing. \nKinda
+    weak, so it's not recommended trying to \ncraft powerful weapons with this."
   specials: 
   craftName: IronBar
-  itemIcon: {fileID: 21300000, guid: 5b033b836ef60464d856c0282ef88d8a, type: 3}
-  itemType: 2
-  itemRarity: 0
   stackLimit: 12
   value: 15
+  isDiscovered: 1
+  recipe: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 5b033b836ef60464d856c0282ef88d8a, type: 3}
+  itemType: 2
+  itemSubType: 17
+  itemRarity: 0
   level: 0

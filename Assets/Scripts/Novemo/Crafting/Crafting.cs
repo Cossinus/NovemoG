@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using Novemo.Controllers;
-using Novemo.Inventory;
 using Novemo.Inventory.Slot;
+using Novemo.Items;
 using Novemo.Player;
 using Novemo.Stats;
 using TMPro;
@@ -48,7 +49,7 @@ namespace Novemo.Crafting
         {
 			base.Open();
 
-			foreach (var slot in slots)
+			foreach (var slot in Slots)
 			{
 				var tmpSlot = slot;
 
@@ -72,40 +73,33 @@ namespace Novemo.Crafting
 
         public void CraftItem()
         {
-	        var output = string.Empty;
-            
-            foreach (var slot in slots)
+	        var recipe = craftPrefabButton.GetComponent<Slot>().CurrentItem.recipe;
+	        var ingredients = new List<Item>(recipe.Ingredients);
+	        
+            foreach (var slot in Slots)
             {
-	            var tmpSlot = slot.GetComponent<Slot>();
-                
-                if (tmpSlot.IsEmpty)
+	            if (slot.IsEmpty)
                 {
-                    output += "EMPTY-";
                 }
                 else
                 {
-                    output += tmpSlot.CurrentItem.craftName + "-";
+	                foreach (var item in slot.Items)
+	                {
+		                if (ingredients.Contains(item))
+		                {
+			                ingredients.Remove(item);
+			                slot.RemoveItem();
+		                }
+	                }
+	                if (ingredients.Count == 0)
+	                {
+		                Inventory.Inventory.Instance.AddItem(craftPrefabButton.GetComponent<Slot>().CurrentItem);
+		                ingredients = new List<Item>(recipe.Ingredients);
+	                }
                 }
             }
 
-            /*if (_recipeManager.playerRecipes.ContainsKey(output))
-            {
-                _recipeManager.playersCraftingRecipe.TryGetValue(output, out var craftedItem);
-
-                if (craftedItem != null)
-                {
-	                InventoryManager.Instance.Clicked = craftPrefabButton;
-					if (GameObject.FindWithTag("Inventory").GetComponent<Inventory.Inventory>().AddItem(craftedItem))
-                    {
-                        foreach (var slot in slots)
-                        {
-                            slot.RemoveItem();
-                        }
-                    }
-                }
-            }*/
-			
-			Preview();
+            Preview();
         }
         
         public void Preview()
@@ -114,7 +108,7 @@ namespace Novemo.Crafting
 
 			var output = string.Empty;
 
-	        foreach (var slot in slots)
+	        foreach (var slot in Slots)
 	        {
 		        var tmpSlot = slot.GetComponent<Slot>();
                 
@@ -127,18 +121,6 @@ namespace Novemo.Crafting
                     output += tmpSlot.CurrentItem.craftName + "-";
                 }
             }
-
-			/*if (_recipeManager.playersCraftingRecipe.ContainsKey(output))
-            {
-	            _recipeManager.playersCraftingRecipe.TryGetValue(output, out var craftedItem);
-
-                if (craftedItem != null)
-                {
-	                craftPrefabButton.transform.Find("ItemButton/Icon").gameObject.SetActive(true);
-					craftPrefabButton.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite = craftedItem.itemIcon;
-					craftPrefabButton.GetComponent<Slot>().AddItem(craftedItem);
-				}
-            }*/
         }
     }
 }

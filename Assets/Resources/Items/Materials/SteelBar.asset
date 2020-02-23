@@ -13,12 +13,17 @@ MonoBehaviour:
   m_Name: SteelBar
   m_EditorClassIdentifier: 
   itemName: Steel Bar
-  itemDescription: Item Description
+  itemDescription: "Rare material used only in crafting and smithing. \nVery hard,
+    so it's very good to use as a core of a weapon.\nVery powerful with soft blade
+    edges."
   specials: 
   craftName: SteelBar
-  itemIcon: {fileID: 21300000, guid: aab7a1490a0c9fb43b510b5d77e0b2f6, type: 3}
-  itemType: 2
-  itemRarity: 3
   stackLimit: 8
   value: 35
+  isDiscovered: 1
+  recipe: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: aab7a1490a0c9fb43b510b5d77e0b2f6, type: 3}
+  itemType: 2
+  itemSubType: 17
+  itemRarity: 3
   level: 0

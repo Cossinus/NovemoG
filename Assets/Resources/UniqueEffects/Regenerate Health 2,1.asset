@@ -16,7 +16,8 @@ MonoBehaviour:
   effectDescription: 'Regenerate Health Effect: Regenerates some Health constantly
     with specified cooldown.'
   effectType: 0
+  effectPower: 2
+  effectRate: 1
+  statIndex: 0
   passiveType: 0
-  regenPower: 2
-  regenRate: 1
   regenType: 0

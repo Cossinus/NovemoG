@@ -16,5 +16,7 @@ MonoBehaviour:
   effectDescription: 'Thorns Effect: Returns some taken physical and magic damage
     as lethal physical damage.'
   effectType: 0
+  effectPower: 0.1
+  effectRate: 0
+  statIndex: 0
   passiveType: 1
-  thornsPercentage: 0.1

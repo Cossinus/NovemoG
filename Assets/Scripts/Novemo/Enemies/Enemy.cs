@@ -1,4 +1,4 @@
-﻿using Novemo.Controllers;
+﻿using Novemo.Combat;
 using Novemo.Player;
 using Novemo.Stats;
 using UnityEngine;

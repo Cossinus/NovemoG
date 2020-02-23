@@ -18,4 +18,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 87270c16ff2c3294dbcb3de7b3fadb6b, type: 2}
   - {fileID: 11400000, guid: 87270c16ff2c3294dbcb3de7b3fadb6b, type: 2}
   - {fileID: 11400000, guid: 87270c16ff2c3294dbcb3de7b3fadb6b, type: 2}
-  Type: 0
+  recipeType: 0
+  craftSkillRequired: 1
+  Discovered: 1

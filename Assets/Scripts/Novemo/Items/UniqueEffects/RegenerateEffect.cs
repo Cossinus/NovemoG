@@ -7,44 +7,38 @@ namespace Novemo.Items.UniqueEffects
     [CreateAssetMenu (menuName = "EquipmentEffects/PassiveEffects/RegenerateEffect")]
     public class RegenerateEffect : PassiveEffect
     {
-        public int regenPower;
-        public float regenRate;
-
         public RegenerateType regenType;
 
-        private void OnEnable()
+        public override bool EffectReady(CharacterStats targetStats)
         {
-            IsRegenerating = false;
-            Mitigated = false;
-            Bolted = false;
-            Blazed = false;
+            return (targetStats.CurrentHealth < targetStats.stats[0].GetValue() && !Regenerating ||
+                    targetStats.CurrentMana < targetStats.stats[1].GetValue()) && !Regenerating;
         }
 
-        public bool CheckForEffect(PlayerStats playerStats)
-        {
-            return (playerStats.CurrentHealth < playerStats.stats[0].GetValue() ||
-                    playerStats.CurrentMana < playerStats.stats[1].GetValue()) && !IsRegenerating;
-        }
-
-        public override IEnumerator Passive(PlayerStats playerStats)
+        public override IEnumerator Passive(CharacterStats targetStats)
         {
             var intRegen = (int) regenType;
-            if (intRegen == 0 && playerStats.CurrentHealth < playerStats.stats[0].GetValue())
+            if (intRegen == 0 && targetStats.CurrentHealth < targetStats.stats[0].GetValue())
             {
-                playerStats.CurrentHealth += regenPower;
-                playerStats.OnHealthChangeInvoke();
-                IsRegenerating = true;
-                yield return new WaitForSeconds(regenRate);
+                targetStats.CurrentHealth += effectPower;
+                targetStats.OnHealthChangeInvoke();
+                Regenerating = true;
+                yield return new WaitForSeconds(effectRate);
             }
-            if (intRegen == 1 && playerStats.CurrentMana < playerStats.stats[1].GetValue())
+            if (intRegen == 1 && targetStats.CurrentMana < targetStats.stats[1].GetValue())
             {
-                playerStats.CurrentMana += regenPower;
-                playerStats.OnManaChangeInvoke();
-                IsRegenerating = true;
-                yield return new WaitForSeconds(regenRate);
+                targetStats.CurrentMana += effectPower;
+                targetStats.OnManaChangeInvoke();
+                Regenerating = true;
+                yield return new WaitForSeconds(effectRate);
             }
 
-            IsRegenerating = false;
+            Regenerating = false;
+        }
+
+        public override void OnEnable()
+        {
+            Regenerating = false;
         }
 
         public enum RegenerateType

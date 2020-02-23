@@ -1,49 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
 using Novemo.Crafting;
+using Novemo.Player;
+using Novemo.Stats;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Novemo.Items
 {
     [CreateAssetMenu(fileName = "New Item", menuName = "Items/Item")]
-    public class Item : ScriptableObject
+    public class Item : ScriptableObject, IEquatable<Item>
     {
         public string itemName = "New Item";
         [TextArea(2, 5)]
         public string itemDescription = "Item Description";
         public string specials = string.Empty;
-        public string craftName = string.Empty;
 
         public int stackLimit = 1;
+        public int level = 1;
         public int value;
 
         public bool isDiscovered;
 
         public Recipe recipe;
-
+        public string craftName = string.Empty;
+        
 		public Sprite itemIcon;
         
         public ItemType itemType;
+        public ItemSubType itemSubType;
         public Rarity itemRarity;
 
-        public int level;
-        public float CurrentExperience { get; set; }
-        public float RequiredExperience { get; set; }
-        
         #region GetModifiers
         private Item _item;
         private List<Modifier> _modifiers = new List<Modifier>();
         #endregion
 
-        private void OnEnable()
+        public virtual void OnEnable()
         {
-            _item = this; 
-            RequiredExperience = level * (float) itemRarity / 100;
+            _item = this;
+            SetDescription();
         }
-        
-        public virtual void Use()
+
+        public virtual string SetDescription()
+        {
+            return string.Empty;
+        }
+
+        public virtual bool Use()
         {
             Debug.Log($"{itemName} has been used!");
+            return true;
         }
 
         public string GetTooltip()
@@ -51,15 +58,9 @@ namespace Novemo.Items
             var stats = string.Empty;
             var color = string.Empty;
             var newLine = string.Empty;
-            var itemLevel = level.ToString();
 
             if (itemDescription != string.Empty)
                 newLine = "\n";
-
-            if (itemLevel == "1" || itemLevel == "0")
-                itemLevel = string.Empty;
-            else
-                itemLevel = $"Level: {level}";
 
             if (_item.itemType == ItemType.Equipment)
             {
@@ -76,25 +77,25 @@ namespace Novemo.Items
             switch (itemRarity)
             {
                 case Rarity.Common:
-                    color = $"#696969><size=40>{itemName}</size>";
+                    color = $"#696969><size=40>{itemName}</size>"; //dark gray
                     break;
                 case Rarity.Normal:
                     color = $"yellow><size=40>{itemName}</size>";
                     break;
                 case Rarity.Uncommon:
-                    color = $"#bfff00><size=40>{itemName}</size>";
+                    color = $"#bfff00><size=40>{itemName}</size>"; //lime-ish
                     break;
                 case Rarity.Rare:
-                    color = $"#bc3c21><size=40>{itemName}</size>";
+                    color = $"#bc3c21><size=40>{itemName}</size>"; //brick-ish
                     break;
                 case Rarity.VeryRare:
-                    color = $"#00CED1><size=40>{itemName}</size>";
+                    color = $"#00CED1><size=40>{itemName}</size>"; //cyan-ish
                     break;
                 case Rarity.Epic:
-                    color = $"orange><size=40><b>{itemName}</b></size>";
+                    color = $"orange><size=40><b>{itemName}</b></size>"; 
                     break;
                 case Rarity.Legendary:
-                    color = $"#ff00ff><size=40><b>{itemName}</b></size>";
+                    color = $"#ff00ff><size=40><b>{itemName}</b></size>"; //purple-ish
                     break;
                 case Rarity.Mystical:
                     color = $"red><size=40><b>{itemName}</b></size>";
@@ -107,9 +108,9 @@ namespace Novemo.Items
             if (stats != string.Empty && specials != string.Empty)
             {
                 return string.Format(
-                    "<color={4}</color><size=24><i><color=purple>{5}{0}</color></i>\nStats:{1}\n" +
+                    "<color={3}</color><size=24><i><color=purple>{4}{0}</color></i>\nStats:{1}\n" +
                     "\n<color=#999900><size=20><i>{2}</i></size></color>" /* +
-                effect.EffectText()*/, itemDescription, stats, specials, itemLevel, color, newLine);
+                effect.EffectText()*/, itemDescription, stats, specials, color, newLine);
             }
             else if (stats != string.Empty && specials == string.Empty)
             {
@@ -131,6 +132,55 @@ namespace Novemo.Items
                     newLine);
             }
         }
+
+        #region Override Equals
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Item);
+        }
+        
+        public virtual bool Equals(Item other)
+        {
+            if (ReferenceEquals(other, null)) {
+                return false;
+            }
+			
+            if (ReferenceEquals(this, other)) {
+                return true;
+            }
+			
+            if (GetType() != other.GetType()) {
+                return false;
+            }
+
+            return itemName == other.itemName && specials == other.specials && stackLimit == other.stackLimit &&
+                   level == other.level && value == other.value && isDiscovered == other.isDiscovered &&
+                   recipe == other.recipe && itemIcon == other.itemIcon && itemType == other.itemType &&
+                   itemSubType == other.itemSubType && itemRarity == other.itemRarity;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = base.GetHashCode();
+                hashCode = (hashCode * 397) ^ (itemName != null ? itemName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (specials != null ? specials.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ stackLimit;
+                hashCode = (hashCode * 397) ^ level;
+                hashCode = (hashCode * 397) ^ value;
+                hashCode = (hashCode * 397) ^ isDiscovered.GetHashCode();
+                hashCode = (hashCode * 397) ^ (recipe != null ? recipe.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (itemIcon != null ? itemIcon.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (int) itemType;
+                hashCode = (hashCode * 397) ^ (int) itemSubType;
+                hashCode = (hashCode * 397) ^ (int) itemRarity;
+                return hashCode;
+            }
+        }
+
+        #endregion
     }
 
     [Serializable]
@@ -161,8 +211,29 @@ namespace Novemo.Items
         QuestPotion,
         Scroll,
         QuestScroll,
-    
+        
         // etc...
         // Only types of things that are used to craft something or use elsewhere (e.g. quest items)
+    }
+
+    public enum ItemSubType {
+        Shield,
+        Sword,
+        Bow, //or crossbow
+        Arrow,
+        Chestplate,
+        Leggings,
+        Boots,
+        Helmet,
+        Ring,
+        Pet,
+        Scroll,
+        Potion,
+        Alloy,
+        Necklace,
+        Rune,
+        Dagger,
+        CraftingMaterial,
+        Bar,
     }
 }

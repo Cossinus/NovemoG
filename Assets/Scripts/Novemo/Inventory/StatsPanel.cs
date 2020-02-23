@@ -13,7 +13,7 @@ namespace Novemo.Inventory
         public List<TextMeshProUGUI> statsText = new List<TextMeshProUGUI>();
         public TextMeshProUGUI visualText;
         public TextMeshProUGUI sizeText;
-        
+
         public GameObject statsTooltip;
 
         private CharacterStats playerStats;
@@ -49,7 +49,7 @@ namespace Novemo.Inventory
 
                 var position = statsText[statIndex].GetComponent<RectTransform>().position;
                 var xPos = position.x - statsText[statIndex].GetComponent<RectTransform>().rect.width / 2;
-                var yPos = position.y + 20f;
+                var yPos = position.y + statsText[statIndex].GetComponent<RectTransform>().rect.height / 2;
 
                 statsTooltip.transform.position = new Vector2(xPos, yPos);
             }

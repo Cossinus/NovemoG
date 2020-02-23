@@ -16,5 +16,7 @@ MonoBehaviour:
   effectDescription: 'Mitigate Effect: Mitigates some taken damage as heal (can be
     boosted by other effects).'
   effectType: 0
+  effectPower: 0.1
+  effectRate: 0
+  statIndex: 0
   passiveType: 4
-  mitigatePercentage: 0.1

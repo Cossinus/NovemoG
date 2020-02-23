@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Novemo.Combat;
 using Novemo.Player;
 using Novemo.Stats;
 using UnityEngine;
@@ -11,72 +12,25 @@ namespace Novemo.Controllers
         public float lookRadius;
         public float attackRadius;
         public float stoppingDistance;
-
+        public float patrolDelay = 10f;
+        
         public bool isRanged;
 
-        private float patrolDelay = 10f;
+        public Animator animator;
 
-        private Coroutine patrol;
-        
-        private Transform target;
-        private CharacterCombat combat;
-        private CharacterStats enemyStats;
-        
+        protected Transform target;
+        protected CharacterStats enemyStats;
+        protected Coroutine patrol;
+        protected CharacterCombat combat;
+
         private void Start()
         {
             target = PlayerManager.Instance.player.transform;
             combat = GetComponent<CharacterCombat>();
             enemyStats = GetComponent<CharacterStats>();
         }
-        
-        private void Update()
-        {
-            patrolDelay -= Time.deltaTime;
-            
-            float distance = Vector3.Distance(target.position, transform.position);
 
-            if (!isRanged)
-            {
-                if (distance <= lookRadius)
-                {
-                    if (patrol != null)
-                    {
-                        StopCoroutine(patrol);
-                    }
-
-                    if (distance >= stoppingDistance)
-                    {
-                        transform.position = Vector2.MoveTowards(transform.position, target.position,
-                            enemyStats.stats[6].GetValue() * Time.deltaTime);
-                    }
-                    else if (distance <= stoppingDistance)
-                    {
-                        CharacterStats targetStats = target.GetComponent<CharacterStats>();
-                        if (targetStats != null)
-                        {
-                            combat.Attack(targetStats);
-                        }
-
-                        FaceTarget();
-                    }
-                }
-                else
-                {
-                    if (patrolDelay <= 0f)
-                    {
-                        patrol = StartCoroutine(Patrol());
-
-                        patrolDelay = 10f;
-                    }
-                }
-            }
-            else
-            {
-                
-            }
-        }
-
-        private IEnumerator Patrol()
+        protected IEnumerator Patrol()
         {
             var enemyPosition = transform.position;
             var randomXPosition = Random.Range(enemyPosition.x - lookRadius, enemyPosition.x + lookRadius);
@@ -95,11 +49,6 @@ namespace Novemo.Controllers
                 progress += rate * Time.deltaTime;
                 yield return null;
             }
-        }
-
-        private void FaceTarget()
-        {
-            
         }
 
         private void OnDrawGizmosSelected()

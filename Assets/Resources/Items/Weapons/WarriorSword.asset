@@ -15,13 +15,15 @@ MonoBehaviour:
   itemName: Big Sword
   itemDescription: Item Description
   specials: 
-  craftName: WarriorSword
-  itemIcon: {fileID: 21300000, guid: e2e5a167f38a7c346a50ae88961c2131, type: 3}
-  itemType: 0
-  itemRarity: 0
   stackLimit: 1
   value: 5
-  level: 0
+  isDiscovered: 1
+  recipe: {fileID: 0}
+  craftName: WarriorSword
+  itemIcon: {fileID: 21300000, guid: 65d98ccec74b1ee469cbf95e39614e69, type: 3}
+  itemType: 0
+  itemSubType: 1
+  itemRarity: 0
   equipSlot: 4
   modifiers:
   - Name: Attack Speed
@@ -29,3 +31,4 @@ MonoBehaviour:
   - Name: Damage
     Value: 12
   effects: []
+  level: 0

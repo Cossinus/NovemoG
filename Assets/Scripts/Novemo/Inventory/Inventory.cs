@@ -32,7 +32,7 @@ namespace Novemo.Inventory
         public GameObject inventoryUI;
 
         // All Slots in Inventory
-        protected Slot.Slot[] slots;
+        public Slot.Slot[] Slots { get; private set; }
 
         // Floats
         private float _hoverYOffset;
@@ -45,7 +45,7 @@ namespace Novemo.Inventory
         // Instance of Manager
         private InventoryManager _inventoryManager;
 
-        // EmptySlots and All Slots as an int
+        // EmptySlots and All Slots Count
         public int EmptySlots { get; set; }
         public int debugEmptySlots;
         public int slotsCount;
@@ -54,18 +54,18 @@ namespace Novemo.Inventory
         {
             _playerRef = PlayerManager.Instance.player;
 
-            if (slots != null)
-                foreach (var go in slots)
+            if (Slots != null)
+                foreach (var go in Slots)
                     Destroy(go);
 
-            slots = itemsParent.GetComponentsInChildren<Slot.Slot>();
+            Slots = itemsParent.GetComponentsInChildren<Slot.Slot>();
 
             EmptySlots = slotsCount;
 
             _hoverYOffset = 100f * 0.01f;
 
             _inventoryManager = InventoryManager.Instance;
-
+            
             canvasGroup.blocksRaycasts = false;
             _inventoryManager.blur.SetActive(false);
             IsOpen = false;
@@ -120,7 +120,7 @@ namespace Novemo.Inventory
             }
         }
 
-        private void DropItem()
+        public void DropItem()
         {
             if (!_inventoryManager.MovingSlot.IsEmpty)
             {
@@ -163,12 +163,12 @@ namespace Novemo.Inventory
 
             if (item.stackLimit > 1)
             {
-                foreach (var slot in slots)
+                foreach (var slot in Slots)
                 {
 	                var tmpSlot = slot.GetComponent<Slot.Slot>();
 
                     if (tmpSlot.IsEmpty) continue;
-                    if (tmpSlot.CurrentItem.itemName != item.itemName || !tmpSlot.IsAvailable) continue;
+                    if (!tmpSlot.CurrentItem.Equals(item) || !tmpSlot.IsAvailable) continue;
                     if (_inventoryManager.Clicked != null &&
                         _inventoryManager.Clicked.GetComponent<Slot.Slot>() == tmpSlot.GetComponent<Slot.Slot>() &&
                         tmpSlot.Items.Count == item.stackLimit - _inventoryManager.MovingSlot.Items.Count)
@@ -195,7 +195,7 @@ namespace Novemo.Inventory
         private bool PlaceEmpty(Item item)
         {
             if (EmptySlots > 0)
-                foreach (var slot in slots)
+                foreach (var slot in Slots)
                 {
                     var tmp = slot.GetComponent<Slot.Slot>();
                     if (tmp.IsEmpty)
@@ -225,10 +225,35 @@ namespace Novemo.Inventory
                     Destroy(GameObject.Find("Hover"));
                     EmptySlots--;
                 }
-                else if (!tmp.IsEmpty && _inventoryManager.MovingSlot.CurrentItem.itemType == tmp.CurrentItem.itemType &&
+                else if (!tmp.IsEmpty && _inventoryManager.MovingSlot.CurrentItem == tmp.CurrentItem &&
                          tmp.IsAvailable)
                 {
                     MergeStacks(_inventoryManager.MovingSlot, tmp);
+                }
+                else if (!tmp.IsEmpty)
+                {
+                    var tmpItems = new Stack<Item>();
+                    foreach (var item in tmp.Items)
+                    {
+                        tmpItems.Push(item);
+                    }
+
+                    Destroy(GameObject.Find("Hover"));
+                    tmp.ClearSlot();
+                    foreach (var item in _inventoryManager.MovingSlot.Items)
+                    {
+                        tmp.AddItem(item);
+                    }
+
+                    _inventoryManager.MovingSlot.ClearSlot();
+                    foreach (var item in tmpItems)
+                    {
+                        _inventoryManager.MovingSlot.AddItem(item);
+                    }
+
+                    tmpItems.Clear();
+                    CreateHoverIcon(_inventoryManager.MovingSlot.CurrentItem.itemIcon);
+                    Destroy(GameObject.Find("Hover"));
                 }
             }
             else if (_inventoryManager.From == null && canvasGroup.alpha >= 1)
@@ -238,18 +263,17 @@ namespace Novemo.Inventory
                     EmptySlots++;
                     _inventoryManager.MovingSlot.Items = clicked.GetComponent<Slot.Slot>()
                         .RemoveItems(clicked.GetComponent<Slot.Slot>().Items.Count);
-                    CreateHoverIcon();
+                    CreateHoverIcon(clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite);
                     clicked.GetComponent<Slot.Slot>().ClearSlot();
                 }
             }
             else if (_inventoryManager.To == null)
-            { 
+            {
                 _inventoryManager.To = clicked.GetComponent<Slot.Slot>();
                 _inventoryManager.Clicked = null;
                 Destroy(GameObject.Find("Hover"));
             }
-
-            if (_inventoryManager.To != null && !_inventoryManager.MovingSlot.IsEmpty)
+            else if (_inventoryManager.To != null && !_inventoryManager.MovingSlot.IsEmpty)
             {
                 var tmpTo = new Stack<Item>(_inventoryManager.To.Items);
                 if (tmpTo.Count == 0)
@@ -309,10 +333,10 @@ namespace Novemo.Inventory
             }
         }
 
-        public void CreateHoverIcon()
+        public void CreateHoverIcon(Sprite icon)
         {
             _inventoryManager.HoverObject = Instantiate(_inventoryManager.iconPrefab, GameObject.Find("Inventory Canvas").transform, true);
-            _inventoryManager.HoverObject.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite = _inventoryManager.Clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite;
+            _inventoryManager.HoverObject.GetComponent<Slot.Slot>().AddItem(_inventoryManager.MovingSlot.CurrentItem);
 
             _inventoryManager.HoverObject.transform.Find("ItemButton/Icon").gameObject.SetActive(true);
             _inventoryManager.HoverObject.name = "Hover";
@@ -333,13 +357,6 @@ namespace Novemo.Inventory
 			            ? _inventoryManager.MovingSlot.Items.Count.ToString()
 			            : string.Empty;
             }
-            else
-            {
-	            _inventoryManager.HoverObject.transform.Find("ItemButton/Amount").GetComponent<Text>().text =
-		            _inventoryManager.From.Items.Count > 1
-			            ? _inventoryManager.From.Items.Count.ToString()
-			            : string.Empty;
-            }
         }
 
         public void SplitStack()
@@ -349,14 +366,14 @@ namespace Novemo.Inventory
             if (_inventoryManager.SplitAmount == _inventoryManager.MaxStackCount)
             {
                 _inventoryManager.MovingSlot.Items = _inventoryManager.Clicked.GetComponent<Slot.Slot>().RemoveItems(_inventoryManager.SplitAmount);
-                CreateHoverIcon();
+                CreateHoverIcon(_inventoryManager.Clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite);
                 _inventoryManager.Clicked.GetComponent<Slot.Slot>().ClearSlot();
                 EmptySlots++;
             }
             else if (_inventoryManager.SplitAmount > 0)
             {
                 _inventoryManager.MovingSlot.Items = _inventoryManager.Clicked.GetComponent<Slot.Slot>().RemoveItems(_inventoryManager.SplitAmount);
-                CreateHoverIcon();
+                CreateHoverIcon(_inventoryManager.Clicked.transform.Find("ItemButton/Icon").GetComponent<Image>().sprite);
             }
 
             _inventoryManager.splitSlider.value = 0;
@@ -455,9 +472,9 @@ namespace Novemo.Inventory
         {
             var content = string.Empty;
 
-            for (var i = 0; i < slots.Length; i++)
+            for (var i = 0; i < Slots.Length; i++)
             {
-                var tmp = slots[i].GetComponent<Slot.Slot>();
+                var tmp = Slots[i].GetComponent<Slot.Slot>();
 
                 if (!tmp.IsEmpty) content += i + "-" + tmp.CurrentItem.itemType + "-" + tmp.Items.Count + ";";
             }

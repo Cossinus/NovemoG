@@ -7,12 +7,16 @@ namespace Novemo.Items.UniqueEffects
     {
         public PassiveTypes passiveType;
 
-        protected bool IsRegenerating { get; set; }
+        protected bool Regenerating { get; set; }
         protected bool Blazed { get; set; }
         protected bool Bolted { get; set; }
         protected bool Mitigated { get; set; }
+
+        public abstract bool EffectReady(CharacterStats targetStats);
         
-        public abstract IEnumerator Passive(PlayerStats playerStats);
+        public abstract IEnumerator Passive(CharacterStats targetStats);
+
+        public abstract void OnEnable();
     }
 
     public enum PassiveTypes

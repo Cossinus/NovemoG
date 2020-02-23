@@ -1,5 +1,6 @@
 using System.Collections;
-using Novemo.Controllers;
+using Novemo.Combat;
+using Novemo.Player;
 using Novemo.Stats;
 using UnityEngine;
 
@@ -10,24 +11,32 @@ namespace Novemo.Items.UniqueEffects
     {
         private CharacterStats _targetStats;
 
-        public float thornsPercentage;
+        public override bool EffectReady(CharacterStats targetStats)
+        {
+            var enemy = PlayerManager.Instance.player.GetComponent<CharacterCombat>().enemyCurrentlyFightingWith;
+            if (enemy != null)
+                _targetStats = enemy.GetComponent<CharacterStats>();
+            return true;
+        }
 
-        public IEnumerator GetEffect(CharacterCombat playerCombat)
+        /*public IEnumerator GetEffect(CharacterCombat playerCombat)
         {
             _targetStats = playerCombat.enemyCurrentlyFightingWith.GetComponent<CharacterStats>();
             yield return new WaitForSeconds(0.1f);
-        }
+        }*/
 
-        public override IEnumerator Passive(PlayerStats playerStats)
+        public override IEnumerator Passive(CharacterStats targetStats)
         {
             if (_targetStats != null)
             {
-                var thorn = playerStats.GetLastDamage * thornsPercentage;
+                var thorn = targetStats.GetLastDamage * effectPower;
                 _targetStats.TakeLethalDamage(thorn, 0);
                 _targetStats.OnHealthChangeInvoke();
-                playerStats.GetLastDamage = 0;
+                targetStats.GetLastDamage = 0;
                 yield return null;
             }
         }
+
+        public override void OnEnable() { }
     }
 }

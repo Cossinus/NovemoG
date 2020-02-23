@@ -16,11 +16,14 @@ MonoBehaviour:
   itemDescription: Item Description
   specials: 
   craftName: NeonaziHelmet
-  itemIcon: {fileID: 21300000, guid: e6d019d1cf3851447963e4646de2ab72, type: 3}
-  itemType: 0
-  itemRarity: 2
   stackLimit: 1
   value: 70
+  isDiscovered: 0
+  recipe: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: e6d019d1cf3851447963e4646de2ab72, type: 3}
+  itemType: 0
+  itemSubType: 7
+  itemRarity: 2
   level: 3
   equipSlot: 0
   modifiers:
