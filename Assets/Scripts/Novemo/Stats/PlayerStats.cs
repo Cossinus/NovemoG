@@ -1,6 +1,7 @@
 ﻿using Novemo.Controllers;
 using Novemo.Items;
 using Novemo.Player;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Novemo.Stats
@@ -12,15 +13,15 @@ namespace Novemo.Stats
         public int CraftSkill { get; set; } = 1;
 
         private PlayerController _controller;
-        
-        void Start()
+
+        private void Start()
         {
             EquipmentManager.Instance.onEquipmentChanged += OnEquipmentChanged;
             GetComponent<CharacterStats>().OnExperienceChanged += SetExperienceBar;
             _controller = GetComponent<PlayerController>();
         }
 
-        void OnEquipmentChanged(Equipment newItem, Equipment oldItem)
+        private void OnEquipmentChanged(Equipment newItem, Equipment oldItem)
         {
             if (newItem != null)
             {
@@ -30,11 +31,26 @@ namespace Novemo.Stats
                     {
                         if (stat.statName == modifier.Name)
                         {
-                            stat.AddModifier(modifier.Name, modifier.Value);
-                            if (stat.statName == "Health")
-                                CurrentHealth += modifier.Value;
-                            if (stat.statName == "Mana")
-                                CurrentMana += modifier.Value;
+                            switch (stat.statName)
+                            {
+                                case "Health":
+                                    var healthFraction = metrics.GetCurrentFraction(true);
+                                    stat.AddModifier(modifier.Name, modifier.Value);
+                                    SetCurrentStat(0, healthFraction);
+                                    
+                                    OnHealthChangeInvoke();
+                                    break;
+                                case "Mana":
+                                    var manaFraction = metrics.GetCurrentFraction(false);
+                                    stat.AddModifier(modifier.Name, modifier.Value);
+                                    SetCurrentStat(1, manaFraction);
+                                    
+                                    OnManaChangeInvoke();
+                                    break;
+                                default:
+                                    stat.AddModifier(modifier.Name, modifier.Value);
+                                    break;
+                            }
                         }
                     }
                 }
@@ -48,11 +64,26 @@ namespace Novemo.Stats
                     {
                         if (stat.statName == modifier.Name)
                         {
-                            stat.RemoveModifier(modifier.Name, modifier.Value);
-                            if (stat.statName == "Health")
-                                CurrentHealth -= modifier.Value;
-                            if (stat.statName == "Mana")
-                                CurrentMana -= modifier.Value;
+                            switch (stat.statName)
+                            {
+                                case "Health":
+                                    var healthFraction = metrics.GetCurrentFraction(true);
+                                    stat.RemoveModifier(modifier.Name, modifier.Value);
+                                    SetCurrentStat(0, healthFraction);
+
+                                    OnHealthChangeInvoke();
+                                    break;
+                                case "Mana":
+                                    var manaFraction = metrics.GetCurrentFraction(false);
+                                    stat.RemoveModifier(modifier.Name, modifier.Value);
+                                    SetCurrentStat(1, manaFraction);
+
+                                    OnManaChangeInvoke();
+                                    break;
+                                default:
+                                    stat.RemoveModifier(modifier.Name, modifier.Value);
+                                    break;
+                            }
                         }
                     }
                 }

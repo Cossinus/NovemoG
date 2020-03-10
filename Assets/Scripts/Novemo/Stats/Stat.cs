@@ -11,9 +11,11 @@ namespace Novemo.Stats
     {
         public string statName;
         public float baseValue;
-        protected ConcurrentDictionary<string, float> modifiers = new ConcurrentDictionary<string, float>();
+        public ConcurrentDictionary<string, float> modifiers = new ConcurrentDictionary<string, float>();
 
-        [NonSerialized] public float modifierValue;
+        [NonSerialized] public float baseModifierValue;
+        [NonSerialized] public float bonusModifierValue;
+        [NonSerialized] public float wholeModifierValue;
         [NonSerialized] public float tmpAttackSpeed;
         
         public float GetValue()
@@ -22,27 +24,19 @@ namespace Novemo.Stats
             Parallel.ForEach(modifiers, x => finalValue += x.Value);
             return finalValue;
         }
+
+        public void AddBaseValue(float value)
+        {
+            baseValue += value;
+            Scale();
+        }
         
         // Clearly working for now
         public void Scale()
         {
-            if (modifiers.ContainsKey("Scale"))
-            {
-                if (modifiers["Scale"] > 0)
-                    modifiers["Scale"] = modifierValue * (GetValue() - modifiers["Scale"]);
-                else
-                    modifiers["Scale"] = modifierValue * GetValue();
-            }
-            else
-            {
-                modifiers["Scale"] = modifierValue * GetValue();
-            }
-
-            if (statName == "Health") {
-                PlayerManager.Instance.player.GetComponent<CharacterStats>().CurrentHealth += modifiers["Scale"];
-            } if (statName == "Mana") {
-                PlayerManager.Instance.player.GetComponent<CharacterStats>().CurrentMana += modifiers["Scale"];
-            }
+            Metrics.CalculateScale(this, "Whole", wholeModifierValue);
+            Metrics.CalculateScale(this, "Bonus", bonusModifierValue);
+            Metrics.CalculateScale(this, "Base", baseModifierValue);
         }
 
         public void AddModifier(string name, float modifier)

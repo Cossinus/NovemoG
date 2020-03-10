@@ -20,7 +20,7 @@ namespace Novemo.Player
 
         public void OnEnable()
         {
-            Invoke(nameof(SetGFX), 0.1f);
+            Invoke(nameof(SetGFX), 0.05f);
         }
 
         private void SetGFX()

@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using Novemo.Status_Effects.Buffs;
-using Novemo.Status_Effects.Debuffs;
+using Novemo.Status_Effects;
 using UnityEngine;
 
 namespace Novemo.Stats
 {
     public class CharacterStats : MonoBehaviour
     {
-        //Character Level and Rarity
+        //Character Level
         public int level;
-        public int stars;
 
         //Character Stats
         public List<Stat> stats = new List<Stat>();
+        
+        //Metrics component
+        protected Metrics metrics;
 
         //Character status effects
-        public List<Debuff> remainingDebuffs = new List<Debuff>();
-        public List<Debuff> debuffs = new List<Debuff>();
-        public List<Buff> remainingBuffs = new List<Buff>();
-        public List<Buff> buffs = new List<Buff>();
+        public List<StatusEffect> statusEffects = new List<StatusEffect>();
         
         //Health
         public float CurrentHealth { get; set; }
@@ -41,7 +39,7 @@ namespace Novemo.Stats
         public bool CanAttack { get; set; } = true;
 
         //Events
-        public event Action<float> OnDamageTake;
+        public event Action<float> OnDamageTook;
         public event Action<float, float> OnHealthChanged;
         public event Action<float, float> OnManaChanged;
         public event Action<float, float> OnExperienceChanged;
@@ -53,21 +51,29 @@ namespace Novemo.Stats
             CurrentHealth = stats[0].GetValue();
             CurrentMana = stats[1].GetValue();
             RequiredExperience = 50;
+            metrics = GameObject.Find("GameManager").GetComponent<Metrics>();
         }
 
         private void Update()
         {
-            LevelUp();
-            HandleDebuffs();
-            HandleBuffs();
-
-            if (DamageReducePercentage > 75f) {
-                DamageReducePercentage = 75f;
-            } if (DamageBoostPercentage > 125f) {
-                DamageBoostPercentage = 125f;
+            if (CurrentHealth <= 0)
+            {
+                Die();
             }
             
-            if (Input.GetKeyDown(KeyCode.T))
+            CurrentHealth = CurrentHealth > stats[0].GetValue() ? stats[0].GetValue() : CurrentHealth;
+            CurrentMana = CurrentMana > stats[1].GetValue() ? stats[1].GetValue() : CurrentMana;
+
+            RegenerateHealth(stats[7].GetValue(), stats[28].GetValue());
+            RegenerateMana(stats[8].GetValue(), stats[29].GetValue());
+
+            DamageBoostPercentage = DamageBoostPercentage > 125f ? 125f : DamageBoostPercentage;
+            DamageReducePercentage = DamageReducePercentage > 75f ? 75f : DamageReducePercentage;
+            
+            LevelUp();
+            HandleStatusEffects();
+
+            if (Input.GetKey(KeyCode.T))
             {
                 TakeDamage(1, 1, 1, 1, false);
                 TakeLethalDamage(1, 1);
@@ -75,22 +81,10 @@ namespace Novemo.Stats
 
             if (Input.GetKey(KeyCode.X))
             {
-                CurrentExperience += 5;
+                CurrentExperience += 10;
                 OnExperienceChanged?.Invoke(RequiredExperience, CurrentExperience);
-            }
-            
-            RegenerateHealth(stats[7].GetValue(), stats[28].GetValue());
-            RegenerateMana(stats[8].GetValue(), stats[29].GetValue());
-
-            if (CurrentHealth > stats[0].GetValue()) {
-                CurrentHealth = stats[0].GetValue();
-            } if (CurrentMana > stats[1].GetValue()) {
-                CurrentMana = stats[1].GetValue();
-            }
-
-            if (CurrentHealth <= 0)
-            {
-                Die();
+                DamageBoostPercentage += 50f;
+                DamageReducePercentage += 50f;
             }
         }
 
@@ -98,12 +92,12 @@ namespace Novemo.Stats
         {
             //TODO Modify this formula (according to other effects, potions, scrolls mostly in %)
             physicalDamage -= physicalDamage * ((stats[3].GetValue() - physicalDamagePenetration) / (stats[3].GetValue() + physicalDamagePenetration)) * 0.75f;
-            physicalDamage = Mathf.Clamp(physicalDamage, 0, float.MaxValue);
-            physicalDamage = (float) Math.Round(physicalDamage * 100f) / 100f;
+            physicalDamage = Mathf.Clamp(physicalDamage, 1, float.MaxValue);
+            physicalDamage = (float) Math.Round(physicalDamage, 2);
 
             magicDamage -= magicDamage * ((stats[4].GetValue() - magicDamagePenetration) / (stats[4].GetValue() + magicDamagePenetration)) * 0.75f;
-            magicDamage = Mathf.Clamp(magicDamage, 0, float.MaxValue);
-            magicDamage = (float) Math.Round(magicDamage * 100f) / 100f;
+            magicDamage = Mathf.Clamp(magicDamage, 1, float.MaxValue);
+            magicDamage = (float) Math.Round(magicDamage, 2);
 
             var damage = physicalDamage + magicDamage;
             
@@ -124,7 +118,7 @@ namespace Novemo.Stats
                 damage *= 2;
             }
 
-            OnDamageTake?.Invoke(damage);
+            OnDamageTook?.Invoke(damage);
             GetLastDamage = damage;
 
             CurrentHealth -= damage;
@@ -144,6 +138,11 @@ namespace Novemo.Stats
             Debug.Log($"{transform.name} takes {damage} damage.");
         }
 
+        public void SetCurrentStat(int statIndex, float fraction)
+        {
+            CurrentHealth = stats[statIndex].GetValue() * fraction;
+        }
+
         protected virtual void Die()
         {
             // Die in some way
@@ -159,82 +158,35 @@ namespace Novemo.Stats
         {
             return stats[statIndex].GetValue() * modifierMultiplier;
         }
+
+        #region StatusEffectHandler
         
-        #region DebuffHandler
-        
-        public void ApplyDebuff(Debuff debuff)
+        public void ApplyStatusEffect(StatusEffect statusEffect)
         {
-            if (debuffs.Contains(debuff))
+            if (statusEffects.Contains(statusEffect))
             {
-                remainingDebuffs.Add(debuff);
+                statusEffects.Find(x => x.Equals(statusEffect)).RemoveEffect();
+                statusEffect.ApplyEffect();
             }
             else
             {
-                debuff.ApplyDebuff();
+                statusEffect.ApplyEffect();
             }
         }
 
-        public void RemoveDebuff(Debuff debuff)
+        public void RemoveStatusEffect(StatusEffect statusEffect)
         {
-            debuffs.Remove(debuff);
+            statusEffects.Remove(statusEffect);
         }
 
-        private void HandleDebuffs()
+        private void HandleStatusEffects()
         {
-            if (debuffs.Count >= 1)
+            if (statusEffects.Count >= 1)
             {
-                for (var i = 0; i < debuffs.Count; i++)
+                for (var i = 0; i < statusEffects.Count; i++)
                 {
-                    debuffs[i].Update();
+                    statusEffects[i].UpdateEffect();
                 }
-            }
-
-            if (remainingDebuffs.Count < 1) return;
-            for (var i = 0; i < remainingDebuffs.Count; i++)
-            {
-                ApplyDebuff(remainingDebuffs[i]);
-
-                remainingDebuffs.Remove(remainingDebuffs[i]);
-            }
-        }
-        
-        #endregion
-        
-        #region BuffHandler
-        
-        public void ApplyBuff(Buff buff)
-        {
-            if (buffs.Contains(buff))
-            {
-                remainingBuffs.Add(buff);
-            }
-            else
-            {
-                buff.ApplyBuff();
-            }
-        }
-
-        public void RemoveBuff(Buff buff)
-        {
-            buffs.Remove(buff);
-        }
-
-        private void HandleBuffs()
-        {
-            if (buffs.Count >= 1)
-            {
-                for (var i = 0; i < buffs.Count; i++)
-                {
-                    buffs[i].Update();
-                }
-            }
-
-            if (remainingBuffs.Count < 1) return;
-            for (var i = 0; i < remainingBuffs.Count; i++)
-            {
-                ApplyBuff(remainingBuffs[i]);
-
-                remainingBuffs.Remove(remainingBuffs[i]);
             }
         }
         

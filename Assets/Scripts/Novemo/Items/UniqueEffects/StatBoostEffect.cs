@@ -17,13 +17,13 @@ namespace Novemo.Items.UniqueEffects
 
         public override IEnumerator Passive(CharacterStats targetStats)
         {
-            _targetStats.stats[statIndex].modifierValue += effectPower;
+            _targetStats.stats[statIndex].wholeModifierValue += effectPower;
             yield return null;
         }
 
         public void RemoveModifierValue()
         {
-            _targetStats.stats[statIndex].modifierValue -= effectPower;
+            _targetStats.stats[statIndex].wholeModifierValue -= effectPower;
         }
 
         public override void OnEnable()

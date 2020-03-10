@@ -32,7 +32,7 @@ namespace Novemo.Items
         public Rarity itemRarity;
 
         #region GetModifiers
-        private Item _item;
+        protected Item _item;
         private List<Modifier> _modifiers = new List<Modifier>();
         #endregion
 

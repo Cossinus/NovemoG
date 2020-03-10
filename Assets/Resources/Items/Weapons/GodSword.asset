@@ -15,16 +15,16 @@ MonoBehaviour:
   itemName: God Item
   itemDescription: Item Description
   specials: There is no better sword than this!
-  craftName: GodSword
   stackLimit: 1
+  level: 0
   value: 9999999
   isDiscovered: 1
   recipe: {fileID: 0}
+  craftName: GodSword
   itemIcon: {fileID: 21300000, guid: 037c9a9808c233e43a537552249864a3, type: 3}
   itemType: 0
   itemSubType: 1
   itemRarity: 8
-  level: 0
   equipSlot: 4
   modifiers:
   - Name: Damage
@@ -40,6 +40,8 @@ MonoBehaviour:
   - Name: Magic Resist Penetration
     Value: 300
   - Name: Health
+    Value: 300
+  - Name: Luck
     Value: 300
   effects:
   - {fileID: 11400000, guid: 59442d9d9b6a6004c91362c397f8d36f, type: 2}

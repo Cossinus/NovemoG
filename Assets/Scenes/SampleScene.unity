@@ -634,6 +634,7 @@ GameObject:
   - component: {fileID: 1229858476}
   - component: {fileID: 1229858478}
   - component: {fileID: 1229858477}
+  - component: {fileID: 1229858479}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -745,6 +746,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5a7bc32590b4be8bf941e1058f9f370, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1229858479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1229858471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d440b57b9924daa42a3789ed7b525d84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1310825807 stripped
@@ -1346,7 +1359,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level: 1
-  stars: 1
   stats:
   - statName: Health
     baseValue: 12

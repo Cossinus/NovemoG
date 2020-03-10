@@ -102,42 +102,12 @@ namespace Novemo.Items
 				var uniqueEffect = ScriptableObject.CreateInstance<PassiveEffect>();
 				
 				uniqueEffect.passiveType = (PassiveTypes) Random.Range(0, Enum.GetValues(typeof(PassiveTypes)).Length);
-
-				/*switch (uniqueEffect.passiveType)
-				{
-					case PassiveTypes.Regenerate:
-						break;
-					case PassiveTypes.Thorns:
-						break;
-					case PassiveTypes.Blaze:
-						break;
-					case PassiveTypes.Bolt:
-						break;
-					case PassiveTypes.MitigateDamage:
-						break;
-					case PassiveTypes.StatBoost:
-						break;
-				}*/
 			}
 			else
 			{
 				var uniqueEffect = ScriptableObject.CreateInstance<ActiveEffect>();
 				
 				uniqueEffect.activeType = (ActiveTypes) Random.Range(0, Enum.GetValues(typeof(ActiveTypes)).Length);
-
-				/*switch (uniqueEffect.activeType)
-				{
-					case ActiveTypes.DealDamage:
-						break;
-					case ActiveTypes.Heal:
-						break;
-					case ActiveTypes.SpeedUp:
-						break;
-					case ActiveTypes.Dash:
-						break;
-					case ActiveTypes.DamageBoost:
-						break;
-				}*/
 			}
 		}
 
