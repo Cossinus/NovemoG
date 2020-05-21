@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections;
-using Novemo.Player;
+using Novemo.Character;
+using Novemo.Character.Player;
+using Novemo.Characters.Player;
 using Novemo.Stats;
 using UnityEngine;
 
 namespace Novemo.Combat
 {
-    [RequireComponent(typeof(CharacterStats))]
+    [RequireComponent(typeof(Characters.Character))]
     public class CharacterCombat : MonoBehaviour
     {
         private GameObject player;
         
-        private CharacterStats _myStats;
+        private Characters.Character _myStats;
 
         private float _attackCooldown;
 
@@ -21,12 +23,12 @@ namespace Novemo.Combat
 
         public float attackDelay = 1f;
 
-        public event Action<bool> OnAttack;
+        public event Action OnAttack;
 
         private void Start()
         {
             player = PlayerManager.Instance.player;
-            _myStats = GetComponent<CharacterStats>();
+            _myStats = GetComponent<Characters.Character>();
         }
 
         private void FixedUpdate()
@@ -34,7 +36,7 @@ namespace Novemo.Combat
             _attackCooldown -= Time.deltaTime;
         }
     
-        public void Attack(CharacterStats targetStats)
+        public void Attack(Characters.Character targetStats)
         {
             if (targetStats.CanAttack && _attackCooldown <= 0f)
             {
@@ -44,13 +46,15 @@ namespace Novemo.Combat
 
                 StartCoroutine(DealBasicAttackDamage(targetStats, attackDelay));
                 
-                OnAttack?.Invoke(true);
+                OnAttack?.Invoke();
 
                 _attackCooldown = 1f / _myStats.stats[5].GetValue();
             }
         }
 
-        private void DealDamage(CharacterStats stats, DamageType type, float physicalDamageAmount, float magicDamageAmount, bool reduced)
+        //TODO BasicAttack method and SpellDamage method
+        
+        private void DealDamage(Characters.Character stats, DamageType type, float physicalDamageAmount, float magicDamageAmount, bool reduced)
         {
             if (reduced)
             {
@@ -61,40 +65,38 @@ namespace Novemo.Combat
             switch (type)
             {
                 case DamageType.Physical:
-                    stats.TakeDamage(physicalDamageAmount, 0, _myStats.stats[23].GetValue(), 0, false);
+                    stats.TakeDamage(_myStats, physicalDamageAmount, 0);
                     break;
                 case DamageType.PhysicalLethal:
-                    stats.TakeLethalDamage(physicalDamageAmount, 0);
+                    stats.TakeLethalDamage(_myStats, physicalDamageAmount, 0);
                     break;
                 case DamageType.Magic:
-                    stats.TakeDamage(0, magicDamageAmount, 0, _myStats.stats[24].GetValue(), false);
+                    stats.TakeDamage(_myStats, 0, magicDamageAmount);
                     break;
                 case DamageType.PhysicalMagic:
-                    stats.TakeLethalDamage(0, magicDamageAmount);
+                    stats.TakeLethalDamage(_myStats, 0, magicDamageAmount);
                     break;
                 case DamageType.Mixed:
-                    stats.TakeDamage(physicalDamageAmount, magicDamageAmount, _myStats.stats[23].GetValue(), _myStats.stats[24].GetValue(), false);
+                    stats.TakeDamage(_myStats, physicalDamageAmount, magicDamageAmount);
                     break;
                 case DamageType.MixedLethal:
-                    stats.TakeLethalDamage(physicalDamageAmount, magicDamageAmount);
+                    stats.TakeLethalDamage(_myStats, physicalDamageAmount, magicDamageAmount);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
 
-        private IEnumerator DealBasicAttackDamage(CharacterStats stats, float delay)
+        private IEnumerator DealBasicAttackDamage(Characters.Character stats, float delay)
         {
             yield return new WaitForSeconds(delay);
-            stats.TakeDamage(_myStats.stats[2].GetValue(), _myStats.stats[9].GetValue(), 1, 1, false);
-            // TODO Change myStats.stats[9].GetValue() with spell damage nad lethal spell damage
+            stats.TakeDamage(_myStats, _myStats.stats[2].GetValue(), _myStats.stats[9].GetValue());
         }
         
         /*private IEnumerator DealBasicAttackLethalDamage(CharacterStats stats, float delay)
         {
             yield return new WaitForSeconds(delay);
             stats.TakeLethalDamage(_myStats.stats[10].GetValue(), _myStats.stats[9].GetValue(), false, false);
-            // TODO Change myStats.stats[9].GetValue() with spell damage nad lethal spell damage
         }*/
     }
 
@@ -105,6 +107,8 @@ namespace Novemo.Combat
         Magic,
         PhysicalMagic,
         Mixed,
-        MixedLethal
+        MixedLethal,
+        Spell,
+        BasicAttack
     }
 }

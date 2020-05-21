@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14f0fd5f1c8d1dc46900c5d836e113b4, type: 3}
+  m_Name: Warrior
+  m_EditorClassIdentifier: 
+  className: Warrior
+  classDescription: Default
+  classPassive:
+    passive: {fileID: 0}
+    passiveIcon: {fileID: 0}
+    passiveName: Healthy
+    passiveDescription: 'Gives you (<color=#ff3232><b>+3%</b></color> max HP) and
+      from the start player has <color=#ff3232><b>25 HP</b></color> more.
+
+      Actually:
+      (<color=#ff3232><b>+0,4 HP</b></color>)'
+  rangeType: 0
+  role: 0
+  damageType: 0
+  classIcon: {fileID: 0}
+  defaultWeapon: {fileID: 11400000, guid: 7a35c6292b9394e44be873e0dea0f4f9, type: 2}

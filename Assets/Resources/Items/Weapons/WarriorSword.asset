@@ -13,22 +13,20 @@ MonoBehaviour:
   m_Name: WarriorSword
   m_EditorClassIdentifier: 
   itemName: Big Sword
-  itemDescription: Item Description
+  itemDescription: A simple warrior sword.
   specials: 
   stackLimit: 1
+  level: 0
   value: 5
   isDiscovered: 1
   recipe: {fileID: 0}
-  craftName: WarriorSword
   itemIcon: {fileID: 21300000, guid: 65d98ccec74b1ee469cbf95e39614e69, type: 3}
   itemType: 0
   itemSubType: 1
   itemRarity: 0
   equipSlot: 4
   modifiers:
-  - Name: Attack Speed
-    Value: 45
-  - Name: Damage
-    Value: 12
-  effects: []
-  level: 0
+  - name: Damage
+    value: 13
+  - name: Attack Speed
+    value: 7

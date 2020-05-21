@@ -1,20 +1,19 @@
-using System.Collections.Generic;
-using Novemo.Controllers;
-using Novemo.Inventory.Slot;
-using Novemo.Items;
-using Novemo.Player;
-using Novemo.Stats;
+using System.Collections;
+using System.Linq;
+using Novemo.Character.Player;
+using Novemo.Characters.Player;
+using Novemo.Inventories;
+using Novemo.Inventory;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Novemo.Crafting
 {
-    public class Crafting : Inventory.Inventory
+    public class Crafting : MonoBehaviour
     {
         #region Singleton
 
-        public new static Crafting Instance;
+        public static Crafting Instance;
 
         private void Awake()
         {
@@ -23,104 +22,99 @@ namespace Novemo.Crafting
 
         #endregion
 
-        private RecipeManager _recipeManager;
-
-        private PlayerStats _playerStats;
-
+        public bool IsOpen { get; set; }
+        
         public TextMeshProUGUI craftSkillText;
+
+        private InventoryManager _inventoryManager;
+
+        private CanvasGroup _canvasGroup;
         
-        public GameObject craftPrefabButton; // also a preview slot
+        private Player _playerStats;
+        
+        private bool _fadingIn;
+        private bool _fadingOut;
 
-        public override void Start()
+        public void Start()
         {
-            base.Start();
-            _recipeManager = RecipeManager.Instance;
-            _playerStats = PlayerManager.Instance.player.GetComponent<PlayerStats>();
-            craftPrefabButton.GetComponentInChildren<Button>().onClick.AddListener(CraftItem);
-		}
-
-        public override void Update()
-        {
-            base.Update();
-            craftSkillText.text = _playerStats.CraftSkill.ToString();
+            _inventoryManager = InventoryManager.Instance;
+            _playerStats = PlayerManager.Instance.player.GetComponent<Player>();
+            _canvasGroup = GetComponent<CanvasGroup>();
         }
 
-        public override void Open()
+        public void Open()
         {
-			base.Open();
-
-			foreach (var slot in Slots)
-			{
-				var tmpSlot = slot;
-
-				int count = tmpSlot.Items.Count;
-				for (int i = 0; i < count; i++)
-				{
-					var tmpItem = tmpSlot.RemoveItem();
-					PlayerManager.Instance.player.GetComponent<PlayerController>().inventory.AddItem(tmpItem);
-				}
-			}
-
-			Preview();
-        }
-
-        public override void MoveItem(GameObject clicked)
-        {
-	        base.MoveItem(clicked);
-
-	        Preview();
-		}
-
-        public void CraftItem()
-        {
-	        var recipe = craftPrefabButton.GetComponent<Slot>().CurrentItem.recipe;
-	        var ingredients = new List<Item>(recipe.Ingredients);
-	        
-            foreach (var slot in Slots)
+            if (Metrics.EqualFloats(_canvasGroup.alpha, 0, 0.01f))
             {
-	            if (slot.IsEmpty)
+                craftSkillText.text = $"Crafting Skill: {_playerStats.CraftSkill.ToString()}";
+
+                StartCoroutine(nameof(FadeIn));
+                IsOpen = true;
+            }
+            else
+            {
+                StartCoroutine(nameof(FadeOut));
+                InventoryManager.Instance.selectStackSize.SetActive(false);
+                IsOpen = false;
+
+                if (!_inventoryManager.MovingSlot.IsEmpty)
                 {
-                }
-                else
-                {
-	                foreach (var item in slot.Items)
-	                {
-		                if (ingredients.Contains(item))
-		                {
-			                ingredients.Remove(item);
-			                slot.RemoveItem();
-		                }
-	                }
-	                if (ingredients.Count == 0)
-	                {
-		                Inventory.Inventory.Instance.AddItem(craftPrefabButton.GetComponent<Slot>().CurrentItem);
-		                ingredients = new List<Item>(recipe.Ingredients);
-	                }
+                    Inventories.Inventory.Instance.DropItems(_inventoryManager.MovingSlot.Items.ToList(), _playerStats.transform);
+                    
+                    _inventoryManager.MovingSlot.ClearSlot();
+                    Destroy(GameObject.Find("Hover"));
                 }
             }
-
-            Preview();
         }
         
-        public void Preview()
+        private IEnumerator FadeOut()
         {
-	        craftPrefabButton.GetComponent<Slot>().ClearSlot();
+            if (_fadingOut) yield break;
+            
+            _fadingOut = true;
+            _fadingIn = false;
+            StopCoroutine(nameof(FadeIn));
 
-			var output = string.Empty;
-
-	        foreach (var slot in Slots)
-	        {
-		        var tmpSlot = slot.GetComponent<Slot>();
+            var startAlpha = _canvasGroup.alpha;
+            var rate = 1.0f / 0.7f;
+            var progress = 0.0f;
                 
-                if (tmpSlot.IsEmpty)
-                {
-                    output += "EMPTY-";
-                }
-                else
-                {
-                    output += tmpSlot.CurrentItem.craftName + "-";
-                }
+            while (progress < 1.0)
+            {
+                _canvasGroup.alpha = Mathf.Lerp(startAlpha, 0, progress);
+
+                progress += rate * Time.deltaTime;
+                yield return null;
             }
+            _canvasGroup.blocksRaycasts = false;
+
+            _canvasGroup.alpha = 0;
+            _fadingOut = false;
+        }
+
+        private IEnumerator FadeIn()
+        {
+            if (_fadingIn) yield break;
+            
+            _fadingOut = false;
+            _fadingIn = true;
+            StopCoroutine(nameof(FadeOut));
+
+            var startAlpha = _canvasGroup.alpha;
+            var rate = 1.0f / 0.7f;
+            var progress = 0.0f;
+                
+            _canvasGroup.blocksRaycasts = true;
+            while (progress < 1.0)
+            {
+                _canvasGroup.alpha = Mathf.Lerp(startAlpha, 1, progress);
+
+                progress += rate * Time.deltaTime;
+                yield return null;
+            }
+
+            _canvasGroup.alpha = 1;
+            _fadingIn = false;
         }
     }
 }

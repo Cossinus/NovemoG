@@ -12,7 +12,7 @@ namespace Novemo.Controllers
 
         private Vector3 _targetPos;
 
-        private void Update()
+        private void LateUpdate()
         {
             var targetPosition = target.transform.position;
             var transformPosition = transform.position;

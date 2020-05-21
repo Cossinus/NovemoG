@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Novemo.Player;
+using Novemo.Character.Player;
+using Novemo.Characters.Player;
 using UnityEngine;
 
 namespace Novemo.Stats
@@ -13,11 +14,11 @@ namespace Novemo.Stats
         public float baseValue;
         public ConcurrentDictionary<string, float> modifiers = new ConcurrentDictionary<string, float>();
 
-        [NonSerialized] public float baseModifierValue;
-        [NonSerialized] public float bonusModifierValue;
-        [NonSerialized] public float wholeModifierValue;
-        [NonSerialized] public float tmpAttackSpeed;
-        
+        [HideInInspector] public float baseModifierValue;
+        [HideInInspector] public float bonusModifierValue;
+        [HideInInspector] public float wholeModifierValue;
+        [HideInInspector] public float tmpAttackSpeed;
+
         public float GetValue()
         {
             var finalValue = baseValue;
@@ -25,18 +26,42 @@ namespace Novemo.Stats
             return finalValue;
         }
 
+        public float GetBonusValue()
+        {
+            float finalValue = 0;
+            Parallel.ForEach(modifiers, x => finalValue += x.Value);
+            return finalValue;
+        }
+
         public void AddBaseValue(float value)
         {
             baseValue += value;
-            Scale();
+            ScaleAll();
+        }
+
+        public void AddWholeModifier(float value, Characters.Character target)
+        {
+            wholeModifierValue += value;
+            CalculateScale(this, "Whole", wholeModifierValue, target);
+        }
+
+        public void AddBonusModifier(float value, Characters.Character target)
+        {
+            bonusModifierValue += value;
+            CalculateScale(this, "Bonus", bonusModifierValue, target);
         }
         
-        // Clearly working for now
-        public void Scale()
+        public void AddBaseModifier(float value, Characters.Character target)
         {
-            Metrics.CalculateScale(this, "Whole", wholeModifierValue);
-            Metrics.CalculateScale(this, "Bonus", bonusModifierValue);
-            Metrics.CalculateScale(this, "Base", baseModifierValue);
+            baseModifierValue += value;
+            CalculateScale(this, "Base", baseModifierValue, target);
+        }
+
+        public void ScaleAll()
+        {
+            CalculateScale(this, "Whole", wholeModifierValue, PlayerManager.Instance.player.GetComponent<Player>());
+            CalculateScale(this, "Bonus", bonusModifierValue, PlayerManager.Instance.player.GetComponent<Player>());
+            CalculateScale(this, "Base", baseModifierValue, PlayerManager.Instance.player.GetComponent<Player>());
         }
 
         public void AddModifier(string name, float modifier)
@@ -52,7 +77,7 @@ namespace Novemo.Stats
                 else
                 {
                     modifiers[name] += modifier;
-                    Scale();
+                    ScaleAll();
                 }
             }
             else
@@ -65,7 +90,7 @@ namespace Novemo.Stats
                 else
                 {
                     modifiers[name] = modifier;
-                    Scale();
+                    ScaleAll();
                 }
             }
         }
@@ -81,8 +106,21 @@ namespace Novemo.Stats
             else
             {
                 modifiers[name] -= modifier;
-                Scale();
+                ScaleAll();
             }
+        }
+        
+        private static void CalculateScale(Stat stat, string scaleType, float modifierValue, Characters.Character target)
+        {
+            var healthFraction = Metrics.GetCurrentFraction(true, target);
+
+            stat.modifiers[scaleType] = stat.modifiers.ContainsKey(scaleType)
+                ? stat.modifiers[scaleType] > 0
+                    ? modifierValue * (stat.GetValue() - stat.modifiers[scaleType])
+                    : modifierValue * stat.GetValue()
+                : modifierValue * stat.GetValue();
+			
+            target.SetCurrentStat(0, healthFraction);
         }
     }
 }

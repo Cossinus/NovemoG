@@ -1,6 +1,8 @@
-using Novemo.Player;
+using Novemo.Character.Player;
+using Novemo.Characters.Player;
 using Novemo.Stats;
 using Novemo.Status_Effects;
+using Novemo.Status_Effects.Buffs;
 using UnityEngine;
 
 namespace Novemo.Items
@@ -13,25 +15,25 @@ namespace Novemo.Items
 		public float potionPower;
 		public float potionRate;
 		public float potionTime;
-		
-		private PlayerStats playerStats;
 
-		public override string SetDescription()
+		private Player playerStats;
+
+		public override void SetDescription()
 		{
-			base.SetDescription();
-			return itemDescription = $"{base.SetDescription()}Potion Type: {potionType}\nPotion Power: {potionPower}\nPotion Rate: {potionRate}\nPotion Time: {potionTime}\n<color=#C0C0C0>Level: {level}</color>";
+			itemDescription = $"Potion Type: {potionType}\nPotion Power: {potionPower}\nPotion Rate: {potionRate}\nPotion Time: {potionTime}\n<color=#C0C0C0>Level: {level}</color>";
 		}
 
 		public override bool Use()
 		{
 			base.Use();
-			playerStats = PlayerManager.Instance.player.GetComponent<PlayerStats>();
+			playerStats = PlayerManager.Instance.player.GetComponent<Player>();
 			
 			var potionBuff = new StatBuff {
 				EffectName = potionType.ToString(),
 				EffectDuration = potionTime, 
 				EffectPower = potionPower, 
-				CharacterStats = playerStats
+				Icon = itemIcon,
+				TargetStats = playerStats
 			};
 
 			switch (potionType)
@@ -58,12 +60,12 @@ namespace Novemo.Items
 					break;
 				case PotionType.Regeneration:
 					var regenerationBuff = new RegenerateBuff {
-						EffectName = PotionType.Regeneration.ToString(),
+						EffectName = potionType.ToString(),
 						EffectDuration = potionTime,
 						EffectPower = potionPower,
 						EffectRate = potionRate,
 						StatIndex = 28,
-						CharacterStats = playerStats
+						TargetStats = playerStats
 					};
 
 					playerStats.ApplyStatusEffect(regenerationBuff);
@@ -73,10 +75,14 @@ namespace Novemo.Items
 					break;
 				case PotionType.Heal:
 					if (playerStats.CurrentHealth < playerStats.stats[0].GetValue())
-						playerStats.CurrentHealth += potionPower;
+					{
+						playerStats.ModifyHealth(potionPower);
+						return true;
+					}
 					else
+					{
 						return false;
-					break;
+					}
 			}
 
 			playerStats.ApplyStatusEffect(potionBuff);
@@ -86,7 +92,20 @@ namespace Novemo.Items
 
 		public override bool Equals(Item other)
 		{
+			if (ReferenceEquals(other, null)) {
+				return false;
+			}
+			
+			if (ReferenceEquals(this, other)) {
+				return true;
+			}
+			
+			if (GetType() != other.GetType()) {
+				return false;
+			}
+			
 			var otherPotion = (Potion) other;
+
 			return base.Equals(other) && potionType == otherPotion.potionType && potionPower.Equals(otherPotion.potionPower) &&
 			       potionRate.Equals(otherPotion.potionRate) && potionTime.Equals(otherPotion.potionTime);
 		}

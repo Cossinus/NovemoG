@@ -16,13 +16,13 @@ MonoBehaviour:
   itemDescription: "A Steel Bar infused with gold to make it softer. \nOne of the
     best softly ended materials\nto use as a sword's core."
   specials: 
-  craftName: GoldSteel
   stackLimit: 6
+  level: 0
   value: 175
   isDiscovered: 0
   recipe: {fileID: 11400000, guid: 1095626d4ac5f824a99f6e395da284a4, type: 2}
+  craftSkill: 0
   itemIcon: {fileID: 21300000, guid: a42d74d898ea8cf49a6becad0e3f05cd, type: 3}
   itemType: 2
   itemSubType: 12
-  itemRarity: 3
-  level: 0
+  itemRarity: 4

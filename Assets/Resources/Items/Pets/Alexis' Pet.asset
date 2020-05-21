@@ -15,19 +15,18 @@ MonoBehaviour:
   itemName: Alexis' Pet
   itemDescription: Item Description
   specials: Item made by Alexis, my close friend.
-  craftName: AlexisPet
   stackLimit: 1
+  level: 50
   value: 999
   isDiscovered: 0
   recipe: {fileID: 0}
+  craftName: AlexisPet
   itemIcon: {fileID: 21300000, guid: 8fc39e434f36f71459f01860bda1b591, type: 3}
   itemType: 0
   itemSubType: 9
   itemRarity: 3
-  level: 50
   equipSlot: 12
   modifiers:
-  - Name: Health
-    Value: 700
-  effects:
-  - {fileID: 11400000, guid: 8aa8d60c194b8c740865b946ccf98f79, type: 2}
+  - name: Health
+    value: 700
+  activeEffect: {fileID: 0}

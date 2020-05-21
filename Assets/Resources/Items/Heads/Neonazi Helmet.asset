@@ -15,20 +15,18 @@ MonoBehaviour:
   itemName: Neonazi Helmet
   itemDescription: Item Description
   specials: 
-  craftName: NeonaziHelmet
   stackLimit: 1
+  level: 3
   value: 70
   isDiscovered: 0
   recipe: {fileID: 0}
-  itemIcon: {fileID: 21300000, guid: e6d019d1cf3851447963e4646de2ab72, type: 3}
+  itemIcon: {fileID: 21300000, guid: 3682a17d886438a43811d3a04d8ac330, type: 3}
   itemType: 0
   itemSubType: 7
   itemRarity: 2
-  level: 3
   equipSlot: 0
   modifiers:
-  - Name: Armor
-    Value: 100
-  - Name: Magic Resist
-    Value: 100
-  effects: []
+  - name: Armor
+    value: 120
+  - name: Damage
+    value: 700

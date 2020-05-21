@@ -15,20 +15,20 @@ MonoBehaviour:
   itemName: Chest of Attack Speed
   itemDescription: Item Description
   specials: 'Weight: 0.6kg'
-  craftName: ChestOfAttackSpeed
   stackLimit: 1
+  level: 3
   value: 42
-  isDiscovered: 0
+  isDiscovered: 1
   recipe: {fileID: 0}
+  craftName: ChestOfAttackSpeed
   itemIcon: {fileID: 21300000, guid: 823f150e75d8582469dd87f626060a3b, type: 3}
   itemType: 0
   itemSubType: 4
   itemRarity: 4
-  level: 3
   equipSlot: 1
   modifiers:
-  - Name: Attack Speed
-    Value: 150
-  - Name: Bleed Chance
-    Value: 5
-  effects: []
+  - name: Attack Speed
+    value: 150
+  - name: Movement Speed
+    value: 1.5
+  activeEffect: {fileID: 0}

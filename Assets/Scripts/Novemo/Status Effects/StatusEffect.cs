@@ -1,5 +1,4 @@
 using System;
-using Novemo.Stats;
 using UnityEngine;
 
 namespace Novemo.Status_Effects
@@ -7,44 +6,45 @@ namespace Novemo.Status_Effects
 	public abstract class StatusEffect : IEquatable<StatusEffect>
 	{
 		public string EffectName { get; set; }
-		public float EffectDuration { get; set; }
 		public float EffectPower { get; set; }
+		public float EffectMagicDamage { get; set; }
+		public float EffectDuration { get; set; }
 		public float EffectRate { get; set; }
 		public bool IsDecaying { get; set; }
 		public int StatIndex { get; set; }
 
-		public CharacterStats CharacterStats { get; set; }
+		public Sprite Icon { get; set; }
+
+		public Characters.Character SourceStats { get; set; }
+		public Characters.Character TargetStats { get; set; }
 		
-		private float timeElapsed;
+		private float _timeElapsed;
 
 		public virtual void ApplyEffect()
 		{
-			CharacterStats.statusEffects.Add(this);
+			TargetStats.statusEffects.Add(this);
 		}
 
 		public virtual void RemoveEffect()
 		{
-			CharacterStats.RemoveStatusEffect(this);
-			timeElapsed = 0;
+			TargetStats.RemoveStatusEffect(this);
+			_timeElapsed = 0;
 		}
 		
 		public virtual void UpdateEffect()
 		{
-			timeElapsed += Time.deltaTime;
+			_timeElapsed += Time.deltaTime;
 
-			if (timeElapsed >= EffectDuration)
+			if (_timeElapsed >= EffectDuration)
 			{
 				RemoveEffect();
 			}
 		}
 		
 		#region Override Equals
-		
-		public override bool Equals(object obj)
-		{
-			return Equals(obj as StatusEffect);
-		}
-		
+
+		public override bool Equals(object obj) => Equals(obj as StatusEffect);
+
 		public bool Equals(StatusEffect other)
 		{
 			if (ReferenceEquals(other, null)) {
@@ -59,7 +59,8 @@ namespace Novemo.Status_Effects
 				return false;
 			}
 
-			return EffectName == other.EffectName && CharacterStats == other.CharacterStats;
+			return EffectName == other.EffectName && TargetStats == other.TargetStats &&
+			       Metrics.EqualFloats(EffectDuration, other.EffectDuration, 0.001);
 		}
 
 		public override int GetHashCode()
@@ -72,7 +73,7 @@ namespace Novemo.Status_Effects
 				hashCode = (hashCode * 397) ^ EffectRate.GetHashCode();
 				hashCode = (hashCode * 397) ^ IsDecaying.GetHashCode();
 				hashCode = (hashCode * 397) ^ StatIndex;
-				hashCode = (hashCode * 397) ^ (CharacterStats != null ? CharacterStats.GetHashCode() : 0);
+				hashCode = (hashCode * 397) ^ (TargetStats != null ? TargetStats.GetHashCode() : 0);
 				return hashCode;
 			}
 		}

@@ -13,6 +13,9 @@ TagManager:
   - ChestInventory
   - Enemy
   - Ingredient
+  - Terrain
+  - Obstacle
+  - Interact
   layers:
   - Default
   - TransparentFX

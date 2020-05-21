@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Novemo.Crafting;
-using Novemo.Player;
-using Novemo.Stats;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Novemo.Items
 {
@@ -23,9 +20,8 @@ namespace Novemo.Items
         public bool isDiscovered;
 
         public Recipe recipe;
-        public string craftName = string.Empty;
-        
-		public Sprite itemIcon;
+
+        public Sprite itemIcon;
         
         public ItemType itemType;
         public ItemSubType itemSubType;
@@ -42,10 +38,7 @@ namespace Novemo.Items
             SetDescription();
         }
 
-        public virtual string SetDescription()
-        {
-            return string.Empty;
-        }
+        public virtual void SetDescription() { }
 
         public virtual bool Use()
         {
@@ -55,6 +48,7 @@ namespace Novemo.Items
 
         public string GetTooltip()
         {
+            //Use StringBuilder();
             var stats = string.Empty;
             var color = string.Empty;
             var newLine = string.Empty;
@@ -70,8 +64,8 @@ namespace Novemo.Items
             
             foreach (var modifier in _modifiers)
             {
-                if (modifier.Value > 0)
-                    stats += $"{Environment.NewLine}+{modifier.Value} {modifier.Name}";
+                if (modifier.value > 0)
+                    stats = $"{stats}{Environment.NewLine}+{modifier.value} {modifier.name}";
             }
             
             switch (itemRarity)
@@ -135,11 +129,8 @@ namespace Novemo.Items
 
         #region Override Equals
 
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as Item);
-        }
-        
+        public override bool Equals(object obj) => Equals(obj as Item);
+
         public virtual bool Equals(Item other)
         {
             if (ReferenceEquals(other, null)) {
@@ -154,10 +145,17 @@ namespace Novemo.Items
                 return false;
             }
 
-            return itemName == other.itemName && specials == other.specials && stackLimit == other.stackLimit &&
-                   level == other.level && value == other.value && isDiscovered == other.isDiscovered &&
-                   recipe == other.recipe && itemIcon == other.itemIcon && itemType == other.itemType &&
-                   itemSubType == other.itemSubType && itemRarity == other.itemRarity;
+            return itemName == other.itemName && 
+                   specials == other.specials && 
+                   stackLimit == other.stackLimit && 
+                   level == other.level && 
+                   value == other.value && 
+                   isDiscovered == other.isDiscovered && 
+                   recipe == other.recipe && 
+                   itemIcon == other.itemIcon && 
+                   itemType == other.itemType && 
+                   itemSubType == other.itemSubType && 
+                   itemRarity == other.itemRarity;
         }
 
         public override int GetHashCode()
@@ -186,8 +184,8 @@ namespace Novemo.Items
     [Serializable]
     public struct Modifier
     {
-        public string Name;
-        public float Value;
+        public string name;
+        public float value;
     }
 
     public enum Rarity {
@@ -211,7 +209,7 @@ namespace Novemo.Items
         QuestPotion,
         Scroll,
         QuestScroll,
-        
+        LootChest,
         // etc...
         // Only types of things that are used to craft something or use elsewhere (e.g. quest items)
     }
@@ -235,5 +233,8 @@ namespace Novemo.Items
         Dagger,
         CraftingMaterial,
         Bar,
+        LootChest,
+        Gem,
+        Pickaxe,
     }
 }

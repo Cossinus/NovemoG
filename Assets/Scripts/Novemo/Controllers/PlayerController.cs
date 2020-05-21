@@ -1,9 +1,9 @@
-﻿using Novemo.Classes;
-using Novemo.Inventory;
+﻿using System;
+using Novemo.Classes;
 using Novemo.Items;
-using Novemo.Player;
-using Novemo.Stats;
-using System.Collections;
+using Novemo.Interactable;
+using Novemo.Inventory;
+using Novemo.Items.Equipments;
 using UnityEngine;
 
 namespace Novemo.Controllers
@@ -11,17 +11,17 @@ namespace Novemo.Controllers
 	public class PlayerController : MonoBehaviour
 	{
 		//Currencies
-		public int Currency1 { get; set; }
-		public int Currency2 { get; set; }
-		public int Currency3 { get; set; }
-		public int Currency4 { get; set; }
-		public int Currency5 { get; set; }
+		public int Cossbucks { get; set; }
+		public int FutureCoin { get; set; }
+		public int ShadowCoin { get; set; }
+		public int PlagueCoin { get; set; }
+		public int MagmaCoin { get; set; }
 
 		public Item iron;
 		public Item steel;
 
 		//Player's class
-		public ClassManager playerClass;
+		public Class PlayerClass { get; set; }
 
 		//Player's animator
 		public Animator animator;
@@ -29,37 +29,52 @@ namespace Novemo.Controllers
 		//Actual quest
 		public Quest.Quest quest;
 
-		//Player's stats
-		private CharacterStats _myStats;
-
 		//Player's inventory
-		public Inventory.Inventory inventory;
-		public GameObject playerStats;
+		public Inventories.Inventory inventory;
+		public GameObject playerStatsObject;
 
-		//Player's bench
 		public Crafting.Crafting craftingBench;
 
-		//Player's chest
-		private Inventory.Inventory chest;
-		
 		//Player's weapon
 		public GameObject weapon;
 		private SpriteRenderer _weaponSprite;
+		
+		//Player's stats
+		private Characters.Character _myStats;
+		
+		//Player's chest
+		private Inventories.Inventory _chest;
 		
 		//Animator values
 		private Vector2 _movement;
 		private Vector2 _lastMovement;
 
+		private static Rigidbody2D _rb2d;
+
+		//Animator values
+		private static readonly int Speed = Animator.StringToHash("Speed");
+		private static readonly int Horizontal = Animator.StringToHash("Horizontal");
+		private static readonly int Vertical = Animator.StringToHash("Vertical");
+		private static readonly int LastHorizontal = Animator.StringToHash("LastHorizontal");
+		private static readonly int LastVertical = Animator.StringToHash("LastVertical");
+
+		public event Action<bool> OnPlayerMovement;
+
 		private void Awake()
 		{
-			_myStats = gameObject.GetComponent<CharacterStats>();
-			Currency1 = 10;
+			PlayerClass = FindObjectOfType<ClassHandler>().classes[0];
+			_myStats = GetComponent<Characters.Character>();
+			Cossbucks = 10;
 		}
 	
 		private void Start()
 		{
-			Invoke(nameof(Equip), 0.1f);
 			_weaponSprite = weapon.GetComponent<SpriteRenderer>();
+			_rb2d = GetComponent<Rigidbody2D>();
+			PlayerClass.myStats = _myStats;
+			PlayerClass.AddComponents();
+			PlayerClass.InitializeValues();
+			Invoke(nameof(Equip), 0.1f);
 		}
     
 		private void Update()
@@ -71,13 +86,13 @@ namespace Novemo.Controllers
                 inventory.AddItem(iron);
                 inventory.AddItem(steel);
             }
-			
-			transform.Translate(Time.deltaTime * _myStats.stats[6].GetValue() * (transform.up * _movement.y + transform.right * _movement.x).normalized);
 
 			Quest();
 		
 			if (Input.GetKeyDown(KeyCode.L))
-				playerClass.LevelUp();
+			{
+				PlayerClass.LevelUp();
+			}
 
 			SetWeaponSortingLayer();
 
@@ -88,10 +103,20 @@ namespace Novemo.Controllers
 			OpenChest();
 		}
 
+		private void FixedUpdate()
+		{
+			if (!_myStats.CanMove) return;
+
+			_rb2d.MovePosition(_rb2d.position + new Vector2(Mathf.Lerp(0, Input.GetAxis("Horizontal") * _myStats.stats[6].GetValue(), 1f),
+				                  Mathf.Lerp(0, Input.GetAxis("Vertical") * _myStats.stats[6].GetValue(), 1f)) * Time.fixedDeltaTime);
+		}
+
 		private void OpenCrafting()
 		{
 			if (Input.GetButtonDown("Crafting"))
 			{
+				playerStatsObject.SetActive(false);
+				
 				if (!inventory.IsOpen && !craftingBench.IsOpen)
 				{
 					craftingBench.Open();
@@ -104,6 +129,7 @@ namespace Novemo.Controllers
 				else if (inventory.IsOpen && craftingBench.IsOpen)
 				{
 					craftingBench.Open();
+					inventory.Open();
 				}
 			}
 		}
@@ -112,20 +138,22 @@ namespace Novemo.Controllers
 		{
 			if (Input.GetButtonDown("Chest"))
 			{
-				if (chest != null)
+				if (_chest != null)
 				{
-					if (!inventory.IsOpen && !chest.IsOpen)
+					playerStatsObject.SetActive(false);
+					
+					if (!inventory.IsOpen && !_chest.IsOpen)
 					{
-						chest.Open();
+						_chest.Open();
 						inventory.Open();
 					}
-					else if (inventory.IsOpen && !chest.IsOpen)
+					else if (inventory.IsOpen && !_chest.IsOpen)
 					{
-						chest.Open();
+						_chest.Open();
 					}
-					else if (inventory.IsOpen && chest.IsOpen)
+					else if (inventory.IsOpen && _chest.IsOpen)
 					{
-						chest.Open();
+						_chest.Open();
 						inventory.Open();
 					}
 				}
@@ -136,11 +164,13 @@ namespace Novemo.Controllers
 		{
 			if (Input.GetButtonDown("Inventory"))
 			{
+				playerStatsObject.SetActive(true);
+				
 				inventory.Open();
-				if (chest != null && chest.IsOpen)
+				if (_chest != null && _chest.IsOpen)
 				{
-					chest.Open();
-					playerStats.SetActive(false);
+					_chest.Open();
+					playerStatsObject.SetActive(false);
 				}
 				if (craftingBench.IsOpen)
 				{
@@ -157,7 +187,7 @@ namespace Novemo.Controllers
 				if (quest.goal.IsReached())
 				{
 					//REWARDS
-					Currency1 += 7;
+					Cossbucks += 7;
 					quest.Complete();
 				}
 			}
@@ -183,29 +213,31 @@ namespace Novemo.Controllers
 			if (Input.GetAxisRaw("Horizontal") > 0.5f || Input.GetAxisRaw("Horizontal") < -0.5f)
 			{
 				_lastMovement = new Vector2(Input.GetAxisRaw("Horizontal"), 0f);
+				OnPlayerMovement?.Invoke(true);
 			}
 			if (Input.GetAxisRaw("Vertical") > 0.5f || Input.GetAxisRaw("Vertical") < -0.5f)
 			{
 				_lastMovement = new Vector2(0f, Input.GetAxisRaw("Vertical"));
+				OnPlayerMovement?.Invoke(true);
 			}
 			
-			animator.SetFloat("Speed", _movement.sqrMagnitude);
-			animator.SetFloat("Horizontal", _movement.x);
-			animator.SetFloat("Vertical", _movement.y);
-			animator.SetFloat("LastHorizontal", _lastMovement.x);
-			animator.SetFloat("LastVertical", _lastMovement.y);
+			animator.SetFloat(Speed, _movement.sqrMagnitude);
+			animator.SetFloat(Horizontal, _movement.x);
+			animator.SetFloat(Vertical, _movement.y);
+			animator.SetFloat(LastHorizontal, _lastMovement.x);
+			animator.SetFloat(LastVertical, _lastMovement.y);
 		}
 
-		void OnTriggerEnter2D(Collider2D other)
+		private void OnTriggerEnter2D(Collider2D other)
 		{
 			if (other.gameObject.CompareTag("Item"))
 			{
-				other.gameObject.GetComponent<ItemPickup>().Interact();
+				other.GetComponent<ItemPickup>().Interact();
 			}
 
 			if (other.gameObject.CompareTag("Chest"))
 			{
-				chest = other.GetComponent<ChestScript>().chestInventory;
+				_chest = other.GetComponent<ChestScript>().chestInventory;
 			}
 		}
 
@@ -213,18 +245,29 @@ namespace Novemo.Controllers
 		{
 			if (other.gameObject.CompareTag("Chest"))
 			{
-				if (chest.IsOpen)
+				if (_chest.IsOpen)
 				{
-					chest.Open();
+					_chest.Open();
 					inventory.Open();
 				}
-				chest = null;
+				_chest = null;
+			}
+		}
+
+		private void OnTriggerStay2D(Collider2D other)
+		{
+			if (other.gameObject.CompareTag("Interact"))
+			{
+				if (Input.GetButtonDown("Interact"))
+				{
+					other.GetComponent<Interactable.Interactable>().Interact();
+				}
 			}
 		}
 
 		private void Equip()
 		{
-			EquipmentManager.Instance.Equip(playerClass.defaultWeapon);
+			EquipmentManager.Instance.Equip(Instantiate(PlayerClass.defaultWeapon));
 		}
 	}
 }

@@ -1,5 +1,7 @@
+using Novemo.Character;
+using Novemo.Character.Player;
+using Novemo.Characters.Player;
 using Novemo.Controllers;
-using Novemo.Player;
 using Novemo.Stats;
 using UnityEngine;
 
@@ -17,11 +19,11 @@ namespace Novemo.Combat
 
 		private bool _isAttacking;
 
-		private CharacterStats _playerStats;
+		private Characters.Character _playerStats;
 
 		private void Start()
 		{
-			_playerStats = PlayerManager.Instance.player.GetComponent<CharacterStats>();
+			_playerStats = PlayerManager.Instance.player.GetComponent<Characters.Character>();
 		}
 
 		private void Update()
@@ -49,8 +51,7 @@ namespace Novemo.Combat
 				_magicDamage = _playerStats.stats[9].GetValue();
 				_physicDamagePen = _playerStats.stats[23].GetValue();
 				_magicDamagePen = _playerStats.stats[24].GetValue();
-				other.GetComponent<CharacterStats>().TakeDamage(_physicalDamage, _magicDamage, _physicDamagePen,
-					_magicDamagePen, Random.Range(0f, 100f) <= _playerStats.stats[30].GetValue());
+				other.GetComponent<Characters.Character>().TakeDamage(_playerStats, _physicalDamage, _magicDamage);
 				_isAttacking = false;
 			}
 		}

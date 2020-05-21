@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a34bcbde274397a60e838dc3747c2b, type: 3}
+  m_Name: IronPickaxe
+  m_EditorClassIdentifier: 
+  itemName: Iron Pickaxe
+  itemDescription: 'Your first pick to learn mining. It won''t mine any better
+
+    ores
+    than those basics but at least u will be able to progress.
+
+    <color=#00FFFF>Hardness:
+    Diamond
+
+    Durability: 50/50</color>'
+  specials: 
+  stackLimit: 1
+  level: 0
+  value: 0
+  isDiscovered: 0
+  recipe: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: eb69868aa0a79c642bca29202c836967, type: 3}
+  itemType: 2
+  itemSubType: 20
+  itemRarity: 0
+  durability: 50
+  currentDurability: 50
+  head: {fileID: 11400000, guid: 87270c16ff2c3294dbcb3de7b3fadb6b, type: 2}
+  handle: {fileID: 0}
+  hardness: 8
+  pickDescription: 'Your first pick to learn mining. It won''t mine any better
+
+    ores
+    than those basics but at least u will be able to progress.'

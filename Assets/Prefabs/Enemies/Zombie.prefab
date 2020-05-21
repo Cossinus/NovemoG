@@ -8,7 +8,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3993834099555544573}
+  - component: {fileID: 764292999679606596}
   - component: {fileID: 3993834099555544572}
   - component: {fileID: 3993834099555544571}
   - component: {fileID: 3993834099555544570}
@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3993834099555544568}
   - component: {fileID: 3993834099555544551}
   - component: {fileID: 3993834099555544550}
+  - component: {fileID: 7105685932171955932}
   m_Layer: 0
   m_Name: Zombie
   m_TagString: Enemy
@@ -24,7 +25,7 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3993834099555544573
+--- !u!4 &764292999679606596
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -52,6 +53,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -183,8 +185,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d5599a97530e1b4dba3e89433001364, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 3
-  interactionTransform: {fileID: 3993834099555544573}
 --- !u!114 &3993834099555544551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,71 +198,198 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level: 2
-  stars: 1
   stats:
   - statName: Health
     baseValue: 30
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Mana
     baseValue: 1
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Damage
     baseValue: 7
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Armor
     baseValue: 5
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Magic Resist
     baseValue: 5
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Attack Speed
     baseValue: 0.651
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Movement Speed
     baseValue: 2.75
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Health Regen
     baseValue: 0.5
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Mana Regen
     baseValue: 0.001
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Arcane
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Lethal Damage
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Cooldown Reduction
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: +Gold
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: +Exp
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Mana Burn Chance
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Bleed Chance
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Poison Chance
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Withering Chance
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Ignite Chance
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Max Health Damage
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Current Health Damage
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Attack Pair Chance
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Attack Block Chance
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Armor Penetration
     baseValue: 5
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Magic Resist Penetration
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Life Steal
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Spell Vampirism
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Luck
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Health Regen Rate
     baseValue: 1
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Mana Regen Rate
     baseValue: 1000
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   - statName: Crit Chance
     baseValue: 0
+    baseModifierValue: 0
+    bonusModifierValue: 0
+    wholeModifierValue: 0
+    tmpAttackSpeed: 0
   experienceMultiplier: 10
+  stars: 1
+  enemyRarity: 0
+  lootTable:
+    loot: []
 --- !u!114 &3993834099555544550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,3 +404,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyCurrentlyFightingWith: {fileID: 0}
   attackDelay: 1
+--- !u!114 &7105685932171955932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3993834099555544549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb7a324630894f86acc284f2cf8b99c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
