@@ -9,15 +9,12 @@ namespace Novemo.UI
 		public Image progressBar;
 		public Image fillImage;
 
-		private float _duration;
-
 		private Coroutine _coroutine;
 		
 		public void FillSlider(float duration)
 		{
 			if (_coroutine != null) StopCoroutine(_coroutine);
-			_duration = duration;
-			_coroutine = StartCoroutine(FillSlider());
+			_coroutine = StartCoroutine(FillSliderCoroutine(duration));
 		}
 
 		public void DisableSlider()
@@ -26,15 +23,15 @@ namespace Novemo.UI
 			StopCoroutine(_coroutine);
 		}
 		
-		private IEnumerator FillSlider()
+		private IEnumerator FillSliderCoroutine(float duration)
 		{
 			progressBar.gameObject.SetActive(true);
 			fillImage.fillAmount = 0;
 			
-			var rate = 1.0f / _duration;
+			var rate = 1.0f / duration;
 			var progress = 0.0f;
 			
-			while (progress < 1.0)
+			while (progress < 1.0f)
 			{
 				fillImage.fillAmount += rate * Time.deltaTime;
 

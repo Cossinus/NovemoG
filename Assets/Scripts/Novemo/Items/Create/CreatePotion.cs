@@ -15,9 +15,12 @@ namespace Novemo.Items.Create
 			potion.itemSubType = ItemSubType.Potion;
 			potion.itemName = $"{potion.potionType} Potion";
 			potion.itemIcon = Resources.Load<Sprite>($"Sprites/Items/Potions/{potion.potionType}_Potion");
-			potion.stackLimit = 3;
+			potion.itemRarity = Metrics.CalculateRarity(guaranteedQuality);
 
-			CalculateRarity(potion, baseLevel, guaranteedQuality);
+			potion.level = Random.Range(baseLevel - 3, baseLevel + 3);
+			potion.level = Mathf.Clamp(potion.level, 0, 999);
+			
+			potion.stackLimit = 3;
 
 			//TODO test this while gameplay (on paper it is hard to predict whether it is balanced or not)
 			var basePotionPower = potion.level;
@@ -54,11 +57,11 @@ namespace Novemo.Items.Create
 					break;
 			}
 
-			potion.potionPower = (float)Math.Round(CalculatePowerWithRarity(power, potion.itemRarity), 2);
+			potion.potionPower = (float)Math.Round(ComputePowerWithRarity(power, potion.itemRarity), 2);
 			
 			potion.potionTime = potion.level * minOffset / maxOffset * 10;
 
-			potion.value = (int) Math.Round(potion.potionTime + potion.potionPower + potion.potionRate * 10 * (1 + potion.level / 7) * (1 + (float)potion.itemRarity / 4));
+			potion.value = Mathf.RoundToInt(potion.potionTime + potion.potionPower + potion.potionRate * 10 * (1 + potion.level / 7) * (1 + (float)potion.itemRarity / 4));
 
 			potion.SetDescription();
 			_inventory.AddItem(potion);

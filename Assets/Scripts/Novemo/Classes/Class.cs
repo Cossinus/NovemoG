@@ -1,8 +1,7 @@
 ﻿using System;
 using Novemo.Abilities;
-using Novemo.Character;
-using Novemo.Items;
-using Novemo.Stats;
+using Novemo.Combat;
+using Novemo.Items.Equipments;
 using UnityEngine;
 
 namespace Novemo.Classes
@@ -27,10 +26,11 @@ namespace Novemo.Classes
         public abstract void AddComponents();
         
         public abstract void InitializeValues();
+        
+        public abstract float Damage(DamageType dmgType);
 
         public virtual void LevelUp()
         {
-            myStats.level++;
             myStats.RequiredExperience *= myStats.experienceMultiplier;
         }
     }

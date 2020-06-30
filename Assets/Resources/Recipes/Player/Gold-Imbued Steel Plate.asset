@@ -24,4 +24,4 @@ MonoBehaviour:
   - {fileID: 0}
   recipeType: 0
   craftSkillRequired: 2
-  Discovered: 0
+  Discovered: 1

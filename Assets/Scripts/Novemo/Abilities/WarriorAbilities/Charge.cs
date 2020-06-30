@@ -1,10 +1,7 @@
 ﻿using System;
-using Novemo.Character;
-using Novemo.Character.Player;
 using Novemo.Characters.Player;
-using Novemo.Stats;
-using Novemo.Status_Effects;
-using Novemo.Status_Effects.Debuffs;
+using Novemo.StatusEffects;
+using Novemo.StatusEffects.Debuffs;
 using UnityEngine;
 
 namespace Novemo.Abilities.WarriorAbilities
@@ -30,7 +27,7 @@ namespace Novemo.Abilities.WarriorAbilities
 	    {
 		    abilityDelay -= Time.deltaTime;
 
-		    if (Input.GetButtonDown("Spell1") && abilityDelay <= 0f && playerStats.CurrentHealth > ability.abilityCost[abilityLevel] + 1 && !isActive && playerStats.CanUseSpells)
+		    if (Input.GetButtonDown("Spell1") && abilityDelay <= 0f && playerStats.CurrentHealth > ability.abilityCost[abilityLevel] + 1 && !isActive && playerStats.CanUseSpells && abilityLevel > 0)
 		    {
 			    playerStats.ModifyHealth(-ability.abilityCost[abilityLevel]);
 

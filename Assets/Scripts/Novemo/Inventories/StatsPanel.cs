@@ -1,37 +1,37 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using Novemo.Character;
-using Novemo.Character.Player;
 using Novemo.Characters.Player;
-using Novemo.Inventories;
-using Novemo.Stats;
 using TMPro;
 using UnityEngine;
 
-namespace Novemo.Inventory
+namespace Novemo.Inventories
 {
     public class StatsPanel : MonoBehaviour
     {
+        #region Singleton
+        
+        public static StatsPanel Instance;
+        
+        private void Awake()
+        {
+            Instance = this;
+        }
+        
+        #endregion
+        
         public List<TextMeshProUGUI> statsText = new List<TextMeshProUGUI>();
         public TextMeshProUGUI visualText;
         public TextMeshProUGUI sizeText;
 
         public GameObject statsTooltip;
+        public GameObject placeholder;
 
         private Characters.Character playerStats;
 
-        void Start()
+        private void Start()
         {
             playerStats = PlayerManager.Instance.player.GetComponent<Characters.Character>();
-        }
-
-        void Update()
-        {
-            StartCoroutine(UpdateStatsText());
-            
-            if (Inventories.Inventory.Instance.canvasGroup.alpha <= 0)
-                statsTooltip.SetActive(false);
         }
 
         public void ShowStatTooltip(int statIndex)
@@ -44,8 +44,8 @@ namespace Novemo.Inventory
             {
                 statsTooltip.SetActive(true);
                 
-                visualText.text = $"{playerStats.stats[statIndex].statName}: {statValue:F2}\n" +
-                                  $"Base Value: {baseStatValue:F2}\n" +
+                visualText.text = $"{playerStats.stats[statIndex].statName}: {statValue:F2}{Environment.NewLine}" +
+                                  $"Base Value: {baseStatValue:F2}{Environment.NewLine}" +
                                   $"Bonus Value: {additionalStatValue:F2}";
                 sizeText.text = visualText.text;
 
@@ -62,12 +62,17 @@ namespace Novemo.Inventory
             statsTooltip.SetActive(false);
         }
 
+        public void HideAdvancedStats()
+        {
+            placeholder.SetActive(false);
+        }
+
         public void ShowAdvancedStats(GameObject placeholder)
         {
             placeholder.SetActive(!placeholder.activeSelf);
         }
         
-        private IEnumerator UpdateStatsText()
+        public void UpdateStatsText()
         {
             for (int i = 0; i < statsText.Count; i++)
             {
@@ -75,8 +80,6 @@ namespace Novemo.Inventory
                     ? $"{playerStats.stats[i].statName}: {playerStats.stats[i].GetValue():F2}"
                     : $"{playerStats.stats[i].statName}: {playerStats.stats[i].GetValue():F0}";
             }
-            
-            yield return new WaitForSecondsRealtime(1f);
         }
     }
 }

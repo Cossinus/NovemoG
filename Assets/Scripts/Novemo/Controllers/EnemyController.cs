@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Novemo.Character.Player;
+using Novemo.Characters;
 using Novemo.Characters.Player;
 using Novemo.Combat;
 using UnityEngine;
@@ -22,26 +22,29 @@ namespace Novemo.Controllers
         protected Transform target;
         protected Coroutine patrol;
         protected CharacterCombat combat;
-        protected Characters.Character targetStats;
-        protected Characters.Character enemyStats;
+        protected Character targetStats;
+        protected Character enemyStats;
 
-        private static Rigidbody2D _rb2d;
+        protected Pathfinding pathfinding;
+
+        private Rigidbody2D _rb2d;
 
         private Vector3 prevLocation = Vector3.zero;
-        
+
         private bool calculatePath = true;
-        private static Tilemap tilemap;
-        private List<TileController.Node> nodes = new List<TileController.Node>();
+        private Tilemap _tilemap;
+        private List<Pathfinding.Node> _nodes = new List<Pathfinding.Node>();
 
         private void Start()
         {
             _rb2d = GetComponent<Rigidbody2D>();
-            tilemap = GameObject.Find("Ground").GetComponent<Tilemap>();
+            _tilemap = GameObject.Find("Ground").GetComponent<Tilemap>();
 
             target = PlayerManager.Instance.player.transform;
             targetStats = target.GetComponent<Player>();
             combat = GetComponent<CharacterCombat>();
-            enemyStats = GetComponent<Characters.Character>();
+            enemyStats = GetComponent<Character>();
+            pathfinding = GetComponent<Pathfinding>();
         }
         
         //TODO make enemy stop if stopping distance <= distance between player and enemy and stop calculating the path
@@ -53,35 +56,36 @@ namespace Novemo.Controllers
 
             if (elapsed > 1f && calculatePath)
             {
-                var playerPos = tilemap.WorldToCell(target.position);
-                var myPos = tilemap.WorldToCell(transform.position);
-                var targetNode = new TileController.Node { X = playerPos.x, Y = playerPos.y};
-                var startNode = new TileController.Node {X = myPos.x, Y = myPos.y};
+                var playerPos = _tilemap.WorldToCell(target.position);
+                var myPos = _tilemap.WorldToCell(transform.position);
+                var targetNode = new Pathfinding.Node { X = playerPos.x, Y = playerPos.y};
+                var startNode = new Pathfinding.Node {X = myPos.x, Y = myPos.y};
 
-                nodes = TileController.Search(startNode, targetNode);
+                _nodes = pathfinding.Search(startNode, targetNode);
                 
                 elapsed = 0;
             }
             
-            if (nodes.Count > 0)
+            if (_nodes.Count > 0)
             {
                 var position = transform.position;
-                var currentTile = tilemap.WorldToCell(position);
-                var nextTile = new Vector3Int(nodes.First().X, nodes.First().Y, 0);
+                var currentTile = _tilemap.WorldToCell(position);
+                var nextTile = new Vector3Int(_nodes.First().X, _nodes.First().Y, 0);
 
-                var smoothedDelta = Vector3.MoveTowards(position, tilemap.GetCellCenterWorld(nextTile),
+                var smoothedDelta = Vector3.MoveTowards(position, _tilemap.GetCellCenterWorld(nextTile),
                     enemyStats.stats[6].GetValue() * Time.deltaTime);
                 _rb2d.MovePosition(smoothedDelta);
 
-                if (Metrics.EqualFloats(currentTile.x, nextTile.x, 0.1f) &&
-                    Metrics.EqualFloats(currentTile.y, nextTile.y, 0.1f))
+                if (Metrics.EqualFloats(position.x, _tilemap.GetCellCenterWorld(nextTile).x, 0.01f) &&
+                    Metrics.EqualFloats(position.y, _tilemap.GetCellCenterWorld(nextTile).y, 0.01f))
                 {
-                    nodes.Remove(nodes.First());
+                    _nodes.Remove(_nodes.First());
                 }
 
                 if (Vector2.Distance(transform.position, target.position) < attackRadius)
                 {
-                    nodes.Clear();
+                    _nodes.Clear();
+                    pathfinding.pathLine.positionCount = 0;
                     calculatePath = false;
                     combat.Attack(targetStats);
                 }

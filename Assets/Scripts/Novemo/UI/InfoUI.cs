@@ -1,4 +1,6 @@
-﻿using TMPro;
+﻿using System;
+using Novemo.Characters.Enemies;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +9,8 @@ namespace Novemo.UI
     [RequireComponent(typeof(Characters.Character))]
     public class InfoUI : MonoBehaviour
     {
-        public TextMeshProUGUI levelText;
+        public Sprite[] starsContainer;
+        
         public GameObject uiPrefab;
         public Transform target;
 
@@ -21,17 +24,28 @@ namespace Novemo.UI
         private Image healthSlider;
         private Image shieldSlider;
 
-        void Start()
+        private void Start()
         {
             targetStats = target.GetComponent<Characters.Character>();
-            levelText.text = targetStats.level.ToString();
             foreach (var c in FindObjectsOfType<Canvas>())
             {
                 if (c.renderMode == RenderMode.WorldSpace)
                 {
                     ui = Instantiate(uiPrefab, c.transform).transform;
-                    healthSlider = ui.transform.Find("HealthMask/HealthBar").GetComponent<Image>();
-                    shieldSlider = ui.transform.Find("HealthMask/ShieldBar").GetComponent<Image>();
+                    healthSlider = ui.Find("HealthMask/HealthBar").GetComponent<Image>();
+                    shieldSlider = ui.Find("HealthMask/ShieldBar").GetComponent<Image>();
+                    
+                    try
+                    {
+                        var enemyStats = (EnemyStats) targetStats;
+                        var levelText = ui.Find("LevelBackground/LevelText").GetComponent<TextMeshProUGUI>();
+                        levelText.text = targetStats.level.ToString();
+                        var enemyName = ui.Find("NameBackground/EnemyName").GetComponent<TextMeshProUGUI>();
+                        enemyName.text = gameObject.name;
+                        var enemyStars = ui.Find("LevelBackground/Stars").GetComponent<Image>();
+                        enemyStars.sprite = starsContainer[enemyStats.stars - 1];
+                    } catch { /*Ignored*/ }
+                    
                     ui.gameObject.SetActive(false);
                     break;
                 }
@@ -40,7 +54,7 @@ namespace Novemo.UI
             targetStats.OnHealthChanged += OnHealthChanged;
         }
     
-        void OnHealthChanged(float maxHealth, float currentHealth, float shield)
+        private void OnHealthChanged(float maxHealth, float currentHealth, float shield)
         {
             if (ui == null) return;
             
@@ -62,16 +76,16 @@ namespace Novemo.UI
 
             if (currentHealth <= 0)
             {
+                targetStats.OnHealthChanged -= OnHealthChanged;
                 Destroy(ui.gameObject);
             }
         }
     
-        void LateUpdate()
+        private void LateUpdate()
         {
             if (ui == null) return;
             
             ui.position = target.position;
-            levelText.text = targetStats.level.ToString();
 
             if (Time.time - lastMadeVisibleTime > visibleTime)
             {

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Novemo.Characters.Player;
 using Novemo.Crafting;
+using Novemo.Items.Equipments;
 using UnityEngine;
 
 namespace Novemo.Items
@@ -48,13 +51,15 @@ namespace Novemo.Items
 
         public string GetTooltip()
         {
-            //Use StringBuilder();
             var stats = string.Empty;
-            var color = string.Empty;
-            var newLine = string.Empty;
+            var levelText = string.Empty;
+            var itemDescriptionText = string.Empty;
+            var newLine = Environment.NewLine;
+            var specialsString = newLine;
+            var color = Metrics.GetStringWithRarity(itemRarity, itemName);
 
             if (itemDescription != string.Empty)
-                newLine = "\n";
+                itemDescriptionText = $"{newLine}{itemDescription}";
 
             if (_item.itemType == ItemType.Equipment)
             {
@@ -62,69 +67,25 @@ namespace Novemo.Items
                 _modifiers = eq.modifiers;
             }
             
-            foreach (var modifier in _modifiers)
+            if (_modifiers.Count > 0)
+                stats += $"{newLine}Stats:";
+            stats = _modifiers.Where(modifier => modifier.value > 0).Aggregate(stats, (current, modifier) => $"{current}{newLine}+{modifier.value} {modifier.name}");
+
+            if (level > 0)
             {
-                if (modifier.value > 0)
-                    stats = $"{stats}{Environment.NewLine}+{modifier.value} {modifier.name}";
+                specialsString = string.Empty;
+                
+                if (PlayerManager.Instance.player.GetComponent<Player>().level < level)
+                    levelText = $"{newLine}{newLine}<color=red><b>Level: {level}</b></color>";
+                if (PlayerManager.Instance.player.GetComponent<Player>().level >= level)
+                    levelText = $"{newLine}{newLine}<color=green>Level: {level}</color>";
             }
             
-            switch (itemRarity)
-            {
-                case Rarity.Common:
-                    color = $"#696969><size=40>{itemName}</size>"; //dark gray
-                    break;
-                case Rarity.Normal:
-                    color = $"yellow><size=40>{itemName}</size>";
-                    break;
-                case Rarity.Uncommon:
-                    color = $"#bfff00><size=40>{itemName}</size>"; //lime-ish
-                    break;
-                case Rarity.Rare:
-                    color = $"#bc3c21><size=40>{itemName}</size>"; //brick-ish
-                    break;
-                case Rarity.VeryRare:
-                    color = $"#00CED1><size=40>{itemName}</size>"; //cyan-ish
-                    break;
-                case Rarity.Epic:
-                    color = $"orange><size=40><b>{itemName}</b></size>"; 
-                    break;
-                case Rarity.Legendary:
-                    color = $"#ff00ff><size=40><b>{itemName}</b></size>"; //purple-ish
-                    break;
-                case Rarity.Mystical:
-                    color = $"red><size=40><b>{itemName}</b></size>";
-                    break;
-                case Rarity.Artifact:
-                    color = $"white><size=40><b>{itemName}</b></size>";
-                    break;
-            }
+            if (specials != string.Empty)
+                specialsString += $"{newLine}<color=#999900><size=20><i>{specials}</i></size></color>";
 
-            if (stats != string.Empty && specials != string.Empty)
-            {
-                return string.Format(
-                    "<color={3}</color><size=24><i><color=purple>{4}{0}</color></i>\nStats:{1}\n" +
-                    "\n<color=#999900><size=20><i>{2}</i></size></color>" /* +
-                effect.EffectText()*/, itemDescription, stats, specials, color, newLine);
-            }
-            else if (stats != string.Empty && specials == string.Empty)
-            {
-                return string.Format(
-                    "<color={2}</color><size=24><i><color=purple>{3}{0}</color></i>\nStats:{1}" /* + effect.EffectText()*/,
-                    itemDescription, stats, color, newLine);
-            }
-            else if (stats == string.Empty && specials != string.Empty)
-            {
-                return string.Format(
-                    "<color={2}</color><size=24><i><color=purple>{3}{0}</color></i>" +
-                    "\n<color=#999900><size=20><i>{1}</i></size></color>" /* +
-                effect.EffectText()*/, itemDescription, specials, color, newLine);
-            }
-            else
-            {
-                return string.Format(
-                    "<color={1}</color><size=24><i><color=purple>{2}{0}</color></i></size>", itemDescription, color,
-                    newLine);
-            }
+            //TODO display statuseffect info
+            return $"{color}<size=24><color=purple><i>{itemDescriptionText}</i></color>{stats}{levelText}{specialsString}</size=24>";
         }
 
         #region Override Equals

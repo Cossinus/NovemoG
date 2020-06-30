@@ -1,6 +1,6 @@
 ﻿using System;
-using Novemo.Inventories.Slot;
-using Novemo.Inventory;
+using Novemo.Inventories;
+using Novemo.Inventories.Slots;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,7 +24,7 @@ namespace Novemo.Items.Equipments
     
         #endregion
 
-        private Inventories.Inventory _inventory;
+        private Inventory _inventory;
 
         public delegate void OnEquipmentChanged(Equipment newItem, Equipment oldItem);
         public OnEquipmentChanged onEquipmentChanged;

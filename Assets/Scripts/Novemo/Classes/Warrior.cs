@@ -1,4 +1,5 @@
-﻿using Novemo.Abilities.WarriorAbilities;
+﻿using System;
+using Novemo.Abilities.WarriorAbilities;
 using Novemo.Characters.Player;
 using UnityEngine;
 
@@ -20,9 +21,14 @@ namespace Novemo.Classes
         {
             classPassive.passiveDescription = "Gives you (<color=#ff3232><b>+3%</b></color> max HP) " +
                                               "and from the start player has <color=#ff3232><b>25 HP</b></color> more." +
-                                              $"\nActually: (<color=#ff3232><b>+{myStats.GetScaledValueByMultiplier(0, 0.03f):F1} HP</b></color>)";
+                                              $"{Environment.NewLine}Actually: (<color=#ff3232><b>+{myStats.GetScaledValueByMultiplier(0, 0.03f):F1} HP</b></color>)";
             
             classPassive.passive.Passive(myStats);
+        }
+
+        public override float Damage(DamageType dmgType)
+        {
+            throw new NotImplementedException();
         }
 
         public override void LevelUp()

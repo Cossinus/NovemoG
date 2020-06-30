@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GodSword
   m_EditorClassIdentifier: 
   itemName: God Sword
-  itemDescription: 
+  itemDescription: It must contain Description!
   specials: There is no better sword than this!
   stackLimit: 1
   level: 0
@@ -42,3 +42,9 @@ MonoBehaviour:
     value: 300
   - name: Lethal Damage
     value: 300
+  edge: {fileID: 0}
+  core: {fileID: 0}
+  guard: {fileID: 0}
+  grip: {fileID: 0}
+  limb: {fileID: 0}
+  string: {fileID: 0}

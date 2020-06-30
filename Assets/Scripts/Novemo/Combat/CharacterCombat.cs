@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections;
-using Novemo.Character;
-using Novemo.Character.Player;
 using Novemo.Characters.Player;
-using Novemo.Stats;
 using UnityEngine;
 
 namespace Novemo.Combat

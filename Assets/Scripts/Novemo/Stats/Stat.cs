@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Novemo.Character.Player;
 using Novemo.Characters.Player;
+using Novemo.Inventories;
 using UnityEngine;
 
 namespace Novemo.Stats
@@ -73,6 +73,7 @@ namespace Novemo.Stats
                 {
                     tmpAttackSpeed += modifier;
                     modifiers[name] = (100 + tmpAttackSpeed) / 100 * baseValue - baseValue;
+                    StatsPanel.Instance.UpdateStatsText();
                 }
                 else
                 {
@@ -86,6 +87,7 @@ namespace Novemo.Stats
                 {
                     tmpAttackSpeed += modifier;
                     modifiers[name] = (100 + tmpAttackSpeed) / 100 * baseValue - baseValue;
+                    StatsPanel.Instance.UpdateStatsText();
                 }
                 else
                 {
@@ -121,6 +123,8 @@ namespace Novemo.Stats
                 : modifierValue * stat.GetValue();
 			
             target.SetCurrentStat(0, healthFraction);
+            
+            StatsPanel.Instance.UpdateStatsText();
         }
     }
 }

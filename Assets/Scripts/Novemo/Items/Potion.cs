@@ -1,8 +1,6 @@
-using Novemo.Character.Player;
+using System;
 using Novemo.Characters.Player;
-using Novemo.Stats;
-using Novemo.Status_Effects;
-using Novemo.Status_Effects.Buffs;
+using Novemo.StatusEffects.Buffs;
 using UnityEngine;
 
 namespace Novemo.Items
@@ -20,7 +18,10 @@ namespace Novemo.Items
 
 		public override void SetDescription()
 		{
-			itemDescription = $"Potion Type: {potionType}\nPotion Power: {potionPower}\nPotion Rate: {potionRate}\nPotion Time: {potionTime}\n<color=#C0C0C0>Level: {level}</color>";
+			itemDescription =
+				$"Potion Type: {potionType}{Environment.NewLine}Potion Power: {potionPower}" +
+				$"{Environment.NewLine}Potion Rate: {potionRate}" +
+				$"{Environment.NewLine}Potion Time: {potionTime}";
 		}
 
 		public override bool Use()
@@ -44,11 +45,11 @@ namespace Novemo.Items
 					break;
 				case PotionType.Resistance:
 					potionBuff.EffectName = PotionType.Resistance.ToString();
-					potionBuff.StatIndex = 98;
+					potionBuff.StatIndex = 31;
 					break;
 				case PotionType.Strength:
 					potionBuff.EffectName = PotionType.Strength.ToString();
-					potionBuff.StatIndex = 99;
+					potionBuff.StatIndex = 32;
 					break;
 				case PotionType.Luck:
 					potionBuff.EffectName = PotionType.Luck.ToString();

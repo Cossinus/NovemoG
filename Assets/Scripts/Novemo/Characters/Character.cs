@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using Novemo.Abilities;
 using Novemo.Stats;
-using Novemo.Status_Effects;
+using Novemo.StatusEffects;
+using Novemo.StatusEffects.Debuffs;
+using Novemo.UI;
 using UnityEngine;
 
 namespace Novemo.Characters
 {
     public class Character : MonoBehaviour
     {
-        /// <summary>
-        /// Character's level.
-        /// </summary>
         [Header("Character's Level")]
         public int level;
 
@@ -61,30 +60,15 @@ namespace Novemo.Characters
 
         #region Properties
         
-        /// <summary>
-        /// Character's Current Health.
-        /// </summary>
-        public float CurrentHealth { get; private set; }
-        public float CurrentShield { get; private set; }
+        public float CurrentHealth { get; protected set; }
+        public float CurrentShield { get; protected set; }
         private float HealthRegenTimeElapsed { get; set; }
         
-        /// <summary>
-        /// Character's Current Mana.
-        /// </summary>
-        public float CurrentMana { get; private set; }
+        public float CurrentMana { get; protected set; }
         private float ManaRegenTimeElapsed { get; set; }
         
-        /// <summary>
-        /// Character's Current Experience.
-        /// </summary>
         public float CurrentExperience { get; protected set; }
-        /// <summary>
-        /// Character's Required Experience to level up.
-        /// </summary>
-        public float RequiredExperience { get; set; } 
-        /// <summary>
-        /// Character's experience multiplier, that multiplies required experience by a specified amount.
-        /// </summary>
+        public float RequiredExperience { get; set; }
         [Header("Experience Settings")]
         public float experienceMultiplier;
         
@@ -203,6 +187,34 @@ namespace Novemo.Characters
             if (Input.GetKeyDown(KeyCode.S))
             {
                 ModifyShield(10f);
+                
+                var statBuff = new Bleeding
+                {
+                    EffectDuration = 10f,
+                    Icon = Resources.Load<Sprite>("Sprites/Effects/Bleeding"),
+                    StatIndex = 0,
+                    EffectName = "Bleeding",
+                    IsDebuff = false,
+                    EffectPower = 10f,
+                    EffectRate = 1,
+                    TargetStats = this,
+                    SourceStats = this
+                };
+                ApplyStatusEffect(statBuff);
+                
+                var statDebuff = new Bleeding
+                {
+                    EffectDuration = 10f,
+                    Icon = Resources.Load<Sprite>("Sprites/Effects/Bleeding"),
+                    StatIndex = 0,
+                    EffectName = "Bleeding2",
+                    IsDebuff = true,
+                    EffectPower = 15f,
+                    EffectRate = 1,
+                    TargetStats = this,
+                    SourceStats = this
+                };
+                ApplyStatusEffect(statDebuff);
             }
 
             if (Input.GetKeyDown(KeyCode.X))
@@ -390,7 +402,7 @@ namespace Novemo.Characters
         /// <summary>
         /// Triggers character's level up.
         /// </summary>
-        protected virtual void LevelUp()
+        public virtual void LevelUp()
         {
             OnExperienceChanged?.Invoke(RequiredExperience, CurrentExperience);
         }
@@ -423,6 +435,11 @@ namespace Novemo.Characters
             {
                 statusEffect.ApplyEffect();
             }
+
+            if (statusEffect.IsPassive) return;
+            var color = statusEffect.IsDebuff ? "<color=red>" : "<color=green>";
+            EventLog.Instance.RaiseEventLog(
+                $"{color}<b>You got {statusEffect.GetType().Name} for {statusEffect.EffectDuration} seconds!</b></color>");
         }
 
         /// <summary>

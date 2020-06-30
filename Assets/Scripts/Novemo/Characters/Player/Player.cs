@@ -2,12 +2,16 @@
 using Novemo.Controllers;
 using Novemo.Items;
 using Novemo.Items.Equipments;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace Novemo.Character.Player
+namespace Novemo.Characters.Player
 {
-    public class Player : Characters.Character
+    public class Player : Character
     {
+        public TextMeshProUGUI levelText;
+        
         public Image experienceSlider;
 
         public int CraftSkill { get; set; } = 1;
@@ -18,7 +22,7 @@ namespace Novemo.Character.Player
         {
             TargetType = TargetType.Player;
             EquipmentManager.Instance.onEquipmentChanged += OnEquipmentChanged;
-            GetComponent<Characters.Character>().OnExperienceChanged += SetExperienceBar;
+            GetComponent<Character>().OnExperienceChanged += SetExperienceBar;
             _controller = GetComponent<PlayerController>();
         }
 
@@ -97,10 +101,13 @@ namespace Novemo.Character.Player
             experienceSlider.fillAmount = experiencePercent;
         }
 
-        protected override void LevelUp()
+        public override void LevelUp()
         {
             var moveToNext = CurrentExperience - RequiredExperience;
 
+            level++;
+            levelText.text = level.ToString();
+            
             _controller.PlayerClass.LevelUp();
                 
             experienceSlider.fillAmount = 0;

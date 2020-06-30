@@ -1,11 +1,10 @@
-﻿using Novemo.Character.Player;
-using Novemo.Characters.Player;
+﻿using Novemo.Characters.Player;
 using Novemo.Classes;
 using Novemo.Controllers;
-using Novemo.Inventories.Slot;
+using Novemo.Inventories.Slots;
 using UnityEngine;
 
-namespace Novemo.Inventory
+namespace Novemo.Inventories
 {
     public class EquipmentPanel : MonoBehaviour
     {

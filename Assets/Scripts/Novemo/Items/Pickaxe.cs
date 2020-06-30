@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Novemo.Items
@@ -25,7 +26,7 @@ namespace Novemo.Items
 		public override void SetDescription()
 		{
 			itemDescription =
-				$"{pickDescription}\n<color=#00FFFF>Hardness: {hardness}\nDurability: {currentDurability}/{durability}</color>";
+				$"{pickDescription}{Environment.NewLine}<color=#00FFFF>Hardness: {hardness}{Environment.NewLine}Durability: {currentDurability}/{durability}</color>";
 		}
 	}
 }

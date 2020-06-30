@@ -1,9 +1,9 @@
 using UnityEngine;
 
-namespace Novemo.Inventory
+namespace Novemo.Inventories
 {
     public class ChestScript : MonoBehaviour
     {
-        public Inventories.Inventory chestInventory;
+        public Inventory chestInventory;
     }
 }

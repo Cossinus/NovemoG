@@ -16,6 +16,7 @@ TagManager:
   - Terrain
   - Obstacle
   - Interact
+  - Effect
   layers:
   - Default
   - TransparentFX

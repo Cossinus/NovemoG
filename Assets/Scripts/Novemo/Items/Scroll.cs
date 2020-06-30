@@ -1,4 +1,4 @@
-using Novemo.Status_Effects;
+using Novemo.StatusEffects;
 using UnityEngine;
 
 namespace Novemo.Items

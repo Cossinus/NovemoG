@@ -1,6 +1,4 @@
 ﻿using System;
-using Novemo.Character;
-using Novemo.Stats;
 using UnityEngine;
 
 namespace Novemo.Abilities
@@ -8,6 +6,8 @@ namespace Novemo.Abilities
 	[RequireComponent(typeof(Characters.Character))]
 	public abstract class Ability : MonoBehaviour
 	{
+		//TODO handle eventlog for abilities
+		
 		[NonSerialized] public AbilityObject ability;
 
 		[NonSerialized] public Characters.Character playerStats;

@@ -1,7 +1,4 @@
-﻿using Novemo.Character;
-using Novemo.Stats;
-
-namespace Novemo.Abilities.WarriorAbilities
+﻿namespace Novemo.Abilities.WarriorAbilities
 {
 	public class WarriorPassive : Ability
 	{

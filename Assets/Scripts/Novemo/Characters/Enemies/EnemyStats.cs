@@ -14,11 +14,9 @@ namespace Novemo.Characters.Enemies
         [Header("Container for Loot")]
         public LootTable lootTable;
 
-        private RarityRandomizer _randomizer = new RarityRandomizer();
-        private int[] _probabilities = Metrics.RarityProbabilities;
-
         private void Start()
         {
+            RollRarity();
             TargetType = TargetType.Enemy;
             OnCharacterDeath += Die;
 
@@ -26,11 +24,14 @@ namespace Novemo.Characters.Enemies
 
             foreach (var stat in stats)
                 stat.AddWholeModifier(multiplier, this);
+
+            CurrentHealth = stats[0].GetValue();
+            CurrentMana = stats[1].GetValue();
         }
 
-        public void RollRarity()
+        private void RollRarity()
         {
-            enemyRarity = (Rarity)_randomizer.Choose(_probabilities, _probabilities.Last(), false);
+            enemyRarity = Metrics.CalculateRarity(false);
         }
         
         private void Die(Character source, Character target)

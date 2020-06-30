@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
-using Novemo.Character.Player;
 using Novemo.Characters.Player;
-using Novemo.Items.Equipments;
-using Novemo.Status_Effects;
+using Novemo.StatusEffects;
+using Novemo.UI;
 using UnityEngine;
 
-namespace Novemo.Items
+namespace Novemo.Items.Equipments
 {
     [CreateAssetMenu(fileName = "New Equipment", menuName = "Items/Equipment/Equipment")]
     public class Equipment : Item
@@ -14,6 +13,14 @@ namespace Novemo.Items
         public EquipmentSlot equipSlot;
         
         public List<Modifier> modifiers = new List<Modifier>();
+        
+        [Header("Armour/Weapon/Ranged components")]
+        public Item edge;
+        public Item core;
+        public Item guard;
+        public Item grip;
+        public Item limb;
+        public Item @string;
         
         [CanBeNull] public ActiveEffect activeEffect;
         
@@ -39,7 +46,7 @@ namespace Novemo.Items
             }
             else
             {
-                //EventLog
+                EventLog.Instance.RaiseEventLog("<color=red>Your level is too low to use this item!</color>");
             }
 
             return false;

@@ -1,6 +1,7 @@
-using System.Linq;
 using Novemo.Characters.Player;
 using Novemo.Controllers;
+using Novemo.Items.Equipments;
+using Novemo.StatusEffects;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -20,19 +21,19 @@ namespace Novemo.Items.Create
 			}
 			if (Input.GetKeyDown(KeyCode.O))
 			{
-				CreateNewPotion(Random.Range(6,10), false);
+				CreateNewScroll(Random.Range(1,5), false);
 			}
 			if (Input.GetKeyDown(KeyCode.L))
 			{
-				CreateNewPotion(Random.Range(11,15), false);
+				CreateNewEquipment<RangeWeapon>(Random.Range(1,5), false);
 			}
 			if (Input.GetKeyDown(KeyCode.K))
 			{
-				CreateNewPotion(Random.Range(16,20), false);
+				CreateNewEffect<ActiveEffect>(Random.Range(1,5), -1, StatusEffect.EffectType.Active);
 			}
 		}
 
-		private static float CalculatePowerWithRarity(float power, Rarity rarity)
+		private static float ComputePowerWithRarity(float power, Rarity rarity)
 		{
 			switch (rarity)
 			{
@@ -65,27 +66,6 @@ namespace Novemo.Items.Create
 					break;
 			}
 			return power;
-		}
-		
-		private static void CalculateRarity(Item item, int baseLevel, bool guaranteedQuality)
-		{
-			var choose = new RarityRandomizer();
-
-			var probabilities = Metrics.RarityProbabilities;
-			
-			if (guaranteedQuality) {
-				item.itemRarity = (Rarity)choose.Choose(probabilities, probabilities.Last(), true);
-				item.level = Random.Range(baseLevel, baseLevel + 2);
-			} else
-			{
-				item.itemRarity = (Rarity)choose.Choose(probabilities, probabilities.Last(), false);
-				item.level = Random.Range(baseLevel - 2, baseLevel + 1);
-			}
-			
-			if (item.level < 1)
-			{
-				item.level = 1;
-			}
 		}
 	}
 }

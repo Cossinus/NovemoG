@@ -1,6 +1,6 @@
 using System;
-using Novemo.Status_Effects;
-using Novemo.Status_Effects.Buffs;
+using Novemo.StatusEffects;
+using Novemo.StatusEffects.Buffs;
 using UnityEngine;
 
 namespace Novemo.Abilities.WarriorAbilities
@@ -22,7 +22,7 @@ namespace Novemo.Abilities.WarriorAbilities
 
             if (abilityUseTime.AddSeconds(ability.abilityDuration[abilityLevel]) < DateTime.UtcNow && isActive) Disable();
             
-            if (Input.GetButtonDown("Spell2") && abilityDelay <= 0f && playerStats.CurrentMana > ability.abilityCost[abilityLevel] && !isActive && playerStats.CanUseSpells)
+            if (Input.GetButtonDown("Spell2") && abilityDelay <= 0f && playerStats.CurrentMana > ability.abilityCost[abilityLevel] && !isActive && playerStats.CanUseSpells && abilityLevel > 0)
             {
                 _mitigateEffect = new MitigateEffect
                 {

@@ -9,7 +9,7 @@ namespace Novemo.Abilities.WarriorAbilities
 		{
 			abilityDelay -= Time.deltaTime;
 
-			if (Input.GetButtonDown("Spell4") && abilityDelay <= 0f && !isActive)
+			if (Input.GetButtonDown("Spell4") && abilityDelay <= 0f && !isActive && abilityLevel > 0)
 			{
 				abilityUseTime = DateTime.UtcNow;
 

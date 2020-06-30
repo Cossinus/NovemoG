@@ -36,7 +36,8 @@ namespace Novemo.Items
 		public override void SetDescription()
 		{
 			itemDescription =
-				$"{gemDescription}\n<color=#00FFFF>Properties:\nHardness: {hardness}\nStrength: {properties.strength}\nClearness: {properties.clearness}</color>";
+				$"{gemDescription}{Environment.NewLine}<color=#00FFFF>Properties:{Environment.NewLine}Hardness: {hardness}" +
+				$"{Environment.NewLine}Strength: {properties.strength}{Environment.NewLine}Clearness: {properties.clearness}</color>";
 		}
 
 		private int CalculateValue()

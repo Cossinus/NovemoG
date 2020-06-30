@@ -1,5 +1,4 @@
-﻿using Novemo.Character.Player;
-using Novemo.Characters.Player;
+﻿using Novemo.Characters.Player;
 using Novemo.Combat;
 using UnityEngine;
 

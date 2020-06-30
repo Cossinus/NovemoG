@@ -1,8 +1,8 @@
 ﻿using System;
 using Novemo.Classes;
 using Novemo.Items;
-using Novemo.Interactable;
-using Novemo.Inventory;
+using Novemo.Interactables;
+using Novemo.Inventories;
 using Novemo.Items.Equipments;
 using UnityEngine;
 
@@ -30,7 +30,7 @@ namespace Novemo.Controllers
 		public Quest.Quest quest;
 
 		//Player's inventory
-		public Inventories.Inventory inventory;
+		public Inventory inventory;
 		public GameObject playerStatsObject;
 
 		public Crafting.Crafting craftingBench;
@@ -43,7 +43,7 @@ namespace Novemo.Controllers
 		private Characters.Character _myStats;
 		
 		//Player's chest
-		private Inventories.Inventory _chest;
+		private Inventory _chest;
 		
 		//Animator values
 		private Vector2 _movement;
@@ -91,7 +91,7 @@ namespace Novemo.Controllers
 		
 			if (Input.GetKeyDown(KeyCode.L))
 			{
-				PlayerClass.LevelUp();
+				_myStats.LevelUp();
 			}
 
 			SetWeaponSortingLayer();
@@ -115,7 +115,7 @@ namespace Novemo.Controllers
 		{
 			if (Input.GetButtonDown("Crafting"))
 			{
-				playerStatsObject.SetActive(false);
+				StartCoroutine(InventoryManager.Instance.FadeOut(playerStatsObject.GetComponent<CanvasGroup>()));
 				
 				if (!inventory.IsOpen && !craftingBench.IsOpen)
 				{
@@ -138,24 +138,23 @@ namespace Novemo.Controllers
 		{
 			if (Input.GetButtonDown("Chest"))
 			{
-				if (_chest != null)
-				{
-					playerStatsObject.SetActive(false);
+				if (_chest == null) return;
+				
+				StartCoroutine(InventoryManager.Instance.FadeOut(playerStatsObject.GetComponent<CanvasGroup>()));
 					
-					if (!inventory.IsOpen && !_chest.IsOpen)
-					{
-						_chest.Open();
-						inventory.Open();
-					}
-					else if (inventory.IsOpen && !_chest.IsOpen)
-					{
-						_chest.Open();
-					}
-					else if (inventory.IsOpen && _chest.IsOpen)
-					{
-						_chest.Open();
-						inventory.Open();
-					}
+				if (!inventory.IsOpen && !_chest.IsOpen)
+				{
+					_chest.Open();
+					inventory.Open();
+				}
+				else if (inventory.IsOpen && !_chest.IsOpen)
+				{
+					_chest.Open();
+				}
+				else if (inventory.IsOpen && _chest.IsOpen)
+				{
+					_chest.Open();
+					inventory.Open();
 				}
 			}
 		}
@@ -164,7 +163,12 @@ namespace Novemo.Controllers
 		{
 			if (Input.GetButtonDown("Inventory"))
 			{
-				playerStatsObject.SetActive(true);
+				if (!inventory.IsOpen)
+				{
+					playerStatsObject.GetComponent<CanvasGroup>().alpha = 1;
+					playerStatsObject.GetComponent<CanvasGroup>().blocksRaycasts = true;
+					playerStatsObject.SetActive(true);
+				}
 				
 				inventory.Open();
 				if (_chest != null && _chest.IsOpen)
@@ -260,7 +264,7 @@ namespace Novemo.Controllers
 			{
 				if (Input.GetButtonDown("Interact"))
 				{
-					other.GetComponent<Interactable.Interactable>().Interact();
+					other.GetComponent<Interactable>().Interact();
 				}
 			}
 		}
